@@ -5,7 +5,6 @@ import Constant from '../config/Constant';
 import Config from '../config/Config';
 import Helper from '../utils/Helper';
 import _ from 'lodash';
-import ModalService from '../services/ModalService';
 
 /*
 
@@ -181,11 +180,7 @@ class CommonStore {
 
   // errorMessage 수동적으로 반영(멀티)
   @action
-  changeInputErrorMessageArray(
-    errorInfoArray,
-    beforeValidateSuccess,
-    scrollTopElementId
-  ) {
+  changeInputErrorMessageArray(errorInfoArray, beforeValidateSuccess) {
     let updateFormData = toJS(this.formData);
     if (errorInfoArray.length) {
       let firstErrorInputData = null;
@@ -517,114 +512,6 @@ class CommonStore {
   @action
   changeSearchKind(searchKind) {
     this.searchKind = searchKind;
-  }
-
-  // 이미지 파일 업로드
-  @action
-  uploadFile(fileObject, fileLocation, fileMaxSize, inputName, maxLength) {
-    if (!Helper.checkImageFileUploadExtension(fileObject)) {
-      ModalService.alert({ body: '이미지만 첨부 가능합니다.' });
-      return;
-    }
-    if (
-      !Helper.checkFileUploadMaxSize(
-        fileObject,
-        fileMaxSize || Config.defaultFileUploadSize
-      )
-    ) {
-      ModalService.alert({ body: '용량을 확인해주세요(5MB 이하).' });
-      return;
-    }
-    let formData = toJS(this.formData);
-    inputName = inputName || 'imageList';
-    let imageList = formData[inputName].value;
-    maxLength = maxLength || 10;
-    if (imageList.length >= maxLength) {
-      ModalService.alert({
-        body: '사진은 ' + maxLength + '개까지만 첨부 가능합니다.'
-      });
-      return;
-    }
-    let fileFormData = new FormData();
-    fileFormData.append('upload_file', fileObject);
-    fileFormData.append('fileType', Constant.FILE_UPLOAD_TYPE_IMAGE);
-    fileFormData.append('fileLocation', fileLocation);
-    ApiService.post('common/uploadFile', fileFormData, {}).then((response) => {
-      let data = response.data;
-      imageList.push({
-        status: Constant.FILE_UPLOAD_STATUS_NEW,
-        fileName: data.fileName,
-        fileThumbnail: data.thumb,
-        fileSeq: data.tempFileSeq,
-        fileUrl: data.fileUrl
-      });
-      this.changeInput(inputName, imageList);
-    });
-  }
-
-  // 파일 삭제
-  @action
-  removeImage(arrayIndex, fileSeq, inputName, notApplyRepresentImage) {
-    let formData = toJS(this.formData);
-    let imageListInputName = inputName || 'imageList';
-    let imageList = formData[imageListInputName].value;
-    let representImage = null;
-    if (formData.representImage) {
-      representImage = formData.representImage.value;
-    }
-    if (formData.representImage && !notApplyRepresentImage) {
-      if (Number(representImage) === Number(fileSeq)) {
-        this.changeInput('representImage', '');
-      }
-    }
-    const newImageList = update(imageList, {
-      $splice: [[arrayIndex, 1]]
-    });
-    this.changeInput(imageListInputName, newImageList);
-  }
-
-  // 이미지 파일 업로드
-  @action
-  uploadFileObject(
-    fileObject,
-    fileInputName,
-    fileLocation,
-    fileMaxSize,
-    byPassLogin
-  ) {
-    if (!Helper.checkImageFileUploadExtension(fileObject)) {
-      ModalService.alert({
-        body: '이미지만 첨부 가능합니다.'
-      });
-      return;
-    }
-    if (
-      !Helper.checkFileUploadMaxSize(
-        fileObject,
-        fileMaxSize || Config.defaultFileUploadSize
-      )
-    ) {
-      ModalService.alert({ body: '용량을 확인해주세요(5MB 미만).' });
-      return;
-    }
-    let fileFormData = new FormData();
-    fileFormData.append('upload_file', fileObject);
-    fileFormData.append('fileType', Constant.FILE_UPLOAD_TYPE_IMAGE);
-    fileFormData.append('fileLocation', fileLocation);
-    let apiUrl = 'common/uploadFile';
-    if (byPassLogin) {
-      apiUrl = 'common/uploadFileWithoutLogin';
-    }
-    ApiService.post(apiUrl, fileFormData, {}).then((response) => {
-      let data = response.data;
-      this.changeInput(fileInputName, {
-        status: Constant.FILE_UPLOAD_STATUS_NEW,
-        fileName: data.fileName,
-        fileThumbnail: data.thumb,
-        fileSeq: data.tempFileSeq,
-        fileUrl: data.fileUrl
-      });
-    });
   }
 
   // 정보 clear
