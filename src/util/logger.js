@@ -1,0 +1,76 @@
+'use strict';
+
+// const levels = {
+//   error: 0,
+//   warn: 1,
+//   info: 2,
+//   http: 3,
+//   verbose: 4,
+//   debug: 5,
+//   silly: 6,
+// };
+
+const Config = require('../Config');
+const process = require('process');
+const isLocalRun = process.env.RUN_ENV === 'local' ? true : false;
+const chalk = require('chalk');
+const winston = require('winston');
+
+let logFileName = Config.LOG_FILE_NAME;
+if (process.env.LOG_FILE_NAME) {
+  logFileName = process.env.LOG_FILE_NAME;
+}
+
+// fileLogTransport
+const DailyRotateFile = require('winston-daily-rotate-file');
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  transports: [
+    new winston.transports.Console(),
+    new DailyRotateFile({
+      datePattern: '',
+      filename: logFileName + '.%DATE%',
+      maxSize: Config.LOG_MAX_FILE_SIZE,
+      maxFiles: Config.LOG_MAX_FILE_COUNT
+    })
+  ]
+});
+
+module.exports = {
+  debug: function (message) {
+    logger.log({
+      level: 'debug',
+      message: message
+    });
+    if (isLocalRun) {
+      console.log(chalk.blue(message));
+    }
+  },
+  info: function (message) {
+    logger.log({
+      level: 'info',
+      message: message
+    });
+    if (isLocalRun) {
+      console.log(chalk.green(message));
+    }
+  },
+  warn: function (message) {
+    logger.log({
+      level: 'warn',
+      message: message
+    });
+    if (isLocalRun) {
+      console.log(chalk.yellow(message));
+    }
+  },
+  error: function (message) {
+    logger.log({
+      level: 'error',
+      message: message
+    });
+    if (isLocalRun) {
+      console.log(chalk.red(message));
+    }
+  }
+};
