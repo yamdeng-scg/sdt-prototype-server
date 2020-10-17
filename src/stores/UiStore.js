@@ -11,6 +11,9 @@ class UiStore {
   // 현재 라우팅 url
   @observable currentRouteUrl = null;
 
+  // 오늘의 통계 정보
+  @observable todayStatsInfo = null;
+
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
@@ -48,6 +51,10 @@ class UiStore {
   hideLoadingBar() {
     this.displayLoadingBar = false;
   }
+
+  // 오늘의 상담 정보 요청
+  @action
+  loadTodayStats() {}
 }
 
 export default UiStore;

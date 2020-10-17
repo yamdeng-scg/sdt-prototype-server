@@ -1,15 +1,26 @@
 import { observable, action } from 'mobx';
 
 class ChatStore {
-  // 로딩바 display
-  @observable displayLoadingBar = false;
+  // 현재 소켓 연결된 사용자 정보
+  @observable chatCustomerInfo = {};
+
+  // 하단 탭 active index
+  @observable bottmActiveTabIndex = 0;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
+  // 하단 탭 index 변경
   @action
-  handle() {}
+  changeBottomActiveTabIndex(tabIndex) {
+    this.bottmActiveTabIndex = tabIndex;
+  }
+
+  @action
+  clear() {
+    this.chatCustomerInfo = null;
+  }
 }
 
 export default ChatStore;

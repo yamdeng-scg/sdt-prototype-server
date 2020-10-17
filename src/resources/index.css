@@ -21,3 +21,35 @@ code {
 .ant-divider-horizontal.ant-divider-with-text::after {
   border-top: 3px solid black;
 }
+
+#root {
+  height: 100%;
+}
+
+
+.ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
+  border-right: 0px
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid #707070;
+  display: inline-block;
+}
+
+.dot-fill {
+  height: 10px;
+  width: 10px;
+  background-color: #78bffd;
+  border-radius: 50%;
+  border: 0px solid #707070;
+  display: inline-block;
+}
+
+.ant-input-textarea {
+  display: inline-block;
+  width: 80%;
+}

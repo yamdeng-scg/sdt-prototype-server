@@ -1,9 +1,14 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+import { Row, Col } from 'antd';
 import RoomList from './RoomList';
-import CurrentUserInfo from './CurrentUserInfo';
 import ChatAreaContainer from './ChatAreaContainer';
-import ContractAreaContainer from './ContractAreaContainer';
+import WiseSaying from './WiseSaying';
 
+@withRouter
+@inject('chatStore')
+@observer
 class ChatContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -11,13 +16,17 @@ class ChatContainer extends React.Component {
   }
 
   render() {
+    let { chatStore } = this.props;
+    let { chatCustomerInfo } = chatStore;
     return (
-      <div>
-        <RoomList />
-        <CurrentUserInfo />
-        <ChatAreaContainer />
-        <ContractAreaContainer />
-      </div>
+      <Row style={{ height: '100%' }}>
+        <Col span={6}>
+          <RoomList />
+        </Col>
+        <Col span={18}>
+          {chatCustomerInfo ? <ChatAreaContainer /> : <WiseSaying />}
+        </Col>
+      </Row>
     );
   }
 }

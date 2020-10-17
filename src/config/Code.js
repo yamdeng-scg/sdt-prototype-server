@@ -3,18 +3,11 @@ import _ from 'lodash';
 
 const Code = {};
 
-// 호칭 select 정보 : 우리집, 아버지, 어머니, 장인어른, 장모님, 시아버지, 시어머님, 할아버지, 할머니, 직접입력
-Code.aliasSelectList = [
-  { name: '우리집' },
-  { name: '아버지' },
-  { name: '어머니' },
-  { name: '장인어른' },
-  { name: '장모님' },
-  { name: '시아버지' },
-  { name: '시어머님' },
-  { name: '할아버지' },
-  { name: '할머니' },
-  { name: '직접입력' }
+// 룸 목록 조회 키워드 유형
+Code.roomListSearcTypeCodeList = [
+  { name: '고객명', value: 'customerName' },
+  { name: '대화내용', value: 'messageText' },
+  { name: '상담사', value: 'empName' }
 ];
 
 Code.deleteBillSendMethodCodeList = [
@@ -185,10 +178,10 @@ Code.unapprovedReasonCode = [
 // 번호 복사하기 code 목록
 Code.normalPasteCodeList = [{ name: '복사하기', value: '1' }];
 
-Code.getCodeNameByValue = function(codeCategory, codeValue) {
+Code.getCodeNameByValue = function (codeCategory, codeValue) {
   let codeName = null;
   let codeList = Code[codeCategory] || [];
-  let searchIndex = _.findIndex(codeList, codeInfo => {
+  let searchIndex = _.findIndex(codeList, (codeInfo) => {
     if (codeValue === codeInfo.value) {
       return true;
     } else {

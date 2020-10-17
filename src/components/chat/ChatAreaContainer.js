@@ -1,7 +1,8 @@
 import React from 'react';
-import MessageList from './MessageList';
-import SendMessageInput from './SendMessageInput';
-import ChatAreaBottom from './ChatAreaBottom';
+import { Row, Col } from 'antd';
+import MessageContainer from './MessageContainer';
+import ContractAreaContainer from './ContractAreaContainer';
+import CurrentUserInfo from './CurrentUserInfo';
 
 class ChatAreaContainer extends React.Component {
   constructor(props) {
@@ -12,9 +13,19 @@ class ChatAreaContainer extends React.Component {
   render() {
     return (
       <div>
-        <MessageList />
-        <SendMessageInput />
-        <ChatAreaBottom />
+        <Row>
+          <Col span={24}>
+            <CurrentUserInfo />
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
+            <MessageContainer />
+          </Col>
+          <Col span={12}>
+            <ContractAreaContainer />
+          </Col>
+        </Row>
       </div>
     );
   }

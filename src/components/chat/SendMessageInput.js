@@ -1,4 +1,6 @@
 import React from 'react';
+import { Input, Button } from 'antd';
+const { TextArea } = Input;
 
 class SendMessageInput extends React.Component {
   constructor(props) {
@@ -7,7 +9,19 @@ class SendMessageInput extends React.Component {
   }
 
   render() {
-    return <div>SendMessageInput</div>;
+    return (
+      <div>
+        <TextArea
+          autoSize={true}
+          style={{
+            backgroundColor: '#78bffd'
+          }}
+        ></TextArea>
+        <Button type="primary" shape="round" size="small">
+          전송
+        </Button>
+      </div>
+    );
   }
 }
 

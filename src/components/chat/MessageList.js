@@ -1,4 +1,5 @@
 import React from 'react';
+import { Row, Col } from 'antd';
 
 class MessageList extends React.Component {
   constructor(props) {
@@ -7,7 +8,11 @@ class MessageList extends React.Component {
   }
 
   render() {
-    return <div>MessageList</div>;
+    return (
+      <Row>
+        <Col span={24}>MessageList</Col>
+      </Row>
+    );
   }
 }
 

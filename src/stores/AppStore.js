@@ -5,7 +5,7 @@ class AppStore {
   @observable company = 0;
 
   // 로그인 token
-  @observable token = '';
+  @observable token = 'aaa';
 
   // 로그인한 사용자 정보
   @observable userInfo = null;

@@ -15,7 +15,7 @@ moment.locale('ko');
 
 // state의 상태는 action을 통해서만 가능하게끔 셋팅
 configure({
-  enforceActions: 'always'
+  enforceActions: 'observed'
 });
 
 ReactDOM.render(
@@ -24,7 +24,6 @@ ReactDOM.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
-      ,
     </Router>
   </Provider>,
   document.getElementById('root')
