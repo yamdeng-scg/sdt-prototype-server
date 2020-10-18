@@ -10,13 +10,13 @@
 //   silly: 6,
 // };
 
-const Config = require('../Config');
+const config = require('../config/config');
 const process = require('process');
 const isLocalRun = process.env.RUN_ENV === 'local' ? true : false;
 const chalk = require('chalk');
 const winston = require('winston');
 
-let logFileName = Config.LOG_FILE_NAME;
+let logFileName = config.LOG_FILE_NAME;
 if (process.env.LOG_FILE_NAME) {
   logFileName = process.env.LOG_FILE_NAME;
 }
@@ -30,8 +30,8 @@ const logger = winston.createLogger({
     new DailyRotateFile({
       datePattern: '',
       filename: logFileName + '.%DATE%',
-      maxSize: Config.LOG_MAX_FILE_SIZE,
-      maxFiles: Config.LOG_MAX_FILE_COUNT
+      maxSize: config.LOG_MAX_FILE_SIZE,
+      maxFiles: config.LOG_MAX_FILE_COUNT
     })
   ]
 });

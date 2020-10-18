@@ -1,17 +1,17 @@
 'use strict';
 
-const Config = require('../Config');
+const config = require('../config/config');
 const logger = require('../util/logger');
-const Helper = require('../util/helper');
+const helper = require('../util/helper');
 const mysql = require('mysql');
 const _ = require('lodash');
 
 let connection = mysql.createConnection({
-  host: Config.db.host,
-  user: Config.db.user,
-  password: Config.db.password,
-  port: Config.db.port,
-  database: Config.db.database
+  host: config.db.host,
+  user: config.db.user,
+  password: config.db.password,
+  port: config.db.port,
+  database: config.db.database
 });
 
 let reconnectIntervalId = null;
@@ -55,11 +55,11 @@ registerErrorHanlder(connection);
 function reconnect() {
   try {
     connection = mysql.createConnection({
-      host: Config.db.host,
-      user: Config.db.user,
-      password: Config.db.password,
-      port: Config.db.port,
-      database: Config.db.database
+      host: config.db.host,
+      user: config.db.user,
+      password: config.db.password,
+      port: config.db.port,
+      database: config.db.database
     });
     registerErrorHanlder(connection);
     service.connect();
