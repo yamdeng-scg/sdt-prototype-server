@@ -20,6 +20,7 @@ let reconnectSuccess = false;
 connection.config.queryFormat = function (query, paramObject) {
   if (!paramObject) return query;
   return query.replace(
+    // eslint-disable-next-line
     /\:(\w+)/g,
     function (txt, key) {
       if (_.has(paramObject, key)) {
@@ -141,7 +142,12 @@ service.connect = function () {
 */
 
 const queryInfo = {
-  findUserByLoginId: 'SELECT * FROM gateway_user WHERE id = ?',
+  findWiseSayAll: 'select * from wise_say',
+  getWiseSay: 'select * from wise_say WHERE id = :id',
+  findWiseSayByContent: 'select * from wise_say WHERE like %:content%',
+  updateWiseSay: 'update wise_say set content = :content where id = :id',
+  updateSettingInfo:
+    'update setting_info set Value = ? where Category = ? and Type = ?',
   findUserByEmail: 'SELECT * FROM gateway_user WHERE email = ?',
   getTableInfoToObjectDefaultValue:
     'select column_name, ordinal_position, is_nullable, data_type, column_default from information_schema.columns where table_name = ? order by ordinal_position asc',
@@ -166,8 +172,6 @@ const queryInfo = {
   treeDisplayGatewayList:
     'select ip_address, status, device_type as name, "G" as tree_type from information_discovery_eth where status > 0',
   findSettingInfo: 'select * from setting_info where Category = ? and Type = ?',
-  updateSettingInfo:
-    'update setting_info set Value = ? where Category = ? and Type = ?',
   findCustomDeviceChannel1:
     'select 1 as channel_number, information_discovery_ch1.logical_identifier, information_device_data_ch1.device_name, information_device_data_ch1.manufacturer_name, information_device_data_ch1.usage, information_device_data_ch1.user_defined_name, information_device_data_ch1.product_code, information_discovery_ch1.status, fast_db_ch1.table_name, information_discovery_ch1.physical_identifier, fast_db_ch1.fast_group_number, fast_db_ch1.fast_function_code1, fast_db_ch1.fast_address1, fast_db_ch1.fast_length1, fast_db_ch1.fast_function_code2, fast_db_ch1.fast_address2, fast_db_ch1.fast_length2 from information_discovery_ch1 left outer join fast_db_ch1 on information_discovery_ch1.logical_identifier = fast_db_ch1.logical_identifier left outer join information_device_data_ch1 on information_discovery_ch1.logical_identifier = information_device_data_ch1.logical_identifier where information_discovery_ch1.physical_identifier = ?',
   findCustomDeviceChannel2:
@@ -247,15 +251,17 @@ service.insert = function (tableName, insertArgumentInfo) {
   logger.debug(
     'insert table [' + tableName + '] : ' + JSON.stringify(insertArgumentInfo)
   );
+  let applyQueryArgument = helper.changeKeyToUnderScore(insertArgumentInfo);
   return new Promise((resolve, reject) => {
     connection.query(
       'INSERT INTO ' + tableName + ' SET ?',
-      insertArgumentInfo,
+      applyQueryArgument,
       (error, results) => {
         if (error) {
           reject(error);
+          return Promise.reject(error);
         } else {
-          resolve(results);
+          return service.selectOne(tableName, results.insertId);
         }
       }
     );
@@ -263,33 +269,41 @@ service.insert = function (tableName, insertArgumentInfo) {
 };
 
 // common update
-service.update = function (tableName, updateArgumentInfo, idColumn, idValue) {
+service.update = function (
+  tableName,
+  updateArgumentInfo,
+  idValue,
+  idColumnName
+) {
   logger.debug(
     'update table [' + tableName + '] : ' + JSON.stringify(updateArgumentInfo)
   );
-  let argumentKeys = _.keys(updateArgumentInfo);
+  let applyQueryArgument = helper.changeKeyToUnderScore(updateArgumentInfo);
+  let argumentKeys = _.keys(applyQueryArgument);
   let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
   let updateSetQueryString = '';
-  let updateArguments = [];
-  argumentKeys.forEach((info) => {
-    updateArguments.push(updateArgumentInfo[info]);
-    if (info === 'usage') {
-      info = '`usage`';
+  argumentKeys.forEach((keyName) => {
+    if (keyName === 'usage') {
+      keyName = '`usage`';
     }
     if (updateSetQueryString) {
-      updateSetQueryString = updateSetQueryString + ', ' + info + '= ?';
+      updateSetQueryString =
+        updateSetQueryString + ', ' + keyName + '= :' + keyName;
     } else {
-      updateSetQueryString = info + '= ?';
+      updateSetQueryString = keyName + '= :' + keyName;
     }
   });
+  idColumnName = idColumnName || 'id';
   updateFullQueryString =
     updateFullQueryString +
     updateSetQueryString +
     ' WHERE ' +
-    idColumn +
-    ' = ?';
-  updateArguments.push(idValue);
-  return service.executeQueryByStr(updateFullQueryString, updateArguments);
+    idColumnName +
+    ' = ' +
+    idValue;
+  return service
+    .executeQueryByStr(updateFullQueryString, applyQueryArgument)
+    .then(() => service.selectOne(tableName, idValue));
 };
 
 // update all
@@ -300,54 +314,21 @@ service.updateAll = function (tableName, updateArgumentInfo) {
       '] : ' +
       JSON.stringify(updateArgumentInfo)
   );
-  let argumentKeys = _.keys(updateArgumentInfo);
+  let applyQueryArgument = helper.changeKeyToUnderScore(updateArgumentInfo);
+  let argumentKeys = _.keys(applyQueryArgument);
   let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
   let updateSetQueryString = '';
-  let updateArguments = [];
-  argumentKeys.forEach((info) => {
+  argumentKeys.forEach((keyName) => {
     if (updateSetQueryString) {
-      updateSetQueryString = updateSetQueryString + ', ' + info + '= :' + info;
+      updateSetQueryString =
+        updateSetQueryString + ', ' + keyName + '= :' + keyName;
     } else {
-      updateSetQueryString = info + '= :' + info;
+      updateSetQueryString = keyName + '= :' + keyName;
     }
-    updateArguments.push(updateArgumentInfo[info]);
   });
   updateFullQueryString = updateFullQueryString + updateSetQueryString;
   logger.debug('updateFullQueryString : ' + updateFullQueryString);
-  return service.executeQueryByStr(updateFullQueryString, updateArguments);
-};
-
-// update where
-service.updateWhere = function (
-  tableName,
-  updateArgumentInfo,
-  whereStr,
-  whereArguments
-) {
-  logger.debug(
-    'update table [' + tableName + '] : ' + JSON.stringify(updateArgumentInfo)
-  );
-  let argumentKeys = _.keys(updateArgumentInfo);
-  let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
-  let updateSetQueryString = '';
-  let updateArguments = [];
-  argumentKeys.forEach((info) => {
-    updateArguments.push(updateArgumentInfo[info]);
-    if (info === 'usage') {
-      info = '`usage`';
-    }
-    if (updateSetQueryString) {
-      updateSetQueryString = updateSetQueryString + ', ' + info + '= :' + info;
-    } else {
-      updateSetQueryString = info + '= :' + info;
-    }
-  });
-  updateFullQueryString =
-    updateFullQueryString + updateSetQueryString + ' WHERE ' + whereStr;
-  return service.executeQueryByStr(
-    updateFullQueryString,
-    updateArguments.concat(whereArguments)
-  );
+  return service.executeQueryByStr(updateFullQueryString, applyQueryArgument);
 };
 
 // select table all
@@ -365,12 +346,13 @@ service.select = function (tableName) {
 };
 
 // select table row 1
-service.selectOne = function (tableName, idColumn, id) {
+service.selectOne = function (tableName, id, idColumnName) {
   logger.debug('selectOne table [' + tableName + ']');
+  idColumnName = idColumnName || 'id';
   return new Promise((resolve, reject) => {
     connection.query(
-      'SELECT * FROM ' + tableName + ' where ' + idColumn + '= ?',
-      [id],
+      'SELECT * FROM ' + tableName + ' where ' + idColumnName + '= :id',
+      { id: id },
       (error, results) => {
         if (error) {
           reject(error);
@@ -405,8 +387,8 @@ service.delete = function (tableName, idColumn, id) {
   logger.debug('delete table [' + tableName + ']');
   return new Promise((resolve, reject) => {
     connection.query(
-      'DELETE FROM ' + tableName + ' where ' + idColumn + '= ?',
-      [id],
+      'DELETE FROM ' + tableName + ' where ' + idColumn + '= :id',
+      { id: id },
       (error, results) => {
         if (error) {
           reject(error);
@@ -419,15 +401,15 @@ service.delete = function (tableName, idColumn, id) {
 };
 
 // insert, update, delete by queryId
-service.executeQueryById = function (queryId, queryArguments) {
+service.executeQueryById = function (queryId, paramObject) {
   logger.debug(
     'executeQueryById queryId [' +
       queryId +
       '] : ' +
-      JSON.stringify(queryArguments)
+      JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryInfo[queryId], queryArguments, (error, results) => {
+    connection.query(queryInfo[queryId], paramObject, (error, results) => {
       if (error) {
         reject(error);
       } else {
@@ -438,15 +420,12 @@ service.executeQueryById = function (queryId, queryArguments) {
 };
 
 // select by queryId
-service.selectQueryById = function (queryId, queryArguments) {
+service.selectQueryById = function (queryId, paramObject) {
   logger.debug(
-    'selectQueryById queryId [' +
-      queryId +
-      '] : ' +
-      JSON.stringify(queryArguments)
+    'selectQueryById queryId [' + queryId + '] : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryInfo[queryId], queryArguments, (error, results) => {
+    connection.query(queryInfo[queryId], paramObject, (error, results) => {
       if (error) {
         reject(error);
       } else {
@@ -457,15 +436,15 @@ service.selectQueryById = function (queryId, queryArguments) {
 };
 
 // insert, update, delete by queryString
-service.executeQueryByStr = function (queryString, queryArguments) {
+service.executeQueryByStr = function (queryString, paramObject) {
   logger.debug(
     'executeQueryByStr queryString [' +
       queryString +
       '] : ' +
-      JSON.stringify(queryArguments)
+      JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, queryArguments, (error, results) => {
+    connection.query(queryString, paramObject, (error, results) => {
       if (error) {
         reject(error);
       } else {
@@ -476,15 +455,15 @@ service.executeQueryByStr = function (queryString, queryArguments) {
 };
 
 // select by queryString
-service.selectQueryByStr = function (queryString, queryArguments) {
+service.selectQueryByStr = function (queryString, paramObject) {
   logger.debug(
     'selectQueryByStr queryString [' +
       queryString +
       '] : ' +
-      JSON.stringify(queryArguments)
+      JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, queryArguments, (error, results) => {
+    connection.query(queryString, paramObject, (error, results) => {
       if (error) {
         reject(error);
       } else {

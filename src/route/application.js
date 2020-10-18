@@ -5,13 +5,13 @@ const express = require('express');
 // const portscanner = require('portscanner');
 const path = require('path');
 const router = express.Router();
-const dbService = require('../services/db');
-// const modbusService = require('../services/modbus');
+const dbService = require('../service/db');
+// const modbusService = require('../service/modbus');
 const moment = require('moment');
-// const AppError = require('../errors/AppError');
-const logger = require('../utils/logger');
+// const AppError = require('../error/AppError');
+const logger = require('../util/logger');
 // const _ = require('lodash');
-const errorRouteHandler = require('../errors/routeHandler');
+const errorRouteHandler = require('../error/routeHandler');
 const process = require('process');
 const os = require('os');
 
@@ -46,14 +46,14 @@ const os = require('os');
 
 // admin으로 수동 로그인하기 위한 작업
 router.get('/manualLogin', function (req, res) {
-    let token = req.query.token;
-    let decodeToken = new Buffer(token, 'base64').toString();
-    logger.info('manualLogin decodeToken : ' + decodeToken);
-    if (decodeToken === moment().format('YYYYMMDD') + 'lsis') {
-        res.sendFile(path.join(__dirname, '../../view', 'manualLogin.html'));
-    } else {
-        res.redirect('/');
-    }
+  let token = req.query.token;
+  let decodeToken = new Buffer(token, 'base64').toString();
+  logger.info('manualLogin decodeToken : ' + decodeToken);
+  if (decodeToken === moment().format('YYYYMMDD') + 'lsis') {
+    res.sendFile(path.join(__dirname, '../../view', 'manualLogin.html'));
+  } else {
+    res.redirect('/');
+  }
 });
 
 // db users
@@ -159,40 +159,45 @@ router.get('/manualLogin', function (req, res) {
 
 // 메모리 체크
 router.get('/memoryUsage', function (req, res) {
-    let result = process.memoryUsage();
-    result.totalmem = os.totalmem();
-    result.freemem = os.freemem();
-    res.send(result);
+  let result = process.memoryUsage();
+  result.totalmem = os.totalmem();
+  result.freemem = os.freemem();
+  res.send(result);
 });
-
 
 // 테마 변경
 router.put('/updateTheme', function (req, res, next) {
-    const theme = req.body.theme;
-    const updateInfo = { theme: theme };
-    dbService.updateAll('global_option_info', updateInfo)
-        .then(() => {
-            res.send({ success: true });
-        }).catch(errorRouteHandler(next));
+  const theme = req.body.theme;
+  const updateInfo = { theme: theme };
+  dbService
+    .updateAll('global_option_info', updateInfo)
+    .then(() => {
+      res.send({ success: true });
+    })
+    .catch(errorRouteHandler(next));
 });
 
 // 다국어 변경
 router.put('/updateLocale', function (req, res, next) {
-    const locale = req.body.locale;
-    const updateInfo = { locale: locale };
-    dbService.updateAll('global_option_info', updateInfo)
-        .then(() => {
-            res.send({ success: true });
-        }).catch(errorRouteHandler(next));
+  const locale = req.body.locale;
+  const updateInfo = { locale: locale };
+  dbService
+    .updateAll('global_option_info', updateInfo)
+    .then(() => {
+      res.send({ success: true });
+    })
+    .catch(errorRouteHandler(next));
 });
 
 // 테마, 다국어 정보
 router.get('/themeAndLocalInfo', function (req, res, next) {
-    dbService.select('global_option_info')
-        .then((result) => {
-            let optionInfo = result[0];
-            res.send(optionInfo);
-        }).catch(errorRouteHandler(next));
+  dbService
+    .select('global_option_info')
+    .then((result) => {
+      let optionInfo = result[0];
+      res.send(optionInfo);
+    })
+    .catch(errorRouteHandler(next));
 });
 
 module.exports = router;
