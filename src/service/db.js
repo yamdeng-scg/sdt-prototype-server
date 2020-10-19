@@ -144,8 +144,11 @@ service.connect = function () {
 const queryInfo = {
   findWiseSayAll: 'select * from wise_say',
   getWiseSay: 'select * from wise_say WHERE id = :id',
-  findWiseSayByContent: 'select * from wise_say WHERE like %:content%',
+  findWiseSayByContent:
+    "select * from wise_say WHERE content like concat('%', :content, '%')",
   updateWiseSay: 'update wise_say set content = :content where id = :id',
+  updateWiseSayLikeContent:
+    "update wise_say set content = :newContent where content like concat('%', :content, '%')",
   updateSettingInfo:
     'update setting_info set Value = ? where Category = ? and Type = ?',
   findUserByEmail: 'SELECT * FROM gateway_user WHERE email = ?',
@@ -253,18 +256,48 @@ service.insert = function (tableName, insertArgumentInfo) {
   );
   let applyQueryArgument = helper.changeKeyToUnderScore(insertArgumentInfo);
   return new Promise((resolve, reject) => {
+    let argumentKeys = _.keys(applyQueryArgument);
+    let insertFullQueryString = 'INSERT INTO ' + tableName + ' (';
+    let insertColumnQueryString = '';
+    argumentKeys.forEach((keyName) => {
+      if (keyName === 'usage') {
+        keyName = '`usage`';
+      }
+      if (insertColumnQueryString) {
+        insertColumnQueryString = insertColumnQueryString + ', ' + keyName;
+      } else {
+        insertColumnQueryString = keyName;
+      }
+    });
+    insertFullQueryString =
+      insertFullQueryString + insertColumnQueryString + ') VALUES (';
+    let insertValueQueryString = '';
+    argumentKeys.forEach((keyName) => {
+      if (keyName === 'usage') {
+        keyName = '`usage`';
+      }
+      if (insertValueQueryString) {
+        insertValueQueryString = insertValueQueryString + ', ' + ':' + keyName;
+      } else {
+        insertValueQueryString = ':' + keyName;
+      }
+    });
+    insertFullQueryString =
+      insertFullQueryString + insertValueQueryString + ')';
     connection.query(
-      'INSERT INTO ' + tableName + ' SET ?',
+      insertFullQueryString,
       applyQueryArgument,
       (error, results) => {
         if (error) {
           reject(error);
           return Promise.reject(error);
         } else {
-          return service.selectOne(tableName, results.insertId);
+          return resolve({ insertId: results.insertId });
         }
       }
     );
+  }).then((result) => {
+    return service.selectOne(tableName, result.insertId);
   });
 };
 
@@ -332,14 +365,44 @@ service.updateAll = function (tableName, updateArgumentInfo) {
 };
 
 // select table all
-service.select = function (tableName) {
+service.select = function (tableName, searchParam) {
+  let selectFullQuerySting = 'select * from ' + tableName;
+  if (searchParam && searchParam.pageSize) {
+    let page = Number(searchParam.page || 1);
+    let pageSize = Number(searchParam.pageSize);
+    let queryParam = { limit: pageSize * (page - 1), pageSize: pageSize };
+    let sortColumn = searchParam.sort ? _.snakeCase(searchParam.sort) : 'id';
+    let sortDesc = searchParam.sortDesc ? searchParam.sortDesc : 'desc';
+    selectFullQuerySting =
+      selectFullQuerySting +
+      ' order by ' +
+      sortColumn +
+      ' ' +
+      sortDesc +
+      ' limit :limit, :pageSize';
+    let selectCountQuerySting =
+      'select ifnull(count(id), 0) AS totalCount from ' + tableName;
+    return service
+      .selectQueryByStr(selectCountQuerySting)
+      .then((totalCountQueryResult) => {
+        const totalCount = totalCountQueryResult[0].totalCount;
+        let result = {};
+        result.totalCount = totalCount;
+        return service
+          .selectQueryByStr(selectFullQuerySting, queryParam)
+          .then((data) => {
+            result.data = data;
+            return result;
+          });
+      });
+  }
   logger.debug('select table [' + tableName + ']');
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM ' + tableName, (error, results) => {
+    connection.query(selectFullQuerySting, (error, results) => {
       if (error) {
         reject(error);
       } else {
-        resolve(results);
+        resolve(helper.changeResultKeyToUnderScore(results));
       }
     });
   });
@@ -358,7 +421,7 @@ service.selectOne = function (tableName, id, idColumnName) {
           reject(error);
         } else {
           if (results.length > 0) {
-            resolve(results[0]);
+            resolve(helper.changeResultKeyToUnderScore(results)[0]);
           } else {
             resolve(null);
           }
@@ -368,36 +431,19 @@ service.selectOne = function (tableName, id, idColumnName) {
   });
 };
 
+// delete table 1 row
+service.delete = function (tableName, id, idColumn) {
+  logger.debug('delete table [' + tableName + ']');
+  idColumn = idColumn || 'id';
+  let queryString = 'delete from ' + tableName + ' where ' + idColumn + '= :id';
+  return service.executeQueryByStr(queryString, { [idColumn]: id });
+};
+
 // delete table all
 service.deleteAll = function (tableName) {
   logger.debug('deleteAll table [' + tableName + ']');
-  return new Promise((resolve, reject) => {
-    connection.query('DELETE FROM ' + tableName, (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
-
-// delete table 1 row
-service.delete = function (tableName, idColumn, id) {
-  logger.debug('delete table [' + tableName + ']');
-  return new Promise((resolve, reject) => {
-    connection.query(
-      'DELETE FROM ' + tableName + ' where ' + idColumn + '= :id',
-      { id: id },
-      (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
-      }
-    );
-  });
+  let queryString = 'delete from ' + tableName;
+  return service.executeQueryByStr(queryString);
 };
 
 // insert, update, delete by queryId
@@ -409,11 +455,11 @@ service.executeQueryById = function (queryId, paramObject) {
       JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryInfo[queryId], paramObject, (error, results) => {
+    connection.query(queryInfo[queryId], paramObject, (error) => {
       if (error) {
         reject(error);
       } else {
-        resolve(results);
+        resolve({ success: true });
       }
     });
   });
@@ -429,7 +475,7 @@ service.selectQueryById = function (queryId, paramObject) {
       if (error) {
         reject(error);
       } else {
-        resolve(results);
+        resolve(helper.changeResultKeyToUnderScore(results));
       }
     });
   });
@@ -444,11 +490,11 @@ service.executeQueryByStr = function (queryString, paramObject) {
       JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, paramObject, (error, results) => {
+    connection.query(queryString, paramObject, (error) => {
       if (error) {
         reject(error);
       } else {
-        resolve(results);
+        resolve({ success: true });
       }
     });
   });
@@ -467,7 +513,7 @@ service.selectQueryByStr = function (queryString, paramObject) {
       if (error) {
         reject(error);
       } else {
-        resolve(results);
+        resolve(helper.changeResultKeyToUnderScore(results));
       }
     });
   });

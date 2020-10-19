@@ -16,6 +16,10 @@ const favicon = require('serve-favicon');
 // const gatewayRoute = require('./routes/gateway');
 // const cameraRoute = require('./routes/camera');
 const applicationRoute = require('./route/application');
+const searchQueryRoute = require('./route/searchQuery');
+const executeQueryRoute = require('./route/executeQuery');
+const restCommonRoute = require('./route/restCommon');
+const wiseSayRoute = require('./route/wiseSay');
 const errorMiddleware = require('./middleware/error');
 const loggerMiddleware = require('./middleware/logger');
 const appInit = require('./init');
@@ -39,6 +43,10 @@ app.use(loggerMiddleware);
 // app.use(CONFIG.API_PREFIX_URL + '/device', deviceRoute);
 // app.use(CONFIG.API_PREFIX_URL + '/gateway', gatewayRoute);
 app.use(CONFIG.API_PREFIX_URL + '/application', applicationRoute);
+app.use(CONFIG.API_PREFIX_URL + '/search-query', searchQueryRoute);
+app.use(CONFIG.API_PREFIX_URL + '/execute-query', executeQueryRoute);
+app.use(CONFIG.API_PREFIX_URL + '/rest-common', restCommonRoute);
+app.use(CONFIG.API_PREFIX_URL + '/wise-say', wiseSayRoute);
 // app.use(CONFIG.API_PREFIX_URL + '/camera', cameraRoute);
 
 app
