@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS `customer_company` (
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `is_block` tinyint(1) NOT NULL DEFAULT 0 COMMENT '블록 여부',
   `block_type` smallint(5) unsigned DEFAULT NULL COMMENT 'block 사유(지정 안됨(해제), 욕설 및 비속어 사용, 업무 외 대화 시도, 모든 업무에 불만, 같은내용 지속적 반복, 과도한 의심, 무리한 업무진행 요구, 사장 등 상급자 찾음, 신고협박)',
-  `read_date` timestamp NULL COMMENT '블록 날짜',
+  `block_date` timestamp NULL COMMENT '블록 날짜',
   `remark` varchar(255) DEFAULT NULL COMMENT '메모',
   `block_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '블록을 설정한 회원 id(member table)',
   `room_id` bigint(5) unsigned NOT NULL COMMENT '방 id(room table)',
