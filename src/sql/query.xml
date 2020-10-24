@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="">
+      select ing_room.*, 
+          chat_message.id          as last_message_id, 
+          chat_message.message     as last_message, 
+          chat_message.create_date as last_message_create_date, 
+          v_customer.name          as customer_name 
+    from   (select r.*, 
+                  ifnull((select create_date 
+                          from   chat_message 
+                          where  id = r.join_message_id), r.create_date) as 
+                          join_start_date, 
+                  (select max(id) 
+                    from   chat_message 
+                    where  room_id = r.id)                                as 
+                          recent_message_id, 
+                  (select speaker2.id 
+                    from   room_speaker 
+                          inner join speaker2 
+                                  on room_speaker.speaker_id = speaker2.id 
+                    where  room_id = r.id 
+                          and speaker2.is_customer = 1)                  as 
+                          customer_speaker_id 
+            from   room r 
+            where  company_id = '1' 
+                  and state < 2) as ing_room 
+          left outer join chat_message 
+                        on ing_room.recent_message_id = chat_message.id 
+          inner join v_customer 
+                  on ing_room.customer_speaker_id = v_customer.speaker_id 
+    where  v_customer.company_id = '1' 
+    order  by ing_room.state, 
+              last_message_create_date desc
+  </query>
+</user>
