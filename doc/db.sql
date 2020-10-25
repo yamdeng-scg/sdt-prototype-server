@@ -60,12 +60,12 @@ CREATE TABLE IF NOT EXISTS `category_middle` (
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `name` varchar(255) DEFAULT NULL COMMENT '카테고리명',
-  `large_category_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_large table)',
+  `category_large_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_large table)',
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
--- update_member_id, company_id, large_category_id
+-- update_member_id, company_id, category_large_id
 
 
 -- category_small <--- catesm
@@ -76,12 +76,12 @@ CREATE TABLE IF NOT EXISTS `category_small` (
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `name` varchar(255) DEFAULT NULL COMMENT '카테고리명',
-  `middle_category_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_middle table)',
+  `category_middle_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_middle table)',
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
--- update_member_id, company_id, middle_category_id
+-- update_member_id, company_id, category_middle_id
 
 
 -- customer2 <--- customer
@@ -90,13 +90,13 @@ CREATE TABLE IF NOT EXISTS `customer2` (
   `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
-  `gasapp_member_no` varchar(255) NOT NULL COMMENT '가스앱 회원번호',
+  `gasapp_member_number` varchar(255) NOT NULL COMMENT '가스앱 회원번호',
   `name` varchar(255) DEFAULT NULL COMMENT '사용자명',
   `tel_number` varchar(255) DEFAULT NULL COMMENT '핸드폰 번호',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id
--- U : gasapp_member_no
+-- U : gasapp_member_number
 
 
 -- customer_company <--- new table
@@ -256,13 +256,13 @@ CREATE TABLE IF NOT EXISTS `room` (
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
   `member_id` bigint(5) unsigned DEFAULT NULL COMMENT '담당 회원 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `state` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:진행중,1:종료대기, 2:종료, 9:폐쇄',
+  `state` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:대기 or 방 최초 생성, 1:진행,8:종료,9:폐쇄 <--- (0:진행중,1:종료대기,2:종료,9:폐쇄)',
   `join_message_id` bigint(5) unsigned DEFAULT NULL COMMENT 'join 시작(또는 재시작) 메시지 id(chate_message table)',
-  `chat_id` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
+  `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
   `join_history_json` varchar(2047) DEFAULT NULL COMMENT 'join 이전 history(json)',
   `is_online` tinyint(1) NOT NULL DEFAULT 0 COMMENT '고객의 온라인 상태',
   `name` varchar(255) DEFAULT NULL COMMENT 'room 이름',
-  `end_dtate` timestamp NULL DEFAULT NULL COMMENT '종료대기 및 종료한 시간',
+  `end_date` timestamp NULL DEFAULT NULL COMMENT '종료대기 및 종료한 시간',
   `last_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '이전 담당 회원 id(member table)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -279,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `room_join_history` (
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `start_mesasge_id` bigint(5) unsigned DEFAULT NULL COMMENT '조인 시작 시작 메시지 id(chat_message table)',
   `end_mesasge_id` bigint(5) unsigned NULL COMMENT '상담 종료 메시지 id(chat_message table)',
-  `end_dtate` timestamp NULL DEFAULT NULL COMMENT '상담 종료한 시간',
+  `end_date` timestamp NULL DEFAULT NULL COMMENT '상담 종료한 시간',
   `last_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '이전 담당 회원 id(member table)',
   `category_small_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 소분류 id(category_small table)',
   `join_history_json` varchar(2047) DEFAULT NULL COMMENT 'join 이전 history(json)',
@@ -327,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `room_speaker` (
   `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
   `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
-  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `company_id` varchar(10) NULL DEFAULT COMMENT '회사 id(company table)',
   `speaker_id` bigint(5) unsigned NOT NULL COMMENT '방에 입장한 사용자 id(speaker table)',
   `room_id` bigint(5) unsigned NOT NULL COMMENT '방 id(room table)',
   `read_last_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '마지막 읽은 메시지 id(chat_message table)',
@@ -382,18 +382,18 @@ INSERT INTO category_large (id, create_date, update_date, company_id, name, minw
     FROM catelg;
 
 -- category_middle
-INSERT INTO category_middle (id, create_date, update_date, company_id, large_category_id,  name, minwon_code, minwon_name)
+INSERT INTO category_middle (id, create_date, update_date, company_id, category_large_id,  name, minwon_code, minwon_name)
     SELECT id, createdate, workdate, CONCAT(cid, ''), catelg, name,  mwcode, mwname
     FROM catemd;
 
 -- category_small
-INSERT INTO category_small (id, create_date, update_date, company_id, middle_category_id,  name, minwon_code, minwon_name)
+INSERT INTO category_small (id, create_date, update_date, company_id, category_middle_id,  name, minwon_code, minwon_name)
     SELECT id, createdate, workdate, CONCAT(cid, ''), catemd, name,  mwcode, mwname
     FROM catesm
     where catemd != 82;
 
 -- customer2
-INSERT INTO customer2 (id, create_date, update_date, gasapp_member_no, name, tel_number )
+INSERT INTO customer2 (id, create_date, update_date, gasapp_member_number, name, tel_number )
 SELECT id, createdate, workdate, userno, telno, name
 FROM Customer;
 
@@ -443,12 +443,20 @@ SELECT id, createdate, workdate, '1', template, keyword
 FROM TemplateKeyword;
 
 -- room
-INSERT INTO room (id, create_date, update_date, member_id, company_id, state, join_message_id, chat_id, join_history_json, is_online, name, end_dtate, last_member_id)
+INSERT INTO room (id, create_date, update_date, member_id, company_id, state, join_message_id, chatid, join_history_json, is_online, name, end_date, last_member_id)
 SELECT id, createdate, workdate, emp, CONCAT(cid, ''), state, startid, chatid, prehistory, isonline, customer, enddt, lastemp
 FROM Space;
 
+UPDATE room
+set state = 8
+where state = 2;
+
+UPDATE room
+set state = 8, end_date = now()
+where state = 1;
+
 -- room_join_history
-INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_mesasge_id, end_mesasge_id, end_dtate, last_member_id, category_small_id, join_history_json)
+INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_mesasge_id, end_mesasge_id, end_date, last_member_id, category_small_id, join_history_json)
 SELECT id, createdate, workdate, CONCAT(cid, ''), emp, space, startid, endid, enddt, lastemp, catesm, prehistory
 FROM SpaceHist;
 
@@ -479,122 +487,122 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 /*
 
   -- company
-  ALTER TABLE sdtprototype.company ADD CONSTRAINT company_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+  ALTER TABLE company ADD CONSTRAINT company_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
 
   -- member
- ALTER TABLE sdtprototype.`member` ADD CONSTRAINT member_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.`member` ADD CONSTRAINT member_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.`member` ADD CONSTRAINT member_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
+ ALTER TABLE `member` ADD CONSTRAINT member_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE `member` ADD CONSTRAINT member_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE `member` ADD CONSTRAINT member_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 
  -- category_large
- ALTER TABLE sdtprototype.category_large ADD CONSTRAINT category_large_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.category_large ADD CONSTRAINT category_large_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+ ALTER TABLE category_large ADD CONSTRAINT category_large_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE category_large ADD CONSTRAINT category_large_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
 
  --  category_middle
- ALTER TABLE sdtprototype.category_middle ADD CONSTRAINT category_middle_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.category_middle ADD CONSTRAINT category_middle_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.category_middle ADD CONSTRAINT category_middle_category_large_FK FOREIGN KEY (large_category_id) REFERENCES sdtprototype.category_large(id);
+ ALTER TABLE category_middle ADD CONSTRAINT category_middle_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE category_middle ADD CONSTRAINT category_middle_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE category_middle ADD CONSTRAINT category_middle_category_large_FK FOREIGN KEY (category_large_id) REFERENCES category_large(id);
 
  -- category_small
- ALTER TABLE sdtprototype.category_small ADD CONSTRAINT category_small_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.category_small ADD CONSTRAINT category_small_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.category_small ADD CONSTRAINT category_small_category_middle_FK FOREIGN KEY (middle_category_id) REFERENCES sdtprototype.category_middle(id);
+ ALTER TABLE category_small ADD CONSTRAINT category_small_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE category_small ADD CONSTRAINT category_small_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE category_small ADD CONSTRAINT category_small_category_middle_FK FOREIGN KEY (category_middle_id) REFERENCES category_middle(id);
 
  -- customer2
- ALTER TABLE sdtprototype.customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- CREATE UNIQUE INDEX customer2_gasapp_member_no_IDX USING BTREE ON sdtprototype.customer2 (gasapp_member_no);
+ ALTER TABLE customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ CREATE UNIQUE INDEX customer2_gasapp_member_number_IDX USING BTREE ON customer2 (gasapp_member_number);
 
  -- customer_company
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_customer2_FK FOREIGN KEY (customer_id) REFERENCES sdtprototype.customer2(id);
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_member_FK_1 FOREIGN KEY (block_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_room_FK FOREIGN KEY (room_id) REFERENCES sdtprototype.room(id);
- ALTER TABLE sdtprototype.customer_company ADD CONSTRAINT customer_company_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
- CREATE UNIQUE INDEX customer_company_customer_id_IDX USING BTREE ON sdtprototype.customer_company (customer_id,company_id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_customer2_FK FOREIGN KEY (customer_id) REFERENCES customer2(id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK_1 FOREIGN KEY (block_member_id) REFERENCES `member`(id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
+ ALTER TABLE customer_company ADD CONSTRAINT customer_company_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
+ CREATE UNIQUE INDEX customer_company_customer_id_IDX USING BTREE ON customer_company (customer_id,company_id);
 
  -- wise_say
- ALTER TABLE sdtprototype.wise_say ADD CONSTRAINT wise_say_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.wise_say ADD CONSTRAINT wise_say_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
+ ALTER TABLE wise_say ADD CONSTRAINT wise_say_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE wise_say ADD CONSTRAINT wise_say_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 
  -- keyword2
- ALTER TABLE sdtprototype.keyword2 ADD CONSTRAINT keyword2_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.keyword2 ADD CONSTRAINT keyword2_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- CREATE UNIQUE INDEX keyword2_company_id_IDX USING BTREE ON sdtprototype.keyword2 (company_id,name);
+ ALTER TABLE keyword2 ADD CONSTRAINT keyword2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE keyword2 ADD CONSTRAINT keyword2_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ CREATE UNIQUE INDEX keyword2_company_id_IDX USING BTREE ON keyword2 (company_id,name);
 
  -- manual
- ALTER TABLE sdtprototype.manual ADD CONSTRAINT manual_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.manual ADD CONSTRAINT manual_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- CREATE UNIQUE INDEX manual_company_id_IDX USING BTREE ON sdtprototype.manual (company_id,manual_index,page_number);
- CREATE INDEX manual_company_id_IDX2 USING BTREE ON sdtprototype.manual (company_id,manual_index);
+ ALTER TABLE manual ADD CONSTRAINT manual_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE manual ADD CONSTRAINT manual_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ CREATE UNIQUE INDEX manual_company_id_IDX USING BTREE ON manual (company_id,manual_index,page_number);
+ CREATE INDEX manual_company_id_IDX2 USING BTREE ON manual (company_id,manual_index);
 
  -- manual_favorite
- ALTER TABLE sdtprototype.manual_favorite ADD CONSTRAINT manual_favorite_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.manual_favorite ADD CONSTRAINT manual_favorite_member_FK FOREIGN KEY (member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.manual_favorite ADD CONSTRAINT manual_favorite_manual_FK FOREIGN KEY (manual_id) REFERENCES sdtprototype.manual(id);
- CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON sdtprototype.manual_favorite (member_id,manual_id);
+ ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id);
+ ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_manual_FK FOREIGN KEY (manual_id) REFERENCES manual(id);
+ CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id,manual_id);
 
  -- template2
- ALTER TABLE sdtprototype.template2 ADD CONSTRAINT template2_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.template2 ADD CONSTRAINT template2_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.template2 ADD CONSTRAINT template2_category_small_FK FOREIGN KEY (category_small_id) REFERENCES sdtprototype.category_small(id);
+ ALTER TABLE template2 ADD CONSTRAINT template2_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE template2 ADD CONSTRAINT template2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE template2 ADD CONSTRAINT template2_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
 
  -- auto_message
- ALTER TABLE sdtprototype.auto_message ADD CONSTRAINT auto_message_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.auto_message ADD CONSTRAINT auto_message_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+ ALTER TABLE auto_message ADD CONSTRAINT auto_message_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE auto_message ADD CONSTRAINT auto_message_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
 
  -- template_favorite
- ALTER TABLE sdtprototype.template_favorite ADD CONSTRAINT template_favorite_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.template_favorite ADD CONSTRAINT template_favorite_member_FK FOREIGN KEY (member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.template_favorite ADD CONSTRAINT template_favorite_template2_FK FOREIGN KEY (template_id) REFERENCES sdtprototype.template2(id);
- CREATE UNIQUE INDEX template_favorite_member_id_IDX USING BTREE ON sdtprototype.template_favorite (member_id,template_id);
+ ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id);
+ ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_template2_FK FOREIGN KEY (template_id) REFERENCES template2(id);
+ CREATE UNIQUE INDEX template_favorite_member_id_IDX USING BTREE ON template_favorite (member_id,template_id);
 
  -- template_keyword
- ALTER TABLE sdtprototype.template_keyword ADD CONSTRAINT template_keyword_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.template_keyword ADD CONSTRAINT template_keyword_keyword2_FK FOREIGN KEY (keyword_id) REFERENCES sdtprototype.keyword2(id);
- ALTER TABLE sdtprototype.template_keyword ADD CONSTRAINT template_keyword_template2_FK FOREIGN KEY (template_id) REFERENCES sdtprototype.template2(id);
- ALTER TABLE sdtprototype.template_keyword ADD CONSTRAINT template_keyword_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- CREATE UNIQUE INDEX template_keyword_template_id_IDX USING BTREE ON sdtprototype.template_keyword (template_id,keyword_id);
+ ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_keyword2_FK FOREIGN KEY (keyword_id) REFERENCES keyword2(id);
+ ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_template2_FK FOREIGN KEY (template_id) REFERENCES template2(id);
+ ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ CREATE UNIQUE INDEX template_keyword_template_id_IDX USING BTREE ON template_keyword (template_id,keyword_id);
 
  -- room
- ALTER TABLE sdtprototype.room ADD CONSTRAINT room_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.room ADD CONSTRAINT room_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.room ADD CONSTRAINT room_member_FK_1 FOREIGN KEY (member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.room ADD CONSTRAINT room_chat_message_FK FOREIGN KEY (join_message_id) REFERENCES sdtprototype.chat_message(id);
- ALTER TABLE sdtprototype.room ADD CONSTRAINT room_member_FK_2 FOREIGN KEY (last_member_id) REFERENCES sdtprototype.`member`(id);
+ ALTER TABLE room ADD CONSTRAINT room_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE room ADD CONSTRAINT room_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE room ADD CONSTRAINT room_member_FK_1 FOREIGN KEY (member_id) REFERENCES `member`(id);
+ ALTER TABLE room ADD CONSTRAINT room_chat_message_FK FOREIGN KEY (join_message_id) REFERENCES chat_message(id);
+ ALTER TABLE room ADD CONSTRAINT room_member_FK_2 FOREIGN KEY (last_member_id) REFERENCES `member`(id);
 
  -- room_join_history
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_member_FK FOREIGN KEY (member_id) REFERENCES sdtprototype.`member`(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN KEY (room_id) REFERENCES sdtprototype.room(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_mesasge_id) REFERENCES sdtprototype.chat_message(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_mesasge_id) REFERENCES sdtprototype.chat_message(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES sdtprototype.category_small(id);
- ALTER TABLE sdtprototype.room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES sdtprototype.`member`(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_mesasge_id) REFERENCES chat_message(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_mesasge_id) REFERENCES chat_message(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id);
 
  -- speaker2
- ALTER TABLE sdtprototype.speaker2 ADD CONSTRAINT speaker2_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.speaker2 ADD CONSTRAINT speaker2_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+ ALTER TABLE speaker2 ADD CONSTRAINT speaker2_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE speaker2 ADD CONSTRAINT speaker2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
 
  -- chat_message
- ALTER TABLE sdtprototype.chat_message ADD CONSTRAINT chat_message_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
- ALTER TABLE sdtprototype.chat_message ADD CONSTRAINT chat_message_room_FK FOREIGN KEY (room_id) REFERENCES sdtprototype.room(id);
- ALTER TABLE sdtprototype.chat_message ADD CONSTRAINT chat_message_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
+ ALTER TABLE chat_message ADD CONSTRAINT chat_message_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
+ ALTER TABLE chat_message ADD CONSTRAINT chat_message_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
+ ALTER TABLE chat_message ADD CONSTRAINT chat_message_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 
  -- room_speaker
- ALTER TABLE sdtprototype.room_speaker ADD CONSTRAINT room_speaker_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.room_speaker ADD CONSTRAINT room_speaker_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
- ALTER TABLE sdtprototype.room_speaker ADD CONSTRAINT room_speaker_room_FK FOREIGN KEY (room_id) REFERENCES sdtprototype.room(id);
- ALTER TABLE sdtprototype.room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES sdtprototype.chat_message(id);
- ALTER TABLE sdtprototype.room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES sdtprototype.chat_message(id);
- CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON sdtprototype.room_speaker (room_id,speaker_id);
+ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
+ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
+ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES chat_message(id);
+ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
+ CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id,speaker_id);
 
  -- 
- ALTER TABLE sdtprototype.message_read ADD CONSTRAINT message_read_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
- ALTER TABLE sdtprototype.message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_id) REFERENCES sdtprototype.room(id);
- ALTER TABLE sdtprototype.message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES sdtprototype.chat_message(id);
- ALTER TABLE sdtprototype.message_read ADD CONSTRAINT message_read_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
- CREATE INDEX message_read_room_id_IDX USING BTREE ON sdtprototype.message_read (room_id,message_id,speaker_id);
+ ALTER TABLE message_read ADD CONSTRAINT message_read_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ ALTER TABLE message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
+ ALTER TABLE message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES chat_message(id);
+ ALTER TABLE message_read ADD CONSTRAINT message_read_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
+ CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id,message_id,speaker_id);
 
 
 */
@@ -611,4 +619,35 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 
 */
 
+/*
 
+  spacename is null
+
+  select *
+from room_speaker inner join speaker2 on room_speaker.speaker_id = speaker2.id
+where room_id = 7 and is_customer = 1
+
+
+*/
+
+/*
+
+메시지 읽음 처리
+
+-- 마지막 메시지까지 모두 읽음 처리
+        UPDATE chat_message 
+           SET not_read_count = not_read_count - 1
+         WHERE room_id = _room_id AND id <= IFNULL(v_max_message_id, 0);
+        -- where room_id = _room_id and id between IFNULL(v_read_last_message_id, 0) and IFNULL(v_max_message_id, 0);
+
+-- 사용자의 메시지 읽음 처리 하기
+UPDATE message_read
+    SET read_date = now()
+  WHERE room_id = :room_id AND speaker_id = :speaker_id AND id <= IFNULL(:message_id, 0);
+
+    -- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
+    UPDATE room_speaker
+        SET old_last_message_id = read_last_message_id, read_last_message_id = v_max_message_id
+      WHERE room_id = _room_id and speaker_id = _speaker_id;
+
+*/
