@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
-  <query id="">
+  <query id="getCompany">
+    SELECT * 
+      FROM   company 
+      WHERE  id = :id
+  </query>
+  <query id="getTodayWiseSay">
+    SELECT * 
+      FROM   wise_say 
+      LIMIT  1 
+  </query>
+  <query id="getTodayWiseSay">
+    SELECT * 
+      FROM   wise_say 
+      LIMIT  1 
+  </query>
+
+  <!-- 
+    진행중이 룸 목록
+    
+    -->
+  <query id="findIngRoom">
 		SELECT 
 			ing_room.*, 
 			chat_message.id AS last_message_id, 
@@ -43,13 +63,17 @@
 				FROM 
 					room r 
 				WHERE 
-					company_id = '1' 
+					company_id = :companyId
 					AND state < 2
+					AND (CASE 
+					       WHEN :member_id is null THEN 1=1
+                        ELSE member_id = :member_id
+                END)
 			) AS ing_room 
 			LEFT OUTER JOIN chat_message ON ing_room.recent_message_id = chat_message.id 
 			INNER JOIN v_customer ON ing_room.customer_speaker_id = v_customer.speaker_id 
 		WHERE 
-			v_customer.company_id = '1' 
+			v_customer.company_id = :companyId
 		ORDER BY 
 			ing_room.state, 
 			last_message_create_date DESC

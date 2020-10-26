@@ -195,6 +195,7 @@ CREATE TABLE IF NOT EXISTS `template2` (
   `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
+  `member_id` bigint(5) unsigned DEFAULT NULL COMMENT '작성자 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `category_small_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 소분류 id(category_small table)',
   `ask` varchar(1023) NOT NULL COMMENT '질문',
@@ -278,15 +279,15 @@ CREATE TABLE IF NOT EXISTS `room_join_history` (
   `member_id` bigint(5) unsigned NOT NULL COMMENT '방의 담당 회원 id(member table)',
   `room_id` bigint(5) unsigned DEFAULT NULL COMMENT '방 id(room table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `start_mesasge_id` bigint(5) unsigned DEFAULT NULL COMMENT '조인 시작 시작 메시지 id(chat_message table)',
-  `end_mesasge_id` bigint(5) unsigned NULL COMMENT '상담 종료 메시지 id(chat_message table)',
+  `start_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '조인 시작 시작 메시지 id(chat_message table)',
+  `end_message_id` bigint(5) unsigned NULL COMMENT '상담 종료 메시지 id(chat_message table)',
   `end_date` timestamp NULL DEFAULT NULL COMMENT '상담 종료한 시간',
   `last_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '이전 담당 회원 id(member table)',
   `category_small_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 소분류 id(category_small table)',
   `join_history_json` varchar(2047) DEFAULT NULL COMMENT 'join 이전 history(json)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
--- member_id, room_id, company_id, start_mesasge_id, end_mesasge_id, last_member_id, category_small_id
+-- member_id, room_id, company_id, start_message_id, end_message_id, last_member_id, category_small_id
 
 
 -- speaker2 <--- speaker
@@ -461,7 +462,7 @@ set state = 8, end_date = now()
 where state = 1;
 
 -- room_join_history
-INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_mesasge_id, end_mesasge_id, end_date, last_member_id, category_small_id, join_history_json)
+INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_message_id, end_message_id, end_date, last_member_id, category_small_id, join_history_json)
 SELECT id, createdate, workdate, CONCAT(cid, ''), emp, space, startid, endid, enddt, lastemp, catesm, prehistory
 FROM SpaceHist;
 
@@ -515,7 +516,7 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 
  -- customer2
  ALTER TABLE customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
- ALTER TABLE sdtprototype.customer2 ADD CONSTRAINT customer2_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
+ ALTER TABLE customer2 ADD CONSTRAINT customer2_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
  CREATE UNIQUE INDEX customer2_gasapp_member_number_IDX USING BTREE ON customer2 (gasapp_member_number);
 
  -- customer_company
@@ -552,6 +553,7 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
  ALTER TABLE template2 ADD CONSTRAINT template2_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
  ALTER TABLE template2 ADD CONSTRAINT template2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
  ALTER TABLE template2 ADD CONSTRAINT template2_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
+ ALTER TABLE template2 ADD CONSTRAINT template2_member_FK_1 FOREIGN KEY (member_id) REFERENCES `member`(id);
 
  -- auto_message
  ALTER TABLE auto_message ADD CONSTRAINT auto_message_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
@@ -581,8 +583,8 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
  ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id);
  ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
  ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_mesasge_id) REFERENCES chat_message(id);
- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_mesasge_id) REFERENCES chat_message(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
+ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
  ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
  ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id);
 
