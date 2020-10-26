@@ -93,6 +93,7 @@ CREATE TABLE IF NOT EXISTS `customer2` (
   `gasapp_member_number` varchar(255) NOT NULL COMMENT '가스앱 회원번호',
   `name` varchar(255) DEFAULT NULL COMMENT '사용자명',
   `tel_number` varchar(255) DEFAULT NULL COMMENT '핸드폰 번호',
+  `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id
@@ -393,14 +394,18 @@ INSERT INTO category_small (id, create_date, update_date, company_id, category_m
     where catemd != 82;
 
 -- customer2
-INSERT INTO customer2 (id, create_date, update_date, gasapp_member_number, name, tel_number )
-SELECT id, createdate, workdate, userno, telno, name
+INSERT INTO customer2 (id, create_date, update_date, gasapp_member_number, name, tel_number, speaker_id)
+SELECT id, createdate, workdate, userno, telno, name, speaker
 FROM Customer;
 
 -- customer_company
 INSERT INTO customer_company (customer_id, create_date, update_date, company_id, is_block, block_type, blockdt, remark, block_member_id, room_id, speaker_id, swear_count, insult_count, state )
 SELECT id, createdate, workdate, '1', 0, blocktype, block_date, remark, blockemp, space, speaker, swear, insult, state
 FROM Customer;
+
+update customer2 m
+  join customer_company s on s.customer_id = m.id
+   set m.speaker_id = s.speaker_id;
 
 -- wise_say
 INSERT INTO wise_say (id, create_date, update_date, company_id, date_string, content_html)
@@ -510,6 +515,7 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 
  -- customer2
  ALTER TABLE customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id);
+ ALTER TABLE sdtprototype.customer2 ADD CONSTRAINT customer2_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES sdtprototype.speaker2(id);
  CREATE UNIQUE INDEX customer2_gasapp_member_number_IDX USING BTREE ON customer2 (gasapp_member_number);
 
  -- customer_company
