@@ -433,6 +433,10 @@ INSERT INTO template2 (id, create_date, update_date, company_id, category_small_
 SELECT id, createdate, workdate, '1', catesm, ask, reply, link, img, imgname
 FROM template;
 
+update template2 m
+  join template s on s.id = m.id
+   set m.update_member_id = s.emp, m.member_id = s.emp
+
 -- auto_message
 INSERT INTO auto_message (id, create_date, update_date, update_member_id, company_id, type, message)
 SELECT id, createdate, workdate, emp, '1', type, msg

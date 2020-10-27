@@ -12,6 +12,7 @@ router.post('/', function (req, res, next) {
   let queryParameter = req.query;
   let queryName = queryParameter.queryName;
   if (queryName) {
+    queryName = 'query.' + queryName;
     dbService
       .executeQueryById(queryName, jsonBody)
       .then((result) => {
@@ -88,6 +89,7 @@ router.get('/', function (req, res, next) {
   let queryParameter = req.query;
   let queryName = queryParameter.queryName;
   if (queryName) {
+    queryName = 'query.' + queryName;
     dbService
       .selectQueryById(queryName, queryParameter)
       .then((result) => {
