@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="findIdsByAI">
+    SELECT 
+      vc.name AS name, 
+      vc.category_large_id, 
+      vc.category_large_name, 
+      vc.category_middle_id, 
+      vc.category_middle_name, 
+      (
+        SELECT 
+          GROUP_CONCAT(k.id) 
+        FROM 
+          template_keyword tk 
+          INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+        WHERE 
+          tk.template_id = t.id
+      ) AS keyword_ids, 
+      t.*, 
+      (
+        CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 end
+      ) AS is_favortie 
+    FROM 
+      template2 t 
+      INNER JOIN v_category vc ON t.category_small_id = vc.id 
+      LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+    WHERE 
+      t.company_id = :companyId 
+      AND t.id IN (?) 
+    ORDER BY 
+      t.id DESC
+  </query>
+  <query id="findAll">
+    <![CDATA[
+			SELECT 
+        vc.name AS name, 
+        vc.category_large_id, 
+        vc.category_large_name, 
+        vc.category_middle_id, 
+        vc.category_middle_name, 
+        (
+          SELECT 
+            GROUP_CONCAT(k.id) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_ids, 
+        t.*, 
+        (
+          CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
+        ) AS is_favortie 
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId 
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+      ORDER BY 
+        t.id DESC
+		]]>
+  </query>
+  <query id="findByCategoryLargeId">
+    <![CDATA[
+			SELECT 
+        vc.name AS name, 
+        vc.category_large_id, 
+        vc.category_large_name, 
+        vc.category_middle_id, 
+        vc.category_middle_name, 
+        (
+          SELECT 
+            GROUP_CONCAT(k.id) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_ids, 
+        t.*, 
+        (
+          CASE WHEN f.member_id = 1 THEN 1 ELSE 0 END
+        ) AS is_favortie 
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId 
+        AND vc.category_large_id = :categoryLargeId 
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+      ORDER BY 
+        t.id DESC
+		]]>
+  </query>
+  <query id="findByCategoryMiddleId">
+    <![CDATA[
+			SELECT 
+        vc.name AS name, 
+        vc.category_large_id, 
+        vc.category_large_name, 
+        vc.category_middle_id, 
+        vc.category_middle_name, 
+        (
+          SELECT 
+            GROUP_CONCAT(k.id) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_ids, 
+        t.*, 
+        (
+          CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
+        ) AS is_favortie 
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId 
+        AND vc.category_middle_id = :categoryMiddleId 
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+      ORDER BY 
+        t.id DESC
+		]]>
+  </query>
+  <query id="findByCategorySmallId">
+    <![CDATA[
+			SELECT 
+        vc.name AS name, 
+        vc.category_large_id, 
+        vc.category_large_name, 
+        vc.category_middle_id, 
+        vc.category_middle_name, 
+        (
+          SELECT 
+            GROUP_CONCAT(k.id) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_ids, 
+        t.*, 
+        (
+          CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
+        ) AS is_favortie 
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId 
+        AND vc.id = :categorySmallId 
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+      ORDER BY 
+        t.id DESC
+		]]>
+  </query>
+  <query id="findByFavoriteLoginMemberId">
+    SELECT 
+      vc.name AS name, 
+      vc.category_large_id, 
+      vc.category_large_name, 
+      vc.category_middle_id, 
+      vc.category_middle_name, 
+      (
+        SELECT 
+          GROUP_CONCAT(k.id) 
+        FROM 
+          template_keyword tk 
+          INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+        WHERE 
+          tk.template_id = t.id
+      ) AS keyword_ids, 
+      t.*, 
+      1 AS is_favortie 
+    FROM 
+      template2 t 
+      INNER JOIN v_category vc ON t.category_small_id = vc.id 
+      LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+    WHERE 
+      t.company_id = :companyId 
+      AND f.member_id = :loginId 
+    ORDER BY 
+      t.id DESC
+  </query>
+  <query id="findSearch">
+    <![CDATA[
+			SELECT 
+        vc.name AS name, 
+        vc.category_large_id, 
+        vc.category_large_name, 
+        vc.category_middle_id, 
+        vc.category_middle_name, 
+        (
+          SELECT 
+            GROUP_CONCAT(k.id) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_ids, 
+        t.*, 
+        (
+          CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
+        ) AS is_favortie 
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId 
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :checkMyAdd = 1 THEN t.create_member_id = :loginId ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :categoryLargeId IS NULL THEN 1 = 1 ELSE vc.category_large_id = :categoryLargeId END
+        ) 
+        AND (
+          CASE WHEN :categoryMiddleId IS NULL THEN 1 = 1 ELSE vc.category_middle_id = :categoryMiddleId END
+        ) 
+        AND (
+          CASE WHEN :categorySmallId IS NULL THEN 1 = 1 ELSE vc.id = :categorySmallId END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'memberName' THEN t.member_id IN (
+            SELECT 
+              id 
+            FROM 
+              member 
+            WHERE 
+              name LIKE CONCAT('%', :searchValue, '%')
+          ) ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'keyword' THEN t.id IN (
+            SELECT 
+              template_id 
+            FROM 
+              template_keyword 
+            WHERE 
+              keyword_id IN (
+                SELECT 
+                  id 
+                FROM 
+                  keyword2 
+                WHERE 
+                  name = :searchValue
+              )
+          ) ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
+          OR t.reply LIKE CONCAT('%', :searchValue, '%') 
+          OR t.member_id IN (
+            SELECT 
+              id 
+            FROM 
+              member 
+            WHERE 
+              name LIKE CONCAT('%', :searchValue, '%')
+          ) 
+          OR t.id IN (
+            SELECT 
+              template_id 
+            FROM 
+              template_keyword 
+            WHERE 
+              keyword_id IN (
+                SELECT 
+                  id 
+                FROM 
+                  keyword2 
+                WHERE 
+                  name = :searchValue
+              )
+          ) ELSE 1 = 1 END
+        ) 
+      ORDER BY 
+        t.id DESC 
+      LIMIT 
+        :limit, 
+        :pageSize
+		]]>
+  </query>
+  <query id="findSearchCount">
+    <![CDATA[
+			SELECT 
+        count(*) as total_count
+      FROM 
+        template2 t 
+        INNER JOIN v_category vc ON t.category_small_id = vc.id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+      WHERE 
+        t.company_id = :companyId
+        AND (
+          CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :checkMyAdd = 1 THEN t.create_member_id = :loginId ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :categoryLargeId IS NULL THEN 1 = 1 ELSE vc.category_large_id = :categoryLargeId END
+        ) 
+        AND (
+          CASE WHEN :categoryMiddleId IS NULL THEN 1 = 1 ELSE vc.category_middle_id = :categoryMiddleId END
+        ) 
+        AND (
+          CASE WHEN :categorySmallId IS NULL THEN 1 = 1 ELSE vc.id = :categorySmallId END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'memberName' THEN t.member_id IN (
+            SELECT 
+              id 
+            FROM 
+              member 
+            WHERE 
+              name LIKE CONCAT('%', :searchValue, '%')
+          ) ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'keyword' THEN t.id IN (
+            SELECT 
+              template_id 
+            FROM 
+              template_keyword 
+            WHERE 
+              keyword_id IN (
+                SELECT 
+                  id 
+                FROM 
+                  keyword2 
+                WHERE 
+                  name = :searchValue
+              )
+          ) ELSE 1 = 1 END
+        ) 
+        AND (
+          CASE WHEN :keywordType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
+          OR t.reply LIKE CONCAT('%', :searchValue, '%') 
+          OR t.member_id IN (
+            SELECT 
+              id 
+            FROM 
+              member 
+            WHERE 
+              name LIKE CONCAT('%', :searchValue, '%')
+          ) 
+          OR t.id IN (
+            SELECT 
+              template_id 
+            FROM 
+              template_keyword 
+            WHERE 
+              keyword_id IN (
+                SELECT 
+                  id 
+                FROM 
+                  keyword2 
+                WHERE 
+                  name = :searchValue
+              )
+          ) ELSE 1 = 1 END
+        )
+		]]>
+  </query>
+  <query id="create">
+    INSERT INTO template2 (company_id, category_small_id, ask, reply, link, image_path, image_name, member_id, update_member_id)
+              VALUES (:companyId, :categorySmallId, :ask, :reply, :link, :imagePath, :imageName, :loginId, :loginId)
+  </query>
+  <query id="createTemplateKeyword">
+    INSERT INTO template_keyword(company_id, keyword_id, template_id, update_member_id)
+        VALUES (:companyId, :keywordId, :templateId, :loginId)
+  </query>
+  <query id="update">
+    UPDATE 
+      template2 
+    SET 
+      category_small_id = :categorySmallId, 
+      member_id = :loginId, 
+      ask = :ask, 
+      reply = :reply, 
+      link = :link, 
+      image_path = :imagePath, 
+      image_name = :imageName,
+      update_member_id = :loginId
+    WHERE 
+      id = :id
+  </query>
+  <query id="delete">
+    DELETE 
+      FROM template2
+    WHERE id = :id
+  </query>
+  <query id="deleteKeyword">
+    DELETE 
+      FROM template_keywword
+    WHERE template_id = :id
+  </query>
+  <query id="deleteFavoriteToMember">
+    DELETE 
+      FROM template_favorite
+    WHERE template_id = :id
+      AND member_id = :loginId
+  </query>
+  <query id="deleteFavoriteToTemplate">
+    DELETE 
+      FROM template_favorite
+    WHERE template_id = :id
+  </query>
+  <query id="findAutoMessageAll">
+    SELECT *
+      FROM   auto_message
+      WHERE company_id = :companyId
+  </query>
+  <query id="createAutoMessage">
+    INSERT INTO auto_message(company_id, type, message, update_member_id)
+        VALUES(:companyId, :type, :message, :loginId)
+  </query>
+  <query id="updateAutoMessage">
+    UPDATE auto_message 
+      SET    message = :message, 
+            update_member_id = :loginId
+      WHERE  id = :id
+  </query>
+  <query id="deleteAutoMessage">
+    DELETE 
+      FORM auto_message
+     WHERE id = :id
+  </query>
+  <query id="getDetail">
+    SELECT vc.name                 AS category_small_name, 
+          vc.category_large_id    AS category_large_id, 
+          vc.category_middle_id   AS category_middle_id, 
+          vc.category_large_name  AS category_large_name, 
+          vc.category_middle_name AS category_middle_name, 
+          t.*
+    FROM   template2 t 
+          LEFT OUTER JOIN v_category vc 
+                        ON t.category_small_id = vc.id 
+    WHERE  t.id = :id 
+  </query>
+  <query id="getTemplateKeyword">
+    SELECT *
+      FROM  template_keyword
+      WHERE id = :id
+  </query>
+  <query id="getAutoMessage">
+    SELECT *
+      FROM   auto_message
+    WHERE  id = :id
+  </query>
+  <query id="getAutoMessageByMatchWait">
+    SELECT * 
+      FROM   auto_message 
+      WHERE  company_id = :companyId 
+            AND type = 1 
+      ORDER  BY RAND() 
+      LIMIT  1
+  </query>
+  <query id="getAutoMessageByReplyWait">
+    SELECT * 
+      FROM   auto_message 
+      WHERE  company_id = :companyId 
+            AND type = 2
+      ORDER  BY RAND() 
+      LIMIT  1
+  </query>
+</querys>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="getToday">
+    SELECT *
+    FROM wise_say
+    LIMIT 1
+  </query>
+</querys>

@@ -4,7 +4,10 @@ const config = require('../config/config');
 const logger = require('../util/logger');
 const helper = require('../util/helper');
 const mysql = require('mysql');
+const fs = require('fs');
+const path = require('path');
 const _ = require('lodash');
+const convert = require('xml-js');
 
 let connection = mysql.createConnection({
   host: config.db.host,
@@ -71,6 +74,34 @@ function reconnect() {
 
 const service = {};
 
+let queryInfo = {};
+
+service.initQuery = function () {
+  let directoryName = path.join(__dirname, '../query');
+  fs.readdirSync(directoryName).forEach((fileName) => {
+    console.log(fileName);
+    let queryPrefixName = fileName.substr(0, fileName.indexOf('.'));
+    const xmlData = fs.readFileSync(
+      path.join(directoryName, fileName),
+      'utf-8'
+    );
+    let jsonString = convert.xml2json(xmlData, { compact: true, spaces: 4 });
+    let jsonData = JSON.parse(jsonString);
+    let queryRoot = jsonData.querys;
+    let queryList = Array.isArray(queryRoot.query)
+      ? queryRoot.query
+      : [queryRoot.query];
+    queryList.forEach((query) => {
+      let queryAttribute = query._attributes;
+      let queryId = queryAttribute.id;
+      queryInfo[queryPrefixName + '.' + queryId] = query._cdata
+        ? query._cdata
+        : query._text;
+    });
+  });
+  console.log(queryInfo);
+};
+
 service.connect = function () {
   return new Promise(function (resolve, reject) {
     connection.connect(function (error) {
@@ -86,174 +117,8 @@ service.connect = function () {
   });
 };
 
-/*
-
-    findUserByLoginId: id로 사용자 찾기
-    findUserByEmail: email로 사용자 찾기
-    getTableInfoToObjectDefaultValue: table column 정보를 가지고 json object로 추출하기
-    discoveredGateways: 디스커리된 게이트웨이 목록
-    ch1BackupDiscoveredDevices : 채널1의 오토디스커비리 [confirm] 전의 디바이스 목록
-    ch2BackupDiscoveredDevices : 채널2의 오토디스커비리 [confirm] 전의 디바이스 목록
-    ch1DiscoveredDevices : 채널1에 discovery된 디바이스 목록
-    ch2DiscoveredDevices : 채널2에 discovery된 디바이스 목록
-    discoveredDevicesByAllChannel : 채널1, 2에 discovery된 디바이스 목록(selectBox에서 사용함)
-    treeDisplayCh1DeviceList: 트리에 보여지는 ch1 device 목록
-    treeDisplayCh2DeviceList: 트리에 보여지는 ch2 device 목록
-    treeDisplayGatewayList: 트리에 보여지는 gateway 목록
-    findSettingInfo: setting 테이블을 Category, Type 단위로 찾기
-    updateSettingInfo: setting 테이블의 update를 Category, Type 단위로 반영
-    findCustomDeviceChannel1: 채널1에 속한 커스텀 디바이스 조회
-    findCustomDeviceChannel2: 채널2에 속한 커스텀 디바이스 조회
-    getChannel1MaxLogicalId: 채널1에 max logicalId 추출(없으면 2)
-    getChannel2MaxLogicalId: 채널2에 max logicalId 추출(없으면 33)
-    getInfoEventLogCh1Count : 채널1의 시스템 이벤트 count
-
-    getInfoEventLogCh2Count : 채널2의 시스템 이벤트 count
-    getFaultEventLogCh1Count : 채널1의 실패 이벤트 count
-    getFaultEventLogCh2Count : 채널2의 실패 이벤트 count
-    getTripwaveLogCh1Count : 채널1의 trip 차트 count
-    getTripwaveLogCh2Count : 채널2의 trip 차트 count
-    getInfoEventLogCh1List : 채널1의 시스템 이벤트 list
-    getInfoEventLogCh2List : 채널2의 시스템 이벤트 list
-    getFaultEventLogCh1List : 채널1의 실패 이벤트 list
-    getFaultEventLogCh2List : 채널2의 실패 이벤트 list
-    getTripwaveLogCh1List : 채널1의 trip 차트 list
-    getTripwaveLogCh2List : 채널2의 trip 차트 list
-    getInfoEventAllCount : 전체 시스템 이벤트 count
-    getFaultEventAllCount : 전체 실패 이벤트 count
-    getTripwaveAllCount : 전체 trip 차트 count
-    getInfoEventAllList : 전체 시스템 이벤트 list
-    getFaultEventAllList : 전체 실패 이벤트 list
-    getTripwaveAllList : 전체 trip 차트 list
-    cameraMonthChart : 카메라 월 차트 데이터
-    cameraWeekChart : 카메라 주 차트 데이터
-    cameraDayChart : 카메라 일 차트 데이터
-
-    ch1InfoEventDuplCheck : 채널1의 시스템 이벤트 중복 체크(logDate 기준)
-    ch2InfoEventDuplCheck : 채널2의 시스템 이벤트 중복 체크(logDate 기준)
-    ch1FaultEventDuplCheck : 채널1의 실패 이벤트 중복 체크(logDate 기준)
-    ch2FaultEventDuplCheck : 채널2의 실패 이벤트 중복 체크(logDate 기준)
-    ch1TripwaveDuplCheck : 채널1의 trip 차트 데이터 중복 체크(logDate 기준)
-    ch2TripwaveDuplCheck : 채널2의 trip 차트 데이터 중복 체크(logDate 기준)
-
-    // SELECT if(information_device_data_ch1.user_defined_name = "", information_device_data_ch1.device_name, information_device_data_ch1.user_defined_name) AS name, 
-    // SELECT if(information_device_data_ch2.user_defined_name = "", information_device_data_ch2.device_name, information_device_data_ch2.user_defined_name) AS name
-
-*/
-
-const queryInfo = {
-  findWiseSayAll: 'select * from wise_say',
-  getWiseSay: 'select * from wise_say WHERE id = :id',
-  findWiseSayByContent:
-    "select * from wise_say WHERE content like concat('%', :content, '%')",
-  updateWiseSay: 'update wise_say set content = :content where id = :id',
-  updateWiseSayLikeContent:
-    "update wise_say set content = :newContent where content like concat('%', :content, '%')",
-  updateSettingInfo:
-    'update setting_info set Value = ? where Category = ? and Type = ?',
-  findUserByEmail: 'SELECT * FROM gateway_user WHERE email = ?',
-  getTableInfoToObjectDefaultValue:
-    'select column_name, ordinal_position, is_nullable, data_type, column_default from information_schema.columns where table_name = ? order by ordinal_position asc',
-  backupDiscoveredGateways:
-    'select * from information_discovery_eth_bak where status >= 0 order by status',
-  discoveredGateways:
-    'select * from information_discovery_eth where status >= 0 order by status',
-  ch1BackupDiscoveredDevices:
-    'SELECT 1 as channel_number, physical_identifier, logical_identifier, status, device_type FROM information_discovery_ch1_bak ORDER BY information_discovery_ch1_bak.status asc, information_discovery_ch1_bak.logical_identifier asc',
-  ch2BackupDiscoveredDevices:
-    'SELECT 1 as channel_number, physical_identifier, logical_identifier, status, device_type FROM information_discovery_ch2_bak ORDER BY information_discovery_ch2_bak.status asc, information_discovery_ch2_bak.logical_identifier asc',
-  ch1DiscoveredDevices:
-    'SELECT 1 as channel_number, physical_identifier, logical_identifier, status, device_type FROM information_discovery_ch1 WHERE information_discovery_ch1.status >= 2 ORDER BY information_discovery_ch1.status asc, information_discovery_ch1.logical_identifier asc',
-  ch2DiscoveredDevices:
-    'SELECT 2 as channel_number, physical_identifier, logical_identifier, status, device_type FROM information_discovery_ch2 WHERE information_discovery_ch2.status >= 2 ORDER BY information_discovery_ch2.status asc, information_discovery_ch2.logical_identifier asc',
-  discoveredDevicesByAllChannel:
-    'SELECT information_device_data_ch1.device_name, information_device_data_ch1.logical_identifier, information_device_data_ch1.manufacturer_name, information_device_data_ch1.product_code, information_device_data_ch1.user_defined_name, information_discovery_ch1.physical_identifier, information_discovery_ch1.status, information_discovery_ch1.device_type, 1 as channel_number FROM information_device_data_ch1 INNER JOIN information_discovery_ch1 ON information_device_data_ch1.logical_identifier = information_discovery_ch1.logical_identifier where information_discovery_ch1.status >= 0 and information_discovery_ch1.status != 9 union SELECT information_device_data_ch2.device_name, information_device_data_ch2.logical_identifier, information_device_data_ch2.manufacturer_name, information_device_data_ch2.product_code, information_device_data_ch2.user_defined_name, information_discovery_ch2.physical_identifier, information_discovery_ch2.status, information_discovery_ch2.device_type, 2 as channel_number FROM information_device_data_ch2 INNER JOIN information_discovery_ch2 ON information_device_data_ch2.logical_identifier = information_discovery_ch2.logical_identifier where information_discovery_ch2.status >= 0 and information_discovery_ch2.status != 9 order by channel_number, logical_identifier',
-  treeDisplayCh1DeviceList:
-    'SELECT information_device_data_ch1.user_defined_name AS name, information_device_data_ch1.logical_identifier, information_device_data_ch1.manufacturer_name, information_device_data_ch1.product_code, information_device_data_ch1.user_defined_name, information_discovery_ch1.physical_identifier, information_discovery_ch1.status, information_discovery_ch1.device_type, 1 as channel_number, "D" as tree_type FROM information_device_data_ch1 INNER JOIN information_discovery_ch1 ON information_device_data_ch1.logical_identifier = information_discovery_ch1.logical_identifier where information_discovery_ch1.status > 0',
-  treeDisplayCh2DeviceList:
-    'SELECT information_device_data_ch2.user_defined_name AS name, information_device_data_ch2.logical_identifier, information_device_data_ch2.manufacturer_name, information_device_data_ch2.product_code, information_device_data_ch2.user_defined_name, information_discovery_ch2.physical_identifier, information_discovery_ch2.status, information_discovery_ch2.device_type, 2 as channel_number, "D" as tree_type FROM information_device_data_ch2 INNER JOIN information_discovery_ch2 ON information_device_data_ch2.logical_identifier = information_discovery_ch2.logical_identifier where information_discovery_ch2.status > 0',
-  treeDisplayGatewayList:
-    'select ip_address, status, device_type as name, "G" as tree_type from information_discovery_eth where status > 0',
-  findSettingInfo: 'select * from setting_info where Category = ? and Type = ?',
-  findCustomDeviceChannel1:
-    'select 1 as channel_number, information_discovery_ch1.logical_identifier, information_device_data_ch1.device_name, information_device_data_ch1.manufacturer_name, information_device_data_ch1.usage, information_device_data_ch1.user_defined_name, information_device_data_ch1.product_code, information_discovery_ch1.status, fast_db_ch1.table_name, information_discovery_ch1.physical_identifier, fast_db_ch1.fast_group_number, fast_db_ch1.fast_function_code1, fast_db_ch1.fast_address1, fast_db_ch1.fast_length1, fast_db_ch1.fast_function_code2, fast_db_ch1.fast_address2, fast_db_ch1.fast_length2 from information_discovery_ch1 left outer join fast_db_ch1 on information_discovery_ch1.logical_identifier = fast_db_ch1.logical_identifier left outer join information_device_data_ch1 on information_discovery_ch1.logical_identifier = information_device_data_ch1.logical_identifier where information_discovery_ch1.physical_identifier = ?',
-  findCustomDeviceChannel2:
-    'select 2 as channel_number, information_discovery_ch2.logical_identifier, information_device_data_ch2.device_name, information_device_data_ch2.manufacturer_name, information_device_data_ch2.usage, information_device_data_ch2.user_defined_name, information_device_data_ch2.product_code, information_discovery_ch2.status, fast_db_ch2.table_name, information_discovery_ch2.physical_identifier, fast_db_ch2.fast_group_number, fast_db_ch2.fast_function_code1, fast_db_ch2.fast_address1, fast_db_ch2.fast_length1, fast_db_ch2.fast_function_code2, fast_db_ch2.fast_address2, fast_db_ch2.fast_length2 from information_discovery_ch2 left outer join fast_db_ch2 on information_discovery_ch2.logical_identifier = fast_db_ch2.logical_identifier left outer join information_device_data_ch2 on information_discovery_ch2.logical_identifier = information_device_data_ch2.logical_identifier where information_discovery_ch2.physical_identifier = ?',
-  getChannel1MaxLogicalId:
-    'select ifnull(max(information_discovery_ch1.logical_identifier), 2) as maxId from information_discovery_ch1',
-  getChannel2MaxLogicalId:
-    'select ifnull(max(information_discovery_ch2.logical_identifier), 33) as maxId from information_discovery_ch2',
-
-  getInfoEventLogCh1Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM info_event_log_ch1 INNER JOIN information_device_data_ch1 ON info_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where info_event_log_ch1.logical_identifier = ?',
-  getInfoEventLogCh2Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM info_event_log_ch2 INNER JOIN information_device_data_ch2 ON info_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where info_event_log_ch2.logical_identifier = ?',
-
-  getFaultEventLogCh1Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM fault_event_log_ch1 INNER JOIN information_device_data_ch1 ON fault_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where fault_event_log_ch1.logical_identifier = ?',
-  getFaultEventLogCh2Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM fault_event_log_ch2 INNER JOIN information_device_data_ch2 ON fault_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where fault_event_log_ch2.logical_identifier = ?',
-
-  getTripwaveLogCh1Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM tripwave_log_ch1 INNER JOIN information_device_data_ch1 ON tripwave_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where tripwave_log_ch1.logical_identifier = ?',
-  getTripwaveLogCh2Count:
-    'SELECT ifnull(count(id), 0) AS totalCount FROM tripwave_log_ch2 INNER JOIN information_device_data_ch2 ON tripwave_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where tripwave_log_ch2.logical_identifier = ?',
-
-  getInfoEventLogCh1List:
-    "SELECT info_event_log_ch1.*, information_device_data_ch1.user_defined_name as device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) as location FROM info_event_log_ch1 INNER JOIN information_device_data_ch1 ON info_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where info_event_log_ch1.logical_identifier = ? order by id desc limit ?, ?",
-  getInfoEventLogCh2List:
-    "SELECT info_event_log_ch2.*, information_device_data_ch2.user_defined_name as device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) as location FROM info_event_log_ch2 INNER JOIN information_device_data_ch2 ON info_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where info_event_log_ch2.logical_identifier = ? order by id desc limit ?, ?",
-
-  getFaultEventLogCh1List:
-    "SELECT fault_event_log_ch1.*, information_device_data_ch1.user_defined_name as device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) as location FROM fault_event_log_ch1 INNER JOIN information_device_data_ch1 ON fault_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where fault_event_log_ch1.logical_identifier = ? order by id desc limit ?, ?",
-  getFaultEventLogCh2List:
-    "SELECT fault_event_log_ch2.*, information_device_data_ch2.user_defined_name as device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) as location FROM fault_event_log_ch2 INNER JOIN information_device_data_ch2 ON fault_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where fault_event_log_ch2.logical_identifier = ? order by id desc limit ?, ?",
-
-  getTripwaveLogCh1List:
-    "SELECT tripwave_log_ch1.*, information_device_data_ch1.user_defined_name as device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) as location FROM tripwave_log_ch1 INNER JOIN information_device_data_ch1 ON tripwave_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier where tripwave_log_ch1.logical_identifier = ? order by id desc limit ?, ?",
-  getTripwaveLogCh2List:
-    "SELECT tripwave_log_ch2.*, information_device_data_ch2.user_defined_name as device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) as location FROM tripwave_log_ch2 INNER JOIN information_device_data_ch2 ON tripwave_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier where tripwave_log_ch2.logical_identifier = ? order by id desc limit ?, ?",
-
-  getInfoEventAllCount:
-    'select a.ch1Count + a.ch2Count as totalCount from ( select ( select ifnull(count(info_event_log_ch1.id), 0) FROM info_event_log_ch1) as ch1Count, ( select ifnull(count(info_event_log_ch2.id), 0) FROM info_event_log_ch2) as ch2Count ) a',
-  getFaultEventAllCount:
-    'select a.ch1Count + a.ch2Count as totalCount from ( select ( select ifnull(count(fault_event_log_ch1.id), 0) FROM fault_event_log_ch1) as ch1Count, ( select ifnull(count(fault_event_log_ch2.id), 0) FROM fault_event_log_ch2) as ch2Count ) a',
-  getTripwaveAllCount:
-    'select a.ch1Count + a.ch2Count as totalCount from ( select ( select ifnull(count(tripwave_log_ch1.id), 0) FROM tripwave_log_ch1) as ch1Count, ( select ifnull(count(tripwave_log_ch2.id), 0) FROM tripwave_log_ch2) as ch2Count ) a',
-
-  getInfoEventAllList:
-    "SELECT info_event_log_ch1.*, information_device_data_ch1.user_defined_name AS device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) AS location FROM info_event_log_ch1 INNER JOIN information_device_data_ch1 ON info_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier UNION SELECT info_event_log_ch2.*, information_device_data_ch2.user_defined_name AS device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) AS location FROM info_event_log_ch2 INNER JOIN information_device_data_ch2 ON info_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier order by id desc limit ?, ?",
-  getFaultEventAllList:
-    "SELECT fault_event_log_ch1.*, information_device_data_ch1.user_defined_name AS device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) AS location FROM fault_event_log_ch1 INNER JOIN information_device_data_ch1 ON fault_event_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier UNION SELECT fault_event_log_ch2.*, information_device_data_ch2.user_defined_name AS device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) AS location FROM fault_event_log_ch2 INNER JOIN information_device_data_ch2 ON fault_event_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier order by id desc limit ?, ?",
-  getTripwaveAllList:
-    "SELECT tripwave_log_ch1.*, information_device_data_ch1.user_defined_name AS device_name, concat('channe1 RS485 < ', information_device_data_ch1.user_defined_name) AS location FROM tripwave_log_ch1 INNER JOIN information_device_data_ch1 ON tripwave_log_ch1.logical_identifier = information_device_data_ch1.logical_identifier UNION SELECT tripwave_log_ch2.*, information_device_data_ch2.user_defined_name AS device_name, concat('channe2 RS485 < ', information_device_data_ch2.user_defined_name) AS location FROM tripwave_log_ch2 INNER JOIN information_device_data_ch2 ON tripwave_log_ch2.logical_identifier = information_device_data_ch2.logical_identifier order by id desc limit ?, ?",
-
-  cameraMonthChart:
-    'select * from camera_temp_month where temp_date >= ? and temp_date <= ? and channel_number = ?order by temp_date asc',
-  cameraWeekChart:
-    'select * from camera_temp_week where temp_date >= ? and temp_date <= ? and channel_number = ? order by temp_date asc',
-  cameraDayChart:
-    'select * from camera_temp_day where temp_date >= ? and temp_date <= ? and channel_number = ? order by temp_date asc',
-
-  ch1InfoEventDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from info_event_log_ch1 where logical_identifier = ? and logDate = ?',
-  ch2InfoEventDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from info_event_log_ch2 where logical_identifier = ? and logDate = ?',
-  ch1FaultEventDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from fault_event_log_ch1 where logical_identifier = ? and logDate = ?',
-  ch2FaultEventDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from fault_event_log_ch2 where logical_identifier = ? and logDate = ?',
-  ch1TripwaveDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from tripwave_log_ch1 where logical_identifier = ? and logDate = ?',
-  ch2TripwaveDuplCheck:
-    'select ifnull(count(1), 0) as searchCount from tripwave_log_ch2 where logical_identifier = ? and logDate = ?'
-};
-
 // common insert
 service.insert = function (tableName, insertArgumentInfo) {
-  logger.debug(
-    'insert table [' + tableName + '] : ' + JSON.stringify(insertArgumentInfo)
-  );
   let applyQueryArgument = helper.changeKeyToUnderScore(insertArgumentInfo);
   return new Promise((resolve, reject) => {
     let argumentKeys = _.keys(applyQueryArgument);
@@ -284,6 +149,12 @@ service.insert = function (tableName, insertArgumentInfo) {
     });
     insertFullQueryString =
       insertFullQueryString + insertValueQueryString + ')';
+    logger.debug(
+      'query : ' +
+        insertFullQueryString +
+        ' @ argument : ' +
+        JSON.stringify(applyQueryArgument)
+    );
     connection.query(
       insertFullQueryString,
       applyQueryArgument,
@@ -308,9 +179,6 @@ service.update = function (
   idValue,
   idColumnName
 ) {
-  logger.debug(
-    'update table [' + tableName + '] : ' + JSON.stringify(updateArgumentInfo)
-  );
   let applyQueryArgument = helper.changeKeyToUnderScore(updateArgumentInfo);
   let argumentKeys = _.keys(applyQueryArgument);
   let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
@@ -334,6 +202,12 @@ service.update = function (
     idColumnName +
     ' = ' +
     idValue;
+  logger.debug(
+    'query : ' +
+      updateFullQueryString +
+      ' @ argument : ' +
+      JSON.stringify(applyQueryArgument)
+  );
   return service
     .executeQueryByStr(updateFullQueryString, applyQueryArgument)
     .then(() => service.selectOne(tableName, idValue));
@@ -341,12 +215,6 @@ service.update = function (
 
 // update all
 service.updateAll = function (tableName, updateArgumentInfo) {
-  logger.debug(
-    'updateAll table [' +
-      tableName +
-      '] : ' +
-      JSON.stringify(updateArgumentInfo)
-  );
   let applyQueryArgument = helper.changeKeyToUnderScore(updateArgumentInfo);
   let argumentKeys = _.keys(applyQueryArgument);
   let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
@@ -360,7 +228,12 @@ service.updateAll = function (tableName, updateArgumentInfo) {
     }
   });
   updateFullQueryString = updateFullQueryString + updateSetQueryString;
-  logger.debug('updateFullQueryString : ' + updateFullQueryString);
+  logger.debug(
+    'query : ' +
+      updateFullQueryString +
+      ' @ argument : ' +
+      JSON.stringify(applyQueryArgument)
+  );
   return service.executeQueryByStr(updateFullQueryString, applyQueryArgument);
 };
 
@@ -382,12 +255,19 @@ service.select = function (tableName, searchParam) {
       ' limit :limit, :pageSize';
     let selectCountQuerySting =
       'select ifnull(count(id), 0) AS totalCount from ' + tableName;
+    logger.debug('query : ' + selectCountQuerySting);
     return service
       .selectQueryByStr(selectCountQuerySting)
       .then((totalCountQueryResult) => {
         const totalCount = totalCountQueryResult[0].totalCount;
         let result = {};
         result.totalCount = totalCount;
+        logger.debug(
+          'query : ' +
+            selectFullQuerySting +
+            ' @ argument : ' +
+            JSON.stringify(queryParam)
+        );
         return service
           .selectQueryByStr(selectFullQuerySting, queryParam)
           .then((data) => {
@@ -396,8 +276,8 @@ service.select = function (tableName, searchParam) {
           });
       });
   }
-  logger.debug('select table [' + tableName + ']');
   return new Promise((resolve, reject) => {
+    logger.debug('query : ' + selectFullQuerySting);
     connection.query(selectFullQuerySting, (error, results) => {
       if (error) {
         reject(error);
@@ -410,8 +290,10 @@ service.select = function (tableName, searchParam) {
 
 // select table row 1
 service.selectOne = function (tableName, id, idColumnName) {
-  logger.debug('selectOne table [' + tableName + ']');
   idColumnName = idColumnName || 'id';
+  let queryString =
+    'SELECT * FROM ' + tableName + ' where ' + idColumnName + '= :id';
+  logger.debug('query : ' + queryString + ' @ argument : ' + id);
   return new Promise((resolve, reject) => {
     connection.query(
       'SELECT * FROM ' + tableName + ' where ' + idColumnName + '= :id',
@@ -433,29 +315,27 @@ service.selectOne = function (tableName, id, idColumnName) {
 
 // delete table 1 row
 service.delete = function (tableName, id, idColumn) {
-  logger.debug('delete table [' + tableName + ']');
   idColumn = idColumn || 'id';
   let queryString = 'delete from ' + tableName + ' where ' + idColumn + '= :id';
+  logger.debug('query : ' + queryString + ' @ argument : ' + id);
   return service.executeQueryByStr(queryString, { [idColumn]: id });
 };
 
 // delete table all
 service.deleteAll = function (tableName) {
-  logger.debug('deleteAll table [' + tableName + ']');
   let queryString = 'delete from ' + tableName;
+  logger.debug('query : ' + queryString);
   return service.executeQueryByStr(queryString);
 };
 
 // insert, update, delete by queryId
 service.executeQueryById = function (queryId, paramObject) {
+  let queryString = queryInfo[queryId];
   logger.debug(
-    'executeQueryById queryId [' +
-      queryId +
-      '] : ' +
-      JSON.stringify(paramObject)
+    'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryInfo[queryId], paramObject, (error) => {
+    connection.query(queryString, paramObject, (error) => {
       if (error) {
         reject(error);
       } else {
@@ -467,11 +347,12 @@ service.executeQueryById = function (queryId, paramObject) {
 
 // select by queryId
 service.selectQueryById = function (queryId, paramObject) {
+  let queryString = queryInfo[queryId];
   logger.debug(
-    'selectQueryById queryId [' + queryId + '] : ' + JSON.stringify(paramObject)
+    'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryInfo[queryId], paramObject, (error, results) => {
+    connection.query(queryString, paramObject, (error, results) => {
       if (error) {
         reject(error);
       } else {
@@ -484,10 +365,7 @@ service.selectQueryById = function (queryId, paramObject) {
 // insert, update, delete by queryString
 service.executeQueryByStr = function (queryString, paramObject) {
   logger.debug(
-    'executeQueryByStr queryString [' +
-      queryString +
-      '] : ' +
-      JSON.stringify(paramObject)
+    'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
     connection.query(queryString, paramObject, (error) => {
@@ -503,10 +381,7 @@ service.executeQueryByStr = function (queryString, paramObject) {
 // select by queryString
 service.selectQueryByStr = function (queryString, paramObject) {
   logger.debug(
-    'selectQueryByStr queryString [' +
-      queryString +
-      '] : ' +
-      JSON.stringify(paramObject)
+    'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
     connection.query(queryString, paramObject, (error, results) => {

@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
-  <query id="getCompany">
+	<query id="findWiseSayAll">
+		<![CDATA[
+    select * from wise_say where id < 10
+		]]>
+	</query>
+	<query id="getWiseSay">
+    select * from wise_say WHERE id = :id
+	</query>
+	<query id="findWiseSayByContent">
+    select * from wise_say WHERE content_html like concat('%', :content, '%')
+	</query>
+	<query id="updateWiseSay">
+    update wise_say set content_html = :content where id = :id
+	</query>
+	<query id="updateWiseSayLikeContent">
+    update wise_say set content_html = :newContent where content_html like concat('%', :content, '%')
+	</query>
+	<query id="getCompany">
     SELECT * 
       FROM   company 
       WHERE  id = :id
-  </query>
-  <query id="getTodayWiseSay">
+	</query>
+	<query id="getTodayWiseSay">
     SELECT * 
       FROM   wise_say 
       LIMIT  1 
-  </query>
-  <query id="getTodayWiseSay">
+	</query>
+	<query id="getTodayWiseSay">
     SELECT * 
       FROM   wise_say 
       LIMIT  1 
-  </query>
-
-  <!-- 
-    진행중이 룸 목록
-    
-    -->
-  <query id="findIngRoom">
+	</query>
+	<query id="findIngRoom">
+		<![CDATA[
 		SELECT 
 			ing_room.*, 
 			chat_message.id AS last_message_id, 
@@ -77,5 +90,6 @@
 		ORDER BY 
 			ing_room.state, 
 			last_message_create_date DESC
-  </query>
-</user>
+			]]>
+	</query>
+</querys>

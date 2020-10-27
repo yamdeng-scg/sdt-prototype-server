@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+	<query id="findNotAdmin">
+		<![CDATA[
+			SELECT * 
+				FROM   member
+				WHERE  company_id = :companyId 
+							AND auth_level > 0
+		]]>
+	</query>
+	<query id="regist">
+    CALL regist_member(:companyId, :employeeNumber, :name, :authLevel)
+	</query>
+	<query id="getByEmployeeNumber">
+    SELECT * 
+			FROM   member 
+			WHERE  employee_number = :employeeNumber 
+	</query>
+	<query id="update">
+    UPDATE member 
+			SET auth_level = IFNULL(:authLevel, auth_level), 
+						state = IFNULL(:state, state), 
+						profile_image_id = IFNULL(:profileImageId, profile_image_id),
+						update_member_id = :loginId
+			WHERE  id = :id 
+	</query>
+	<query id="updateState">
+    UPDATE member 
+			SET state = :state,
+						update_member_id = :loginId
+			WHERE  id = :id 
+	</query>
+	<query id="updateStateAndAuthLevel">
+    UPDATE member 
+			SET state = :state,
+							auth_level = :authLevel,
+							update_member_id = :loginId
+			WHERE  id = :id 
+	</query>
+	<query id="getDetail">
+    SELECT * 
+			FROM   member
+			WHERE  id = :id 
+	</query>
+</querys>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="findCategoryLarge">
+    SELECT *
+      FROM category_large
+      WHERE company_id = :companyId
+      ORDER BY name ASC
+  </query>
+  <query id="findCategoryMiddle">
+    SELECT *
+      FROM category_middle
+      WHERE company_id = :companyId
+      ORDER BY name ASC
+  </query>
+  <query id="findCategorySmall">
+    SELECT *
+      FROM category_small
+      WHERE company_id = :companyId
+      ORDER BY name ASC
+  </query>
+  <query id="createCategoryLarge">
+    INSERT INTO (company_id, name, minwon_code, minwon_name, update_member_id)
+        VALUES(:companyId, :name, :minwonCode, :minwonName, :loginId)
+  </query>
+  <query id="updateCategoryLarge">
+    UPDATE category_large 
+      SET    name = :name, 
+            minwon_code = :minwonCode, 
+            minwon_name = :minwonName, 
+            update_member_id = :loginId 
+      WHERE  id = :id
+  </query>
+  <query id="deleteCategoryLarge">
+    DELETE FROM category_large
+    WHERE  id = :id
+  </query>
+  <query id="createCategoryMiddle">
+    INSERT INTO category_middle(company_id, name, category_large_id, minwon_code, minwon_name, update_member_id)
+        VALUES(:companyId, :name, :categoryLargeId, :minwonCode, :minwonName, :loginId)
+  </query>
+  <query id="updateCategoryMiddle">
+    UPDATE category_middle 
+      SET    name = :name, 
+                category_large_id = :categoryLargeId,
+            minwon_code = :minwonCode, 
+            minwon_name = :minwonName, 
+            update_member_id = :loginId 
+      WHERE  id = :id
+  </query>
+  <query id="deleteCategoryMiddle">
+    DELETE FROM category_middle
+      WHERE  id = :id
+  </query>
+  <query id="createCategorySmall">
+    INSERT INTO category_small(company_id, name, category_middle_id, minwon_code, minwon_name, update_member_id)
+          VALUES(:companyId, :name, :categoryMiddleId, :minwonCode, :minwonName, :loginId)
+  </query>
+  <query id="updateCategorySmall">
+    UPDATE category_middle 
+      SET    name = :name, 
+                category_middle_id = :categoryMiddleId,
+            minwon_code = :minwonCode, 
+            minwon_name = :minwonName, 
+            update_member_id = :loginId 
+      WHERE  id = :id
+  </query>
+  <query id="deleteCategorySmall">
+    DELETE FROM category_small
+      WHERE  id = :id
+  </query>
+  <query id="getCategoryLarge">
+    SELECT *
+      FROM   category_large
+      WHERE  id = :id
+  </query>
+  <query id="getCategoryMiddle">
+    SELECT *
+      FROM   category_middle
+      WHERE  id = :id
+  </query>
+  <query id="getCategorySmall">
+    SELECT *
+      FROM   category_small
+      WHERE  id = :id
+  </query>
+</querys>

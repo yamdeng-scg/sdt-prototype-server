@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `company` (
   `email` varchar(255) DEFAULT NULL COMMENT '회사 이메일',
   `address` varchar(255) DEFAULT NULL COMMENT '회사 주소',
   `homepage` varchar(255) DEFAULT NULL COMMENT '회사 homepage',
-  `use_config` varchar(1023) DEFAULT NULL COMMENT '회사별 설정 정보(json)',
+  `use_config_json` varchar(1023) DEFAULT NULL COMMENT '회사별 설정 정보(json)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id

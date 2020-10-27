@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="updateSwearInsultCount">
+    UPDATE customer_company 
+      SET    swear_count = :swearCount, 
+            insult_count = :insultCount,
+            update_member_id = :loginId
+      WHERE  company_id = :companyId 
+            AND customer_id = :id
+  </query>
+  <query id="enableBlackStatus">
+    UPDATE customer_company 
+      SET    block_member_id = :loginId, 
+            block_date = NOW(), 
+            block_type = :blockType, 
+            remark = :remark, 
+            is_block = 1,
+            update_member_id = :loginId
+      WHERE  company_id = :companyId 
+            AND customer_id = :id
+  </query>
+  <query id="disbleBlackStatus">
+    UPDATE customer_company 
+      SET    block_member_id = NULL, 
+            block_date = NULL, 
+            block_type = NULL, 
+            is_block = 0,
+            update_member_id = :loginId
+      WHERE  company_id = :companyId 
+            AND customer_id = :id
+  </query>
+  <query id="plusSwearCount">
+    UPDATE customer_company 
+      SET   swear_count = swear_count + 1,
+            update_member_id = :loginId
+      WHERE  company_id = :companyId 
+            AND customer_id = :id
+  </query>
+  <query id="plusInsultCount">
+    UPDATE customer_company 
+      SET   insult_count = insult_count + 1,
+            update_member_id = :loginId
+      WHERE  company_id = :companyId 
+            AND customer_id = :id
+  </query>
+  <query id="getBySpeakerId">
+    SELECT *
+    FROM   customer2
+    WHERE  speaker_id = :speakerId
+  </query>
+  <query id="getByGasappMemberNumber">
+    SELECT *
+      FROM   customer2
+      WHERE  gasapp_member_number = :gasappMemberNumber
+  </query>
+  <query id="findBlockMember">
+    SELECT *
+      FROM  v_customer
+      WHERE company_id = :companyId
+            AND is_block = 1
+  </query>
+  <query id="getDetail">
+    SELECT * 
+    FROM   v_customer
+    WHERE  customer_id = :id 
+  </query>
+  <query id="regist">
+    CALL regist_customer(:companyId, :gasappMemberNumber, :name, :telNumber) 
+  </query>
+  <query id="getDetailRoom">
+    <![CDATA[
+      SELECT 
+        r.member_id, 
+        r.state AS room_state, 
+        (
+          SELECT 
+            read_last_message_id 
+          FROM 
+            room_speaker 
+          WHERE 
+            room_speaker.room_id = r.id 
+            AND speaker_id = sp.id
+        ) AS read_last_message_id, 
+        (
+          SELECT 
+            DATEDIFF(
+              NOW(), 
+              MAX(create_date)
+            ) 
+          FROM 
+            chat_message 
+          WHERE 
+            room_id = r.id
+        ) AS end_after_day, 
+        (
+          SELECT 
+            COUNT(id) 
+          FROM 
+            chat_message 
+          WHERE 
+            room_id = r.id 
+            AND id > read_last_message_id 
+            AND is_system_message = 0 
+            AND message_admin_type = 0
+        ) AS not_read_count, 
+        vc.* 
+      FROM 
+        v_customer vc 
+        INNER JOIN room r ON vc.room_id = r.id 
+        INNER JOIN speaker2 sp ON vc.speaker_id = sp.id 
+      WHERE
+              vc.company_id = :companyId AND vc.gasapp_member_number = :gasappMemberNumber
+        ]]>
+  </query>
+</querys>

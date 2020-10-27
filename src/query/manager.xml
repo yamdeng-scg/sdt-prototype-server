@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="findCurrentMemberStats">
+    <![CDATA[
+      SELECT
+        sub.member_id, 
+        sub.employee_number, 
+        sub.member_state, 
+        COUNT(*) AS ing_count, 
+        SUM(CASE WHEN diff > 10 THEN 1 ELSE 0 end) AS warning_count, 
+        SUM(
+          CASE WHEN diff BETWEEN 5 
+          AND 10 THEN 1 ELSE 0 end
+        ) AS caution_count, 
+        (
+          SELECT 
+            COUNT(DISTINCT room_id) 
+          FROM 
+            room_join_history 
+          WHERE 
+            company_id = :companyId
+            AND member_id = sub.member_id 
+            AND DATE_FORMAT(create_date, '%Y%m%d') = DATE_FORMAT(NOW(), '%Y%m%d')
+        ) AS end_count 
+      FROM 
+        (
+          SELECT 
+            r.*, 
+            m.state AS member_state, 
+            m.employee_number, 
+            IFNULL(
+              (
+                SELECT 
+                  TIMESTAMPDIFF(
+                    MINUTE, 
+                    MIN(chat_message.create_date), 
+                    NOW()
+                  ) 
+                FROM 
+                  chat_message 
+                  INNER JOIN message_read ON chat_message.id = message_read.message_id 
+                WHERE 
+                  chat_message.room_id = r.id 
+                  AND chat_message.is_employee = 0 
+                  AND message_read.speaker_id != chat_message.speaker_id 
+                  AND message_read.read_date IS NULL 
+                  AND chat_message.id > (
+                    SELECT 
+                      MAX(id) 
+                    FROM 
+                      chat_message 
+                    WHERE 
+                      is_employee = 1 
+                      AND room_id = r.id
+                  )
+              ), 
+              0
+            ) AS diff 
+          FROM 
+            room r 
+            INNER JOIN member m ON r.member_id = m.id 
+          WHERE 
+            r.company_id = :companyId
+            AND r.state < 2
+        ) sub 
+      GROUP BY 
+        sub.member_id
+  ]]>
+  </query>
+  <query id="findCloseHistory">
+    <![CDATA[
+      SELECT 
+        member_id, 
+        COUNT(*) end_count, 
+        (
+          SELECT 
+            employee_number 
+          FROM 
+            member 
+          WHERE 
+            id = rjh.member_id
+        ) AS employee_number, 
+        (
+          SELECT
+            state 
+          FROM 
+            member 
+          WHERE 
+            id = rjh.member_id
+        ) AS member_state 
+      FROM 
+        room_join_history rjh 
+      WHERE 
+        company_id = :companyId 
+        AND DATE_FORMAT(create_date, '%Y-%m-%d') BETWEEN :startDate 
+        AND :endDate 
+        AND member_id IS NOT NULL 
+      GROUP BY
+        member_id
+  ]]>
+  </query>
+</querys>

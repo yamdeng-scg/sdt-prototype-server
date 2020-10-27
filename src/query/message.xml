@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+	<query id="findByRoomId">
+		<![CDATA[
+			SELECT * 
+				FROM   (SELECT r.join_message_id, 
+											m.*, 
+											IFNULL(s.is_customer, 0) 
+								FROM   v_room r 
+											INNER JOIN chat_message m 
+															ON r.id = m.room_id 
+											LEFT OUTER JOIN speaker2 s 
+																		ON m.speaker_id = s.id 
+								WHERE  r.id = :roomId
+											AND m.id >= r.join_message_id 
+								ORDER  BY m.id DESC) sub 
+				ORDER  BY sub.id 
+		]]>
+	</query>
+	<query id="findRangeById">
+    SELECT * 
+			FROM   chat_message 
+			WHERE  room_id = :roomId 
+						AND id BETWEEN :startId AND :endId
+	</query>
+	<query id="findByRoomIdToSpeaker">
+		<![CDATA[
+			SELECT 
+					*, 
+					(
+						CASE WHEN sub.is_employee = 1 THEN 0 ELSE 1 END
+					) AS is_customer 
+				FROM 
+					(
+						SELECT 
+							r.join_message_id, 
+							m.* 
+						FROM 
+							room r 
+							INNER JOIN chat_message m ON r.id = m.room_id 
+							AND (
+								r.create_date > DATE_SUB(NOW(), INTERVAL 7 DAY) 
+								OR m.id > (
+									SELECT 
+										MIN(read_last_message_id) 
+									FROM 
+										room_speaker 
+									WHERE 
+										room_id = r.id
+								)
+							) 
+						WHERE 
+							m.id = :roomId 
+							AND (
+								CASE WHEN :startId IS NULL THEN 1 = 1 ELSE m.id < :startId END
+							) 
+							AND m.message_admin_type <= IFNULL(:messageAdminType, 0) 
+						ORDER BY 
+							m.id DESC 
+						LIMIT 
+							20
+					) sub 
+				ORDER BY 
+					sub.id 
+		]]>
+	</query>
+	<query id="findByRoomIdToAdmin">
+		<![CDATA[
+			SELECT 
+				*, 
+				(
+					CASE WHEN sub.is_employee = 1 THEN 0 ELSE 1 END
+				) AS is_customer
+			FROM 
+				(
+					SELECT 
+						r.join_message_id, 
+						m.* 
+					FROM 
+						room r 
+						INNER JOIN chat_message m ON r.id = m.room_id 
+						AND m.create_date > DATE_SUB(NOW(), INTERVAL 7 day) 
+					WHERE 
+						r.id = :roomId 
+						AND m.id >= r.join_message_id 
+					ORDER BY 
+						m.id DESC
+				) sub 
+			ORDER BY 
+				sub.id
+		]]>
+	</query>
+	<query id="updateMesageNotReadCount">
+		<![CDATA[
+			UPDATE chat_message 
+				SET    not_read_count = not_read_count - 1
+				WHERE  room_id = :roomId 
+				AND    ( 
+											CASE 
+														WHEN :startId = :lastId THEN id = :startId 
+														ELSE id > :startId
+														AND    id <= :lastId 
+											END)
+		]]>
+	</query>
+	<query id="updateRoomSpeakerReadLastMesasge">
+    UPDATE room_speaker 
+			SET    old_last_message_id = read_last_message_id, 
+						read_last_message_id = :lastId 
+			WHERE  room_id = :roomId 
+						AND speaker_id = :speakerId 
+	</query>
+	<query id="updateMessageRead">
+		<![CDATA[
+			UPDATE message_read 
+				SET    read_date = NOW() 
+				WHERE  room_id = :roomId 
+							AND speaker_id = :speakerId 
+							AND message_id >= :lastId 
+		]]>
+	</query>
+	<query id="create">
+    CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail) 
+	</query>
+</querys>
