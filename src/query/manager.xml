@@ -4,7 +4,7 @@
     <![CDATA[
       SELECT
         sub.member_id, 
-        sub.login_id, 
+        sub.login_name, 
         sub.member_state, 
         COUNT(*) AS ing_count, 
         SUM(CASE WHEN diff > 10 THEN 1 ELSE 0 end) AS warning_count, 
@@ -27,7 +27,7 @@
           SELECT 
             r.*, 
             m.state AS member_state, 
-            m.login_id, 
+            m.login_name, 
             IFNULL(
               (
                 SELECT 
@@ -74,12 +74,12 @@
         COUNT(*) end_count, 
         (
           SELECT 
-            login_id 
+            login_name 
           FROM 
             member 
           WHERE 
             id = rjh.member_id
-        ) AS login_id, 
+        ) AS login_name, 
         (
           SELECT
             state 

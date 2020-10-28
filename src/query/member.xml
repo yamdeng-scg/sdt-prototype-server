@@ -11,10 +11,10 @@
 	<query id="regist">
     CALL regist_member(:companyId, :loginId, :name, :authLevel)
 	</query>
-	<query id="getByLoginId">
+	<query id="getByLoginName">
     SELECT * 
 			FROM   member 
-			WHERE  login_id = :loginId 
+			WHERE  loginName = :loginName
 	</query>
 	<query id="update">
     UPDATE member 
