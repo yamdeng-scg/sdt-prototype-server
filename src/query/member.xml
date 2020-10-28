@@ -8,6 +8,14 @@
 							AND auth_level > 0
 		]]>
 	</query>
+	<query id="findCanJoin">
+		<![CDATA[
+			SELECT * 
+				FROM   member
+				WHERE  company_id = :companyId 
+					AND auth_level > 0 AND auth_level < 5
+		]]>
+	</query>
 	<query id="regist">
     CALL regist_member(:companyId, :loginId, :name, :authLevel)
 	</query>

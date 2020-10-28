@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const Constant = require('../config/constant');
 const queryIdPrefix = 'room.';
 
 /*
@@ -87,28 +88,63 @@ const queryIdPrefix = 'room.';
 
 router.get('/', function (req, res, next) {
   let paramObject = req.paramObject;
-  let queryIdParam = paramObject.queryId;
-  let queryId = queryIdParam;
-  if (queryId) {
-    queryId = queryIdPrefix + queryId;
-    dbService
-      .selectQueryById(queryId, paramObject)
-      .then((result) => {
-        let responseResult = result;
-        if (queryIdParam.indexOf('get') === 0) {
-          responseResult = result[0];
-        }
-        res.send(responseResult);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .select('wise_say')
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
+  let queryId = paramObject.queryId;
+  queryId = queryIdPrefix + queryId;
+  let loginProfile = req.loginProfile;
+  if (queryId.indexOf('findReadyState') != -1) {
+    if (paramObject.sort && paramObject.sort === 'joinDate') {
+      paramObject.sort = 'last_message_create_date asc';
+    } else {
+      paramObject.sort = 'end_date desc';
+    }
   }
+  // if (queryId.indexOf('findIngState') != -1) {
+  //   let checkSelf = paramObject.checkSelf;
+  //   if (checkSelf === Constant.YES) {
+  //     paramObject.memberId = paramObject.loginId;
+  //   } else if (loginProfile.authLevel < 4) {
+  //     paramObject.memberId = null;
+  //   } else {
+  //     paramObject.memberId = paramObject.loginId;
+  //   }
+  // }
+  if (queryId.indexOf('State') != -1) {
+    let checkSelf = paramObject.checkSelf;
+    if (checkSelf === Constant.YES) {
+      paramObject.memberId = paramObject.loginId;
+    } else if (loginProfile.authLevel < 4) {
+      paramObject.memberId = null;
+    } else {
+      paramObject.memberId = paramObject.loginId;
+    }
+    if (paramObject.searchType === 'message') {
+      paramObject.message = '';
+      paramObject.customerName = '';
+      paramObject.message = paramObject.searchValue || '';
+    } else if (paramObject.searchType === 'customer') {
+      paramObject.message = '';
+      paramObject.memberName = '';
+      paramObject.customerName = paramObject.searchValue || '';
+    } else if (paramObject.searchType === 'member') {
+      paramObject.message = '';
+      paramObject.customerName = '';
+      paramObject.memberName = paramObject.searchValue || '';
+    } else {
+      paramObject.message = '';
+      paramObject.customerName = '';
+      paramObject.memberName = '';
+    }
+  }
+  dbService
+    .selectQueryById(queryId, paramObject)
+    .then((result) => {
+      let responseResult = result;
+      if (queryId.indexOf('get') === 0) {
+        responseResult = result[0];
+      }
+      res.send(responseResult);
+    })
+    .catch(errorRouteHandler(next));
 });
 
 // 이하

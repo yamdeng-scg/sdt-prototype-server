@@ -59,26 +59,40 @@ router.post('/login', function (req, res, next) {
 });
 
 // 로그인한 사용자 정보
-router.get('/profile', function (req, res) {
+router.get('/profile', function (req, res, next) {
   let profile = null;
   try {
     profile = jwt.verify(req.headers.authorization, Config.JSONTOKEN_SECRETKEY);
-    let filterProfile = _.pick(
-      profile,
-      'id',
-      'companyId',
-      'companyUseConfigJson',
-      'companyName',
-      'isAdmin',
-      'authLevel',
-      'loginName',
-      'state',
-      'profileImageId',
-      'speakerId',
-      'name'
-    );
-    let authJsonWebToken = req.headers.authorization;
-    res.send({ token: authJsonWebToken, profile: filterProfile });
+    dbService
+      .selectQueryById(queryIdPrefix + 'getDetail', { id: profile.id })
+      .then((result) => {
+        if (result.length > 0) {
+          let profile = result[0];
+          let filterProfile = _.pick(
+            profile,
+            'id',
+            'companyId',
+            'companyUseConfigJson',
+            'companyName',
+            'isAdmin',
+            'authLevel',
+            'loginName',
+            'state',
+            'profileImageId',
+            'speakerId',
+            'name'
+          );
+          let authJsonWebToken = jwt.sign(
+            Object.assign({}, filterProfile),
+            Config.JSONTOKEN_SECRETKEY,
+            { expiresIn: Config.JSONTOKEN_EXPIRE }
+          );
+          res.send({ token: authJsonWebToken, profile: profile });
+        } else {
+          return Promise.reject(new AppError('존재하지 않는 ID 입니다'));
+        }
+      })
+      .catch(errorRouteHandler(next));
   } catch (err) {
     throw new AppError('인증정보가 존재하지 않습니다', [err], 403);
   }

@@ -377,7 +377,7 @@ update member
 
 update member
   join Speaker on Speaker.id = member.speaker_id
-   set member.name = Speaker. name;
+   set member.name = Speaker.name;
 
 -- category_large
 INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name)
@@ -397,7 +397,7 @@ INSERT INTO category_small (id, create_date, update_date, company_id, category_m
 
 -- customer2
 INSERT INTO customer2 (id, create_date, update_date, gasapp_member_number, name, tel_number, speaker_id)
-SELECT id, createdate, workdate, userno, telno, name, speaker
+SELECT id, createdate, workdate, userno, name, telno, speaker
 FROM Customer;
 
 -- customer_company

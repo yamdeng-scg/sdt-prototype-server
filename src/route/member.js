@@ -4,12 +4,14 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const queryIdPrefix = 'member.';
 
 /*
 
 1.회원 목록
  : / GET
  : /?query=findNotAdmin GET
+ : /?query=findCanJoin GET
 
 (X) 2.회원 등록 : regist
  : / POST
@@ -30,6 +32,19 @@ const errorRouteHandler = require('../error/routeHandler');
  : /:id/stateAndAuthLevel PUT
 
 */
+
+// 회원 상태 수정
+router.put('/:id/state', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let id = req.params.id;
+  paramObject.id = id;
+  dbService
+    .executeQueryById(queryIdPrefix + 'updateState', paramObject)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch(errorRouteHandler(next));
+});
 
 // 명언 등록 or command
 // 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent

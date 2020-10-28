@@ -15,6 +15,7 @@ const executeQueryRoute = require('./route/executeQuery');
 const restCommonRoute = require('./route/restCommon');
 const wiseSayRoute = require('./route/wiseSay');
 const roomRoute = require('./route/room');
+const memberRoute = require('./route/member');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -40,6 +41,7 @@ app.use(CONFIG.API_PREFIX_URL + '/execute-query', executeQueryRoute);
 app.use(CONFIG.API_PREFIX_URL + '/rest-common', restCommonRoute);
 app.use(CONFIG.API_PREFIX_URL + '/wise-say', wiseSayRoute);
 app.use(CONFIG.API_PREFIX_URL + '/room', roomRoute);
+app.use(CONFIG.API_PREFIX_URL + '/member', memberRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)

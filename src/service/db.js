@@ -352,13 +352,18 @@ service.selectQueryById = function (queryId, paramObject) {
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, paramObject, (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(helper.changeResultKeyToUnderScore(results));
+    let executeSql = connection.query(
+      queryString,
+      paramObject,
+      (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(helper.changeResultKeyToUnderScore(results));
+        }
       }
-    });
+    );
+    logger.debug('executeSql : ' + executeSql.sql);
   });
 };
 
@@ -368,13 +373,14 @@ service.executeQueryByStr = function (queryString, paramObject) {
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, paramObject, (error) => {
+    let executeSql = connection.query(queryString, paramObject, (error) => {
       if (error) {
         reject(error);
       } else {
         resolve({ success: true });
       }
     });
+    logger.debug('executeSql : ' + executeSql.sql);
   });
 };
 
@@ -384,13 +390,18 @@ service.selectQueryByStr = function (queryString, paramObject) {
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, paramObject, (error, results) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(helper.changeResultKeyToUnderScore(results));
+    let executeSql = connection.query(
+      queryString,
+      paramObject,
+      (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(helper.changeResultKeyToUnderScore(results));
+        }
       }
-    });
+    );
+    logger.debug('executeSql : ' + executeSql.sql);
   });
 };
 
