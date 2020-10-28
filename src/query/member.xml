@@ -9,12 +9,17 @@
 		]]>
 	</query>
 	<query id="regist">
-    CALL regist_member(:companyId, :employeeNumber, :name, :authLevel)
+    CALL regist_member(:companyId, :loginId, :name, :authLevel)
 	</query>
-	<query id="getByEmployeeNumber">
-    SELECT * 
-			FROM   member 
-			WHERE  employee_number = :employeeNumber 
+	<query id="getByLoginName">
+    SELECT c.name            AS company_name, 
+       c.use_config_json AS company_use_config_json, 
+       m.*
+		FROM   member m 
+					INNER JOIN company c 
+									ON m.company_id = c.id 
+		WHERE  m.company_id = :companyId
+		  AND  m.login_name = :loginName
 	</query>
 	<query id="update">
     UPDATE member 
@@ -38,8 +43,13 @@
 			WHERE  id = :id 
 	</query>
 	<query id="getDetail">
-    SELECT * 
-			FROM   member
-			WHERE  id = :id 
+    SELECT 
+		   c.name            AS company_name, 
+       c.use_config_json AS company_use_config_json, 
+       m.* 
+		FROM   member m 
+					INNER JOIN company c 
+									ON m.company_id = c.id 
+		WHERE  m.id = :id
 	</query>
 </querys>

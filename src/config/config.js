@@ -2,6 +2,11 @@
 
 const config = {};
 
+// 60 * 60 * 24 하루
+config.JSONTOKEN_EXPIRE = 60 * 60 * 24 * 100;
+// jsonweb token key
+config.JSONTOKEN_SECRETKEY = 'lsisjwtsecretkey';
+
 // 로그파일 포맷
 config.LOGFILE_FORMAT = 'YYYY-MM-DD-HH:mm:ss.SSS';
 // 로그파일 이름

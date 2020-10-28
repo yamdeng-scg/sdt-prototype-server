@@ -10,11 +10,10 @@ const errorRouteHandler = require('../error/routeHandler');
 router.post('/', function (req, res, next) {
   let jsonBody = Object.assign({}, req.body);
   let queryParameter = req.query;
-  let queryName = queryParameter.queryName;
-  if (queryName) {
-    queryName = 'query.' + queryName;
+  let queryId = queryParameter.queryId;
+  if (queryId) {
     dbService
-      .executeQueryById(queryName, jsonBody)
+      .executeQueryById(queryId, jsonBody)
       .then((result) => {
         res.send(result);
       })
@@ -87,14 +86,13 @@ router.delete('/:id', function (req, res, next) {
 // 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
 router.get('/', function (req, res, next) {
   let queryParameter = req.query;
-  let queryName = queryParameter.queryName;
-  if (queryName) {
-    queryName = 'query.' + queryName;
+  let queryId = queryParameter.queryId;
+  if (queryId) {
     dbService
-      .selectQueryById(queryName, queryParameter)
+      .selectQueryById(queryId, queryParameter)
       .then((result) => {
         let responseResult = result;
-        if (queryName === 'getWiseSay') {
+        if (queryId === 'getWiseSay') {
           responseResult = result[0];
         }
         res.send(responseResult);

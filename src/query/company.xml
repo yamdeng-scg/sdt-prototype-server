@@ -5,4 +5,8 @@
       FROM company
       WHERE id = :id
   </query>
+  <query id="findAll">
+    SELECT *
+      FROM company
+  </query>
 </querys>

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `member` (
   `company_id` varchar(10) DEFAULT NULL COMMENT '회사 id(company table)',
   `is_admin` tinyint(1) NOT NULL DEFAULT 0 COMMENT '시스템관리자 여부',
   `auth_level` tinyint(1) unsigned NOT NULL DEFAULT 7 COMMENT '0:sys, 1:super, 2:admin, 3:mgr, 4:emp, 7:reader,9:guest',
-  `employee_number` varchar(255) NOT NULL COMMENT '직원번호',
+  `login_name` varchar(255) NOT NULL COMMENT '로그인 name(직원번호)',
   `state` tinyint(1) unsigned NOT NULL DEFAULT 9 COMMENT '0:정상,1:휴식,2:회의,3:콜집중,5:퇴근,9:기타',
   `profile_image_id` bigint(5) unsigned DEFAULT NULL COMMENT '파일첨부 id(file_attach table)',
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
@@ -335,6 +335,7 @@ CREATE TABLE IF NOT EXISTS `room_speaker` (
   `read_last_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '마지막 읽은 메시지 id(chat_message table)',
   `old_last_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '이전 마지막 읽은 메시지(chat_message table) : 사용하지 않음',
   `is_alarm` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'alarm off 여부 : 사용하지 않음',
+  `is_customer` tinyint(1) NOT NULL DEFAULT 1 COMMENT '고객여부',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- company_id, speaker_id, room_id, read_last_message_id, old_last_message_id
@@ -366,12 +367,12 @@ INSERT INTO company (id, create_date, update_date, name, tel_number, homepage, f
     FROM comp;
 
 -- member
-INSERT INTO member (id, create_date, update_date, company_id, auth_level, employee_number, state, profile_image_id, speaker_id)
+INSERT INTO member (id, create_date, update_date, company_id, auth_level, login_name, state, profile_image_id, speaker_id)
     SELECT id, createdate, workdate, CONCAT(cid, ''), auth, empno, state, profileimg, speaker
 FROM Emp;
 
 update member
-  join Emp on Emp.empno = member.employee_number
+  join Emp on Emp.empno = member.login_name
    set member.speaker_id = Emp.speaker;
 
 update member
@@ -481,9 +482,19 @@ SELECT id, createdate, workdate, CONCAT(cid, ''), space, speaker, mtype, 0, sysm
 FROM speak;
 
 -- room_speaker
-INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm)
-SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm
-FROM spacespeaker;
+INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
+SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 1
+FROM spacespeaker
+where spacename is not null;
+
+INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
+SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 0
+FROM spacespeaker
+where spacename is null;
+
+update room_speaker m
+  join speaker2 s on m.speaker_id = s.id
+   set m.is_customer = s.is_customer;
 
 -- message_read
 INSERT INTO message_read (create_date, update_date, read_date, company_id, room_id, message_id, speaker_id)
@@ -609,7 +620,7 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
  ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
  CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id,speaker_id);
 
- -- 
+ -- message_read
  ALTER TABLE message_read ADD CONSTRAINT message_read_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
  ALTER TABLE message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
  ALTER TABLE message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES chat_message(id);
@@ -622,23 +633,12 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 
 /*
 
-   migration check query
+   -- smigration check query
    select sub.read_last_message_id
     from (
     select read_last_message_id
     from room_speaker) sub
     where sub.read_last_message_id not in(select id from chat_message)
-
-*/
-
-/*
-
-  spacename is null
-
-  select *
-from room_speaker inner join speaker2 on room_speaker.speaker_id = speaker2.id
-where room_id = 7 and is_customer = 1
-
 
 */
 
@@ -657,9 +657,9 @@ UPDATE message_read
     SET read_date = now()
   WHERE room_id = :room_id AND speaker_id = :speaker_id AND id <= IFNULL(:message_id, 0);
 
-    -- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
-    UPDATE room_speaker
-        SET old_last_message_id = read_last_message_id, read_last_message_id = v_max_message_id
-      WHERE room_id = _room_id and speaker_id = _speaker_id;
+-- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
+UPDATE room_speaker
+    SET old_last_message_id = read_last_message_id, read_last_message_id = v_max_message_id
+  WHERE room_id = _room_id and speaker_id = _speaker_id;
 
 */

@@ -5,14 +5,14 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 
-router.get('/:queryName', function (req, res, next) {
+router.get('/:queryId', function (req, res, next) {
   let queryParameter = req.query;
-  let queryName = req.params.queryName;
+  let queryId = req.params.queryId;
   dbService
-    .selectQueryById(queryName, queryParameter)
+    .selectQueryById(queryId, queryParameter)
     .then((result) => {
       let responseResult = result;
-      if (queryName.indexOf('get') !== -1) {
+      if (queryId.indexOf('get') !== -1) {
         responseResult = result[0];
       }
       res.send(responseResult);
