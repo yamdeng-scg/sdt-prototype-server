@@ -488,6 +488,10 @@ SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 0
 FROM spacespeaker
 where spacename is null;
 
+update room_speaker m
+  join speaker2 s on m.speaker_id = s.id
+   set m.is_customer = s.is_customer;
+
 -- message_read
 INSERT INTO message_read (create_date, update_date, read_date, company_id, room_id, message_id, speaker_id)
 SELECT speak.createdate, speak.workdate, speak.workdate, '1', speak.space, speak.id, SpaceSpeaker.speaker
@@ -625,23 +629,12 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
 
 /*
 
-   migration check query
+   -- smigration check query
    select sub.read_last_message_id
     from (
     select read_last_message_id
     from room_speaker) sub
     where sub.read_last_message_id not in(select id from chat_message)
-
-*/
-
-/*
-
-  spacename is null
-
-  select *
-from room_speaker inner join speaker2 on room_speaker.speaker_id = speaker2.id
-where room_id = 7 and is_customer = 1
-
 
 */
 
@@ -660,9 +653,9 @@ UPDATE message_read
     SET read_date = now()
   WHERE room_id = :room_id AND speaker_id = :speaker_id AND id <= IFNULL(:message_id, 0);
 
-    -- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
-    UPDATE room_speaker
-        SET old_last_message_id = read_last_message_id, read_last_message_id = v_max_message_id
-      WHERE room_id = _room_id and speaker_id = _speaker_id;
+-- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
+UPDATE room_speaker
+    SET old_last_message_id = read_last_message_id, read_last_message_id = v_max_message_id
+  WHERE room_id = _room_id and speaker_id = _speaker_id;
 
 */
