@@ -5,11 +5,11 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 
-router.post('/:queryName', function (req, res, next) {
+router.post('/:queryId', function (req, res, next) {
   let jsonBody = Object.assign({}, req.body);
-  let queryName = req.params.queryName;
+  let queryId = req.params.queryId;
   dbService
-    .executeQueryById(queryName, jsonBody)
+    .executeQueryById(queryId, jsonBody)
     .then((result) => {
       res.send(result);
     })

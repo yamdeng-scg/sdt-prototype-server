@@ -4,22 +4,23 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const queryIdPrefix = 'room.';
 
 /*
 
-1.현재시간 방 통계 정보
+1.현재 시간 방 통계 정보
  : /?query=getCurrentTimeStats GET
 
-2.진행중인 방 정보
+2.진행인 방 목록
  : /?query=findIngState GET
 
-3.대기를 기다리고 있는 방 목록
+3.대기인 방 목록
  : /?query=findReadyState GET
 
-4.상태가 종료인 방 검색
+4.종료인 방 검색
  : /?query=findSearchCloseState GET
 
-5.상태이전 상담 목록
+(roomJoinHistory) 5.이전 상담 검색
   : /?query=findSearchJoinHistory GET
 
 6.방 종료
@@ -48,15 +49,79 @@ const errorRouteHandler = require('../error/routeHandler');
 
 */
 
+/*
+
+  1.현재 시간 방 통계 정보
+     : /?query=getCurrentTimeStats GET
+
+  2.진행인 방 목록
+    : /:id GET
+
+
+
+    1.현재 시간 방 통계 정보
+ : /?query=getCurrentTimeStats GET
+
+2.진행인 방 목록
+ : /?query=findIngState GET
+
+3.대기인 방 목록
+ : /?query=findReadyState GET
+
+4.종료인 방 검색
+ : /?query=findSearchCloseState GET
+ */
+
+/*
+
+  1.현재 시간 방 통계 정보 : getCurrentTimeStats
+
+  2.진행인 방 목록 : findIngState
+
+  3.대기인 방 목록 : findReadyState
+
+  4.종료인 방 검색 : findSearchCloseState
+
+
+*/
+
+router.get('/', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let queryIdParam = paramObject.queryId;
+  let queryId = queryIdParam;
+  if (queryId) {
+    queryId = queryIdPrefix + queryId;
+    dbService
+      .selectQueryById(queryId, paramObject)
+      .then((result) => {
+        let responseResult = result;
+        if (queryIdParam.indexOf('get') === 0) {
+          responseResult = result[0];
+        }
+        res.send(responseResult);
+      })
+      .catch(errorRouteHandler(next));
+  } else {
+    dbService
+      .select('wise_say')
+      .then((result) => {
+        res.send(result);
+      })
+      .catch(errorRouteHandler(next));
+  }
+});
+
+// 이하
+
 // 명언 등록 or command
 // 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
 router.post('/', function (req, res, next) {
   let jsonBody = Object.assign({}, req.body);
   let queryParameter = req.query;
-  let queryName = queryParameter.queryName;
-  if (queryName) {
+  let queryId = queryParameter.queryId;
+  if (queryId) {
     dbService
-      .executeQueryById(queryName, jsonBody)
+      .executeQueryById(queryId, jsonBody)
       .then((result) => {
         res.send(result);
       })
@@ -129,13 +194,13 @@ router.delete('/:id', function (req, res, next) {
 // 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
 router.get('/', function (req, res, next) {
   let queryParameter = req.query;
-  let queryName = queryParameter.queryName;
-  if (queryName) {
+  let queryId = queryParameter.queryId;
+  if (queryId) {
     dbService
-      .selectQueryById(queryName, queryParameter)
+      .selectQueryById(queryId, queryParameter)
       .then((result) => {
         let responseResult = result;
-        if (queryName === 'getWiseSay') {
+        if (queryId === 'getWiseSay') {
           responseResult = result[0];
         }
         res.send(responseResult);

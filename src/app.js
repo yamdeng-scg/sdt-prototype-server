@@ -7,20 +7,16 @@ const compress = require('compression');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const favicon = require('serve-favicon');
-// const authRoute = require('./routes/auth');
-// const autoDiscoveryRoute = require('./routes/autoDiscovery');
-// const channel1Route = require('./routes/channel1');
-// const channel2Route = require('./routes/channel2');
-// const customDeviceRoute = require('./routes/customDevice');
-// const deviceRoute = require('./routes/device');
-// const gatewayRoute = require('./routes/gateway');
-// const cameraRoute = require('./routes/camera');
+const authRoute = require('./route/auth');
+const companyRoute = require('./route/company');
 const applicationRoute = require('./route/application');
 const searchQueryRoute = require('./route/searchQuery');
 const executeQueryRoute = require('./route/executeQuery');
 const restCommonRoute = require('./route/restCommon');
 const wiseSayRoute = require('./route/wiseSay');
+const roomRoute = require('./route/room');
 const errorMiddleware = require('./middleware/error');
+const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
 const appInit = require('./init');
 appInit(app);
@@ -34,20 +30,16 @@ app
   .use(cors())
   .use(favicon(__dirname + '/../public/favicon.ico'));
 
+app.use(authMiddleware);
 app.use(loggerMiddleware);
-// app.use(CONFIG.API_PREFIX_URL, authRoute);
-// app.use(CONFIG.API_PREFIX_URL + '/autoDiscovery', autoDiscoveryRoute);
-// app.use(CONFIG.API_PREFIX_URL + '/channel1', channel1Route);
-// app.use(CONFIG.API_PREFIX_URL + '/channel2', channel2Route);
-// app.use(CONFIG.API_PREFIX_URL + '/customDevice', customDeviceRoute);
-// app.use(CONFIG.API_PREFIX_URL + '/device', deviceRoute);
-// app.use(CONFIG.API_PREFIX_URL + '/gateway', gatewayRoute);
+app.use('/auth', authRoute);
+app.use(CONFIG.API_PREFIX_URL + '/company', companyRoute);
 app.use(CONFIG.API_PREFIX_URL + '/application', applicationRoute);
 app.use(CONFIG.API_PREFIX_URL + '/search-query', searchQueryRoute);
 app.use(CONFIG.API_PREFIX_URL + '/execute-query', executeQueryRoute);
 app.use(CONFIG.API_PREFIX_URL + '/rest-common', restCommonRoute);
 app.use(CONFIG.API_PREFIX_URL + '/wise-say', wiseSayRoute);
-// app.use(CONFIG.API_PREFIX_URL + '/camera', cameraRoute);
+app.use(CONFIG.API_PREFIX_URL + '/room', roomRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)
