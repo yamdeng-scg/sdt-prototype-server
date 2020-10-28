@@ -4,7 +4,7 @@ DELIMITER //
 
 CREATE OR REPLACE PROCEDURE regist_member(
 	IN _company_id VARCHAR(255),
-	IN _employee_number VARCHAR(255),
+	IN _login_id VARCHAR(255),
 	IN _name VARCHAR(255),
   IN _auth_level INT
 ) BEGIN
@@ -14,7 +14,7 @@ CREATE OR REPLACE PROCEDURE regist_member(
           기능명 : 회원 로그인(상담사 로그인)
           매개변수
 			     -회사 id : _company_id VARCHAR(255)
-           -직원번호 : _employee_number VARCHAR(255)
+           -직원번호 : _login_id VARCHAR(255)
            -이름 : _name VARCHAR(255)
 
         */
@@ -23,7 +23,7 @@ CREATE OR REPLACE PROCEDURE regist_member(
 
         -- 기존 등록된 회원 조회
         SELECT id, speaker_id INTO v_member_id, v_speaker_id
-		      FROM member WHERE company_id = _company_id AND employee_number = _employee_number;
+		      FROM member WHERE company_id = _company_id AND login_id = _login_id;
 
         -- 회원 존재 여부에 따라 분기
         IF v_member_id IS NULL THEN
@@ -31,7 +31,7 @@ CREATE OR REPLACE PROCEDURE regist_member(
             INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 0);
             SET v_speaker_id = LAST_INSERT_ID();
             
-            INSERT INTO member(company_id, speaker_id, employee_number, name, auth_level) VALUES(_cid, v_speakerid, _employee_number, _name, _auth_level);
+            INSERT INTO member(company_id, speaker_id, login_id, name, auth_level) VALUES(_cid, v_speakerid, _login_id, _name, _auth_level);
         ELSE
             -- 회원이 존재하면 member, speaker 테이블의 이름 값 컬럼을 update
             UPDATE member
