@@ -335,6 +335,7 @@ CREATE TABLE IF NOT EXISTS `room_speaker` (
   `read_last_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '마지막 읽은 메시지 id(chat_message table)',
   `old_last_message_id` bigint(5) unsigned DEFAULT NULL COMMENT '이전 마지막 읽은 메시지(chat_message table) : 사용하지 않음',
   `is_alarm` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'alarm off 여부 : 사용하지 않음',
+  `is_customer` tinyint(1) NOT NULL DEFAULT 1 COMMENT '고객여부',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- company_id, speaker_id, room_id, read_last_message_id, old_last_message_id
@@ -477,9 +478,15 @@ SELECT id, createdate, workdate, CONCAT(cid, ''), space, speaker, mtype, 0, sysm
 FROM speak;
 
 -- room_speaker
-INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm)
-SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm
-FROM spacespeaker;
+INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
+SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 1
+FROM spacespeaker
+where spacename is not null;
+
+INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
+SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 0
+FROM spacespeaker
+where spacename is null;
 
 -- message_read
 INSERT INTO message_read (create_date, update_date, read_date, company_id, room_id, message_id, speaker_id)
@@ -605,7 +612,7 @@ FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
  ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
  CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id,speaker_id);
 
- -- 
+ -- message_read
  ALTER TABLE message_read ADD CONSTRAINT message_read_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
  ALTER TABLE message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
  ALTER TABLE message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES chat_message(id);

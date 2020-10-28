@@ -95,8 +95,8 @@ CREATE OR REPLACE PROCEDURE regist_customer(
             INSERT INTO room(company_id, state, name) VALUES(_company_id, 2, _name);
             SET v_room_id = LAST_INSERT_ID();
 
-            INSERT INTO room_speaker(company_id, room_id, speaker_id) VALUES(_company_id, v_room_id, v_speaker_id);
-            INSERT INTO customer_company(company_id, customer_id, speaker_id, room_id) VALUES(_company_id, v_customer_id, v_speaker_id, v_room_id);
+            INSERT INTO room_speaker(room_id, speaker_id, is_customer) VALUES(_company_id, v_room_id, v_speaker_id, 1);
+            INSERT INTO customer_company(company_id, customer_id, speaker_id, room_id) VALUES(v_customer_id, v_speaker_id, v_room_id);
         ELSE
             -- 등록된 고객이 존재하는 경우
             IF v_customer_company_id IS NULL THEN
@@ -113,7 +113,7 @@ CREATE OR REPLACE PROCEDURE regist_customer(
               INSERT INTO room(company_id, state, name) VALUES(_company_id, 2, _name);
               SET v_room_id = LAST_INSERT_ID();
 
-              INSERT INTO room_speaker(company_id, room_id, speaker_id) VALUES(_company_id, v_room_id, v_speaker_id);
+              INSERT INTO room_speaker(room_id, speaker_id, is_customer) VALUES(v_room_id, v_speaker_id, 1);
               INSERT INTO customer_company(company_id, customer_id, speaker_id, room_id) VALUES(_company_id, v_customer_id, v_speaker_id, v_room_id);
             ELSE
               -- 고객의 회사별 상세 정보가 존재하는 경우 : customer, speaker 테이블 update
@@ -150,6 +150,7 @@ CREATE OR REPLACE PROCEDURE join_room(
         DECLARE v_read_last_message_id INT;
         DECLARE v_room_speaker_id INT;
         DECLARE v_chatid INT;
+        DECLARE v_is_coustomer INT;
 
         -- 가장 최근에 작성된 message max id
         SELECT MAX(id) INTO v_max_message_id 
@@ -161,11 +162,16 @@ CREATE OR REPLACE PROCEDURE join_room(
           FROM room_speaker 
          WHERE room_id = _room_id AND speaker_id = _speaker_id;
 
+        -- 메시지 사용자의 고객 여부 정보 가져오기 
+        SELECT is_customer INTO v_is_coustomer
+          FROM speaker2
+         WHERE speaker_id = _speaker_id;
+
         -- 방에 사용자가 정보가 존재하는 지에 따라 분기
         IF v_room_speaker_id IS NULL THEN
             -- 방에 사용자가 정보가 존재하지 않은 경우 : room_speaker 테이블 insert
-            INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id)
-                VALUES(_room_id, _speaker_id, v_max_message_id);
+            INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_coustomer)
+                VALUES(_room_id, _speaker_id, v_max_message_id, v_is_coustomer);
             SET v_room_speaker_id = LAST_INSERT_ID();
         ELSE
             -- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
