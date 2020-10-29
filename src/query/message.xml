@@ -23,6 +23,14 @@
 			WHERE  room_id = :roomId 
 						AND id BETWEEN :startId AND :endId
 	</query>
+	<query id="findRangeByIdNotAdminType">
+    SELECT * 
+			FROM   chat_messaage 
+			WHERE  room_id = :roomId
+			AND    id BETWEEN :startId AND :endId 
+			AND    is_system_message = 0 
+			AND    message_admin_type = 0
+	</query>
 	<query id="findByRoomIdToSpeaker">
 		<![CDATA[
 			SELECT 
@@ -121,5 +129,21 @@
 	</query>
 	<query id="create">
     CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail) 
+	</query>
+	<query id="getReadCountByMessageId">
+		SELECT COUNT(id) AS readCount 
+			FROM   message_read 
+			WHERE  message_id = :id
+				AND read_date IS NOT NULL 
+	</query>
+	<query id="delete">
+    DELETE 
+      FROM chat_messaage
+    WHERE id = :id
+	</query>
+	<query id="deleteMessageRead">
+    DELETE 
+      FROM message_read
+    WHERE message_id = :id
 	</query>
 </querys>

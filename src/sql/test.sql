@@ -1,9 +1,10 @@
 SELECT 
-  ing_room.*, 
-  chat_message.id AS last_message_id, 
-  chat_message.message AS last_message, 
-  chat_message.create_date AS last_message_create_date, 
-  v_customer.name AS customer_name 
+    sub_room.*, 
+    chat_message.id AS last_message_id, 
+    chat_message.message AS last_message, 
+    chat_message.create_date AS last_message_create_date, 
+    v_customer.name AS customer_name,
+    TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute
 FROM 
   (
     SELECT 
@@ -36,9 +37,10 @@ FROM
         WHERE 
           room_id = r.id 
           AND speaker2.is_customer = 1
-      ) AS customer_speaker_id 
+      ) AS customer_speaker_id,
+      mb.name as member_name
     FROM 
-      room r 
+      room r
       INNER JOIN (
         SELECT 
           DISTINCT(room_id), 
@@ -46,23 +48,25 @@ FROM
         FROM 
           chat_message 
         WHERE 
-          is_system_message = 0 
+          is_system_message = 0
+          AND message_admin_type = 0 
           AND message LIKE concat('%', :message, '%')
-      ) messasge_search ON r.id = messasge_search.message_search_room_id 
+      ) messasge_search ON r.id = messasge_search.message_search_room_id
+      LEFT OUTER JOIN member mb ON r.last_member_id = mb.id
+                      AND mb.name LIKE concat('%', :memberName, '%')
     WHERE 
-      company_id = :companyId 
-      AND state < 2 
+      r.company_id = :companyId 
+      AND r.state = 8
       AND (
-        CASE WHEN : memberId is null THEN 1 = 1 ELSE last_member_id = :memberId END
+        CASE WHEN :memberId IS NULL THEN 1 = 1 ELSE last_member_id = :memberId END
       ) 
       AND date_format(end_date, '%Y-%m-%d') BETWEEN :startDate 
-      and :endDate
-  ) AS ing_room 
-  LEFT OUTER JOIN chat_message ON ing_room.recent_message_id = chat_message.id 
-  INNER JOIN v_customer ON ing_room.customer_speaker_id = v_customer.speaker_id 
+      AND :endDate
+  ) AS sub_room 
+  LEFT OUTER JOIN chat_message ON sub_room.recent_message_id = chat_message.id 
+  INNER JOIN v_customer ON sub_room.customer_speaker_id = v_customer.speaker_id 
 WHERE 
   v_customer.company_id = :companyId
   AND v_customer.name LIKE concat('%', :customerName, '%')
 ORDER BY 
-  ing_room.state, 
   last_message_create_date DESC

@@ -5,36 +5,13 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const Constant = require('../config/constant');
+const AppError = require('../error/AppError');
 const queryIdPrefix = 'room.';
 
 /*
 
-1.현재 시간 방 통계 정보
- : /?query=getCurrentTimeStats GET
-
-2.진행인 방 목록
- : /?query=findIngState GET
-
-3.대기인 방 목록
- : /?query=findReadyState GET
-
-4.종료인 방 검색
- : /?query=findSearchCloseState GET
-
 (roomJoinHistory) 5.이전 상담 검색
   : /?query=findSearchJoinHistory GET
-
-6.방 종료
-  : /:id/closeRoom PUT
-
-7.방 이관
-  : /:id/transfeRoom PUT
-
-8.방 이관
-  : /?query=matchRoom POST
-
-9.방 상세
- : /:id GET
 
 10.방 상세 정보(speaker id 기준)
  : /?query=getDetailBySpeakerId
@@ -52,40 +29,17 @@ const queryIdPrefix = 'room.';
 
 /*
 
-  1.현재 시간 방 통계 정보
-     : /?query=getCurrentTimeStats GET
-
-  2.진행인 방 목록
-    : /:id GET
-
-
-
-    1.현재 시간 방 통계 정보
- : /?query=getCurrentTimeStats GET
-
-2.진행인 방 목록
- : /?query=findIngState GET
-
-3.대기인 방 목록
- : /?query=findReadyState GET
-
-4.종료인 방 검색
- : /?query=findSearchCloseState GET
- */
-
-/*
-
+  방 조회
+  
   1.현재 시간 방 통계 정보 : getCurrentTimeStats
 
   2.진행인 방 목록 : findIngState
 
   3.대기인 방 목록 : findReadyState
 
-  4.종료인 방 검색 : findSearchCloseState
-
+  4.종료인 방 검색 : findSearchCloseStateㄴ
 
 */
-
 router.get('/', function (req, res, next) {
   let paramObject = req.paramObject;
   let queryId = paramObject.queryId;
@@ -98,16 +52,6 @@ router.get('/', function (req, res, next) {
       paramObject.sort = 'end_date desc';
     }
   }
-  // if (queryId.indexOf('findIngState') != -1) {
-  //   let checkSelf = paramObject.checkSelf;
-  //   if (checkSelf === Constant.YES) {
-  //     paramObject.memberId = paramObject.loginId;
-  //   } else if (loginProfile.authLevel < 4) {
-  //     paramObject.memberId = null;
-  //   } else {
-  //     paramObject.memberId = paramObject.loginId;
-  //   }
-  // }
   if (queryId.indexOf('State') != -1) {
     let checkSelf = paramObject.checkSelf;
     if (checkSelf === Constant.YES) {
@@ -118,7 +62,7 @@ router.get('/', function (req, res, next) {
       paramObject.memberId = paramObject.loginId;
     }
     if (paramObject.searchType === 'message') {
-      paramObject.message = '';
+      paramObject.memberName = '';
       paramObject.customerName = '';
       paramObject.message = paramObject.searchValue || '';
     } else if (paramObject.searchType === 'customer') {
@@ -139,7 +83,7 @@ router.get('/', function (req, res, next) {
     .selectQueryById(queryId, paramObject)
     .then((result) => {
       let responseResult = result;
-      if (queryId.indexOf('get') === 0) {
+      if (queryId.indexOf('get') !== -1) {
         responseResult = result[0];
       }
       res.send(responseResult);
@@ -147,7 +91,89 @@ router.get('/', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// 이하
+// 방 상세
+router.get('/:id', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = { id: id };
+  let queryId = queryIdPrefix + 'getDetail';
+  dbService
+    .selectQueryById(queryId, paramObject)
+    .then((data) => {
+      res.send(data[0]);
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 방 상담사 매칭시키기
+router.post('/:id/matchRoom', function (req, res, next) {
+  let paramObject = req.paramObject;
+  paramObject.memberId = paramObject.loginId;
+  const id = req.params.id;
+  paramObject.roomId = id;
+  dbService
+    .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
+    .then((result) => {
+      let roomInfo = result[0];
+      if (roomInfo.memberId !== null) {
+        throw new AppError('이미 상담중인 방입니다.');
+      } else {
+        dbService
+          .executeQueryById(queryIdPrefix + 'matchRoom', paramObject)
+          .then(() => {
+            dbService
+              .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
+              .then((result) => {
+                let roomInfo = result[0];
+                res.send(roomInfo);
+              });
+          })
+          .catch(errorRouteHandler(next));
+      }
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 방 종료
+router.post('/:id/closeRoom', function (req, res, next) {
+  let paramObject = req.paramObject;
+  const id = req.params.id;
+  dbService
+    .executeQueryById(queryIdPrefix + 'closeRoom', {
+      roomId: id,
+      loginId: paramObject.loginId
+    })
+    .then(() => {
+      dbService
+        .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
+        .then((result) => {
+          let roomInfo = result[0];
+          res.send(roomInfo);
+        });
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 방 이관
+router.post('/:id/transferRoom', function (req, res, next) {
+  let paramObject = req.paramObject;
+  const id = req.params.id;
+  dbService
+    .executeQueryById(queryIdPrefix + 'transferRoom', {
+      type: paramObject.type,
+      memberId: paramObject.memberId,
+      roomId: id,
+      loginId: paramObject.loginId
+    })
+    .then(() => {
+      dbService
+        .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
+        .then((result) => {
+          let roomInfo = result[0];
+          res.send(roomInfo);
+        });
+    })
+    .catch(errorRouteHandler(next));
+});
 
 // 명언 등록 or command
 // 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
