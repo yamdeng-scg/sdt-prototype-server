@@ -16,7 +16,12 @@ const changeKeyToCamelCase = function (paramObject) {
   let convertParam = {};
   let paramKeys = _.keys(paramObject);
   paramKeys.forEach((paramKey) => {
-    convertParam[_.camelCase(paramKey)] = paramObject[paramKey];
+    // json 컬럼일 경우 parse 해서 던져주기
+    if (paramKey.indexOf('json') !== -1) {
+      convertParam[_.camelCase(paramKey)] = JSON.parse(paramObject[paramKey]);
+    } else {
+      convertParam[_.camelCase(paramKey)] = paramObject[paramKey];
+    }
   });
   return convertParam;
 };

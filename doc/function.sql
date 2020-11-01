@@ -261,7 +261,7 @@ DELIMITER ;
 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE transfer_room(
-  IN _type INT,
+  IN _transfertype VARCHAR(20),
 	IN _room_id INT,
   IN _member_id INT,
   IN _login_id INT
@@ -270,7 +270,7 @@ CREATE OR REPLACE PROCEDURE transfer_room(
           
           기능명 : 방 이관 시키기
           매개변수
-           -이관 타입 : _type INT(1:접수대기로 이동, 2:특정 상담사로 이관)
+           -이관 타입 : _transfertype VARCHAR(20)(ready:접수대기로 이동, toMember:특정 상담사로 이관)
 			     -방 id : _room_id INT
            -상담사 id : _member_id INT
 
@@ -286,8 +286,8 @@ CREATE OR REPLACE PROCEDURE transfer_room(
                         FROM room
                       WHERE id = _room_id);
 
-        -- 이관 유형에 따라 분기(1:접수대기로 이관, 2:지정한 상담사에게 이관)
-        IF _type = 1 THEN
+        -- 이관 유형에 따라 분기(ready:접수대기로 이관, toMember:지정한 상담사에게 이관)
+        IF _transfertype = 'ready' THEN
             -- 접수대기로 이관인 경우
             -- 방의 이전 사용자 정보 삭제
             DELETE 

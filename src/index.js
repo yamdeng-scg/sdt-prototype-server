@@ -16,8 +16,26 @@ try {
   process.exit(-1);
 }
 
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+
 app.listen(serverListenPort, () => {
   logger.info('Sdt Prototype Server ' + serverListenPort);
+});
+
+// socket.io event listen
+io.on('connection', (socket) => {
+  console.log('connection socket : ' + socket);
+  socket.emit('connection_success', 'socket connected!!');
+
+  socket.on('chat message', (msg) => {
+    console.log('message : ' + msg);
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
 });
 
 // 전역 promise 오류(reject) catch

@@ -506,7 +506,7 @@
     CALL close_room(:roomId, :loginId) 
 	</query>
 	<query id="transferRoom">
-    CALL transfer_room(:type, :roomId, :memberId, :loginId) 
+    CALL transfer_room(:transferType, :roomId, :memberId, :loginId)
 	</query>
 	<query id="matchRoom">
     CALL match_room(:roomId, :memberId)
