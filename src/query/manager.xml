@@ -6,7 +6,7 @@
         sub.member_id, 
         sub.login_name, 
         sub.member_state, 
-        COUNT(*) AS ing_count, 
+        COUNT(1) AS ing_count, 
         SUM(CASE WHEN diff > 10 THEN 1 ELSE 0 end) AS warning_count, 
         SUM(
           CASE WHEN diff BETWEEN 5 
@@ -71,7 +71,7 @@
     <![CDATA[
       SELECT 
         member_id, 
-        COUNT(*) end_count, 
+        COUNT(1) end_count, 
         (
           SELECT 
             login_name 

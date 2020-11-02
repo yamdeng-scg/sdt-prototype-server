@@ -15,7 +15,11 @@ const executeQueryRoute = require('./route/executeQuery');
 const restCommonRoute = require('./route/restCommon');
 const wiseSayRoute = require('./route/wiseSay');
 const roomRoute = require('./route/room');
+const messageRoute = require('./route/message');
 const memberRoute = require('./route/member');
+const minwonRoute = require('./route/minwon');
+const categoryRoute = require('./route/category');
+const keywordRoute = require('./route/keyword');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -41,7 +45,11 @@ app.use(CONFIG.API_PREFIX_URL + '/execute-query', executeQueryRoute);
 app.use(CONFIG.API_PREFIX_URL + '/rest-common', restCommonRoute);
 app.use(CONFIG.API_PREFIX_URL + '/wise-say', wiseSayRoute);
 app.use(CONFIG.API_PREFIX_URL + '/room', roomRoute);
+app.use(CONFIG.API_PREFIX_URL + '/message', messageRoute);
 app.use(CONFIG.API_PREFIX_URL + '/member', memberRoute);
+app.use(CONFIG.API_PREFIX_URL + '/minwon', minwonRoute);
+app.use(CONFIG.API_PREFIX_URL + '/category', categoryRoute);
+app.use(CONFIG.API_PREFIX_URL + '/keyword', keywordRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)

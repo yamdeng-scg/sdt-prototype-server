@@ -4,6 +4,8 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const queryIdPrefix = 'category.';
+const _ = require('lodash');
 
 /*
 
@@ -56,6 +58,176 @@ const errorRouteHandler = require('../error/routeHandler');
  : /small/:id GET
 
 */
+
+// 카테고리 전체 목록
+router.get('/', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let promiseList = [];
+  let categoryLargeList = [];
+  let categoryMiddleList = [];
+  let categorySmallList = [];
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryLarge', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryLargeList = result;
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryMiddle', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryMiddleList = result;
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategorySmall', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categorySmallList = result;
+        return true;
+      })
+  );
+  Promise.all(promiseList)
+    .then(() => {
+      res.send({
+        large: categoryLargeList,
+        middle: categoryMiddleList,
+        small: categorySmallList
+      });
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 카테고리 전체 목록 : 트리 형식으로
+router.get('/tree', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let promiseList = [];
+  let categoryLargeList = [];
+  let categoryMiddleList = [];
+  let categorySmallList = [];
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryLarge', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryLargeList = result;
+        categoryLargeList.forEach((info) => {
+          info.level = 1;
+        });
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryMiddle', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryMiddleList = result;
+        categoryMiddleList.forEach((info) => {
+          info.level = 2;
+        });
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategorySmall', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categorySmallList = result;
+        categorySmallList.forEach((info) => {
+          info.level = 3;
+        });
+        return true;
+      })
+  );
+  Promise.all(promiseList)
+    .then(() => {
+      categoryMiddleList.forEach((middleInfo) => {
+        middleInfo.childs = _.filter(categorySmallList, (smallInfo) => {
+          return middleInfo.id === smallInfo.categoryMiddleId;
+        });
+      });
+      categoryLargeList.forEach((largeInfo) => {
+        largeInfo.childs = _.filter(categoryMiddleList, (middleInfo) => {
+          return largeInfo.id === middleInfo.categoryLargeId;
+        });
+      });
+      res.send(categoryLargeList);
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 대분류 목록
+router.get('/large', function (req, res, next) {
+  let paramObject = req.paramObject;
+  dbService
+    .selectQueryById(queryIdPrefix + 'findCategoryLarge', {
+      companyId: paramObject.companyId
+    })
+    .then((result) => {
+      res.send(result);
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 중분류 목록
+router.get('/middle', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let queryId = paramObject.queryId;
+  if (queryId) {
+    dbService
+      .selectQueryById(queryIdPrefix + queryId, paramObject)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch(errorRouteHandler(next));
+  } else {
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryMiddle', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        res.send(result);
+      })
+      .catch(errorRouteHandler(next));
+  }
+});
+
+// 소분류 목록
+router.get('/small', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let queryId = paramObject.queryId;
+  if (queryId) {
+    dbService
+      .selectQueryById(queryIdPrefix + queryId, paramObject)
+      .then((result) => {
+        res.send(result);
+      })
+      .catch(errorRouteHandler(next));
+  } else {
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategorySmall', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        res.send(result);
+      })
+      .catch(errorRouteHandler(next));
+  }
+});
 
 // 명언 등록 or command
 // 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent

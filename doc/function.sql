@@ -428,7 +428,7 @@ BEGIN
         DECLARE v_room_state TINYINT(1);
 			
 			  -- room_speaker count 조회
-        SELECT COUNT(*) INTO v_speaker_count
+        SELECT COUNT(1) INTO v_speaker_count
           FROM room_speaker
          WHERE room_id = _room_id;
 

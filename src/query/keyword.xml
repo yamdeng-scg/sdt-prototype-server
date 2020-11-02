@@ -14,4 +14,10 @@
     FROM keyword2
     WHERE  id = :id
   </query>
+  <query id="getByName">
+    SELECT *
+    FROM keyword2
+    WHERE  company_id = :companyId
+      AND name = :name
+  </query>
 </querys>

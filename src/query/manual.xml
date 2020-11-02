@@ -52,7 +52,7 @@
 	<query id="findSearchCount">
 		<![CDATA[
 			SELECT 
-				count(*) as total_count
+				COUNT(1) as total_count
 			FROM 
 				manual m 
 				LEFT OUTER JOIN manual_favorite f ON m.id = f.manual_id 

@@ -28,7 +28,9 @@ module.exports = function hanlder(req, res, next) {
           companyId: loginProfile.companyId,
           loginSpeakerId: loginProfile.speakerId,
           updateMemberId: loginProfile.id,
-          createMemberId: loginProfile.id
+          createMemberId: loginProfile.id,
+          employeeNumber: loginProfile.loginName,
+          loginName: loginProfile.name
         };
         paramObject = Object.assign(paramObject, profileCommonParam);
       }

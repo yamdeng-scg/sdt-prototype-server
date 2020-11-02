@@ -26,4 +26,10 @@ config.db = {
   database: 'sdtprototype'
 };
 
+// 메시지 조회 기간
+config.DEFAULT_MESSAGE_INTERVAL_DAY = 1500;
+
+// 더보기 메시지 size
+config.DEFAULT_MESSAGE_MORE_PAGE_SIZE = 30;
+
 module.exports = config;

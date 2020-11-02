@@ -1,27 +1,54 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
-	<query id="findByRoomId">
+	<query id="findByRoomIdAll">
 		<![CDATA[
-			SELECT * 
-				FROM   (SELECT r.join_message_id, 
-											m.*, 
-											IFNULL(s.is_customer, 0) 
-								FROM   v_room r 
-											INNER JOIN chat_message m 
-															ON r.id = m.room_id 
-											LEFT OUTER JOIN speaker2 s 
-																		ON m.speaker_id = s.id 
-								WHERE  r.id = :roomId
-											AND m.id >= r.join_message_id 
-								ORDER  BY m.id DESC) sub 
-				ORDER  BY sub.id 
+			SELECT
+				r.join_message_id,
+				m.*,
+				IFNULL(s.is_customer, 0) as is_customer,
+				(
+					SELECT
+						COUNT(1)
+					FROM
+						message_read
+					WHERE
+						message_id = m.id
+						AND read_date is null
+				) no_read_count,
+				r.name as room_name,
+				s.name as speaker_name
+			FROM
+				v_room r
+				INNER JOIN chat_message m ON r.id = m.room_id
+				LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+			WHERE
+				r.id = :roomId
+				AND m.id >= r.join_message_id
+			ORDER BY
+				m.id 
 		]]>
 	</query>
 	<query id="findRangeById">
-    SELECT * 
-			FROM   chat_message 
-			WHERE  room_id = :roomId 
-						AND id BETWEEN :startId AND :endId
+    SELECT m.*,
+				(
+					CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
+				) AS is_customer,
+				(
+					SELECT
+						COUNT(1)
+					FROM
+						message_read
+					WHERE
+						message_id = m.id
+						AND read_date is null
+				) not_read_count,
+				r.name as room_name,
+				s.name as speaker_name
+			FROM  room r 
+			INNER JOIN chat_message m ON r.id = m.room_id
+			LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+			WHERE  r.id = :roomId
+        AND m.id BETWEEN :startId AND :endId
 	</query>
 	<query id="findRangeByIdNotAdminType">
     SELECT * 
@@ -34,71 +61,83 @@
 	<query id="findByRoomIdToSpeaker">
 		<![CDATA[
 			SELECT 
-					*, 
-					(
-						CASE WHEN sub.is_employee = 1 THEN 0 ELSE 1 END
-					) AS is_customer 
-				FROM 
-					(
+				r.join_message_id, 
+				m.*,
+				(
+					CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
+				) AS is_customer,
+				(
+					SELECT
+						COUNT(1)
+					FROM
+						message_read
+					WHERE
+						message_id = m.id
+						AND read_date is null
+				) no_read_count,
+				r.name as room_name,
+				s.name as speaker_name
+			FROM 
+				room r 
+				INNER JOIN chat_message m ON r.id = m.room_id 
+				AND (
+					m.create_date > DATE_SUB(NOW(), INTERVAL :intervalDay DAY) 
+					OR m.id > (
 						SELECT 
-							r.join_message_id, 
-							m.* 
-						FROM 
-							room r 
-							INNER JOIN chat_message m ON r.id = m.room_id 
-							AND (
-								r.create_date > DATE_SUB(NOW(), INTERVAL 7 DAY) 
-								OR m.id > (
-									SELECT 
-										MIN(read_last_message_id) 
-									FROM 
-										room_speaker 
-									WHERE 
-										room_id = r.id
-								)
-							) 
+							MIN(read_last_message_id) 
+						FROM
+							room_speaker 
 						WHERE 
-							m.id = :roomId 
-							AND (
-								CASE WHEN :startId IS NULL THEN 1 = 1 ELSE m.id < :startId END
-							) 
-							AND m.message_admin_type <= IFNULL(:messageAdminType, 0) 
-						ORDER BY 
-							m.id DESC 
-						LIMIT 
-							20
-					) sub 
-				ORDER BY 
-					sub.id 
+							room_id = r.id
+					)
+				) 
+				LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+			WHERE 
+				r.id = :roomId 
+				AND (
+					CASE WHEN :startId IS NULL THEN 1 = 1 ELSE m.id < :startId END
+				) 
+				AND m.message_admin_type <= IFNULL(:messageAdminType, 0) 
+			ORDER BY 
+				m.id DESC 
+			LIMIT 
+				:pageSize
 		]]>
 	</query>
 	<query id="findByRoomIdToAdmin">
 		<![CDATA[
 			SELECT 
-				*, 
+				r.join_message_id, 
+				m.*,
 				(
-					CASE WHEN sub.is_employee = 1 THEN 0 ELSE 1 END
-				) AS is_customer
+					CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
+				) AS is_customer,
+				(
+					SELECT
+						COUNT(1)
+					FROM
+						message_read
+					WHERE
+						message_id = m.id
+						AND read_date is null
+				) no_read_count,
+				r.name as room_name,
+				s.name as speaker_name
 			FROM 
-				(
-					SELECT 
-						r.join_message_id, 
-						m.* 
-					FROM 
-						room r 
-						INNER JOIN chat_message m ON r.id = m.room_id 
-						AND m.create_date > DATE_SUB(NOW(), INTERVAL 7 day) 
-					WHERE 
-						r.id = :roomId 
-						AND m.id >= r.join_message_id 
-					ORDER BY 
-						m.id DESC
-				) sub 
+				room r 
+				INNER JOIN chat_message m ON r.id = m.room_id 
+				AND m.create_date > DATE_SUB(NOW(), INTERVAL :intervalDay DAY) 
+				LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+			WHERE 
+				r.id = :roomId 
+				AND m.id >= r.join_message_id
 			ORDER BY 
-				sub.id
+				m.id DESC 
+			LIMIT 
+				:pageSize
 		]]>
 	</query>
-	<query id="updateMesageNotReadCount">
+	<query id="updateMesageNoReadCount">
 		<![CDATA[
 			UPDATE chat_message 
 				SET    not_read_count = not_read_count - 1
@@ -138,12 +177,36 @@
 	</query>
 	<query id="delete">
     DELETE 
-      FROM chat_messaage
+      FROM chat_message
     WHERE id = :id
 	</query>
 	<query id="deleteMessageRead">
     DELETE 
       FROM message_read
     WHERE message_id = :id
+	</query>
+	<query id="getDetail">
+		SELECT
+			m.*,
+			(
+				CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
+			) AS is_customer,
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					message_read
+				WHERE
+					message_id = m.id
+					AND read_date is null
+			) not_read_count,
+			r.name as room_name,
+			s.name as speaker_name
+		FROM 
+			room r 
+			INNER JOIN chat_message m ON r.id = m.room_id
+			LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+		WHERE 
+			m.id = :id
 	</query>
 </querys>

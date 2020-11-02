@@ -12,10 +12,22 @@
       WHERE company_id = :companyId
       ORDER BY name ASC
   </query>
+  <query id="findCategoryMiddleByLargeId">
+    SELECT *
+      FROM category_middle
+      WHERE category_large_id = :largeId
+      ORDER BY name ASC
+  </query>
   <query id="findCategorySmall">
     SELECT *
-      FROM category_small
+      FROM v_category
       WHERE company_id = :companyId
+      ORDER BY name ASC
+  </query>
+  <query id="findCategorySmallByMiddleId">
+    SELECT *
+      FROM v_category
+      WHERE category_middle_id = :middleId
       ORDER BY name ASC
   </query>
   <query id="createCategoryLarge">

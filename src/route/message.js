@@ -4,130 +4,66 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const Config = require('../config/config');
+const AppError = require('../error/AppError');
+const queryIdPrefix = 'message.';
 
-/*
-
-1.채팅 메시지 목록
- : /?query=findByRoomId GET
-
-2.메시지 조회(id range)
- : /?query=findRangeById GET
-
-3.담당자 또는 고객이 보는 메시지
- : /?query=findByRoomIdToSpeaker GET
-
-4.담당자가 아닌 관리자 또는 조회자 권한이 있는 사용자가 조회시
- : /?query=findByRoomIdToAdmin GET
-
-5.메시지 읽음 처리
- : /:id/updateMesageNotReadCount PUT
-
-6.메시지 생성
- : / POST
-
-*/
-
-// 명언 등록 or command
-// 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
-router.post('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .executeQueryById(queryId, jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .insert('wise_say', jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
-});
-
-// 명언 수정
-router.put('/:id', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let id = req.params.id;
-  dbService
-    .update('wise_say', jsonBody, id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 수정 전체
-router.put('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  dbService
-    .updateAll('wise_say', jsonBody)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 상세
-router.get('/:id', function (req, res, next) {
-  let id = req.params.id;
-  dbService
-    .selectOne('wise_say', id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제(전체)
-router.delete('/', function (req, res, next) {
-  dbService
-    .deleteAll('wise_say')
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제
-router.delete('/:id', function (req, res, next) {
-  let id = req.params.id;
-  dbService
-    .delete('wise_say', id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
 router.get('/', function (req, res, next) {
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .selectQueryById(queryId, queryParameter)
-      .then((result) => {
-        let responseResult = result;
-        if (queryId === 'getWiseSay') {
-          responseResult = result[0];
-        }
-        res.send(responseResult);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .select('wise_say')
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
+  let paramObject = req.paramObject;
+  let queryId = paramObject.queryId;
+  queryId = queryIdPrefix + queryId;
+  paramObject.startId = paramObject.startId || null;
+  paramObject.endId = paramObject.endId || null;
+  paramObject.messageAdminType = paramObject.messageAdminType || null;
+  paramObject.intervalDay =
+    paramObject.intervalDay || Config.DEFAULT_MESSAGE_INTERVAL_DAY;
+  paramObject.pageSize =
+    paramObject.pageSize || Config.DEFAULT_MESSAGE_MORE_PAGE_SIZE;
+  dbService
+    .selectQueryById(queryId, paramObject)
+    .then((result) => {
+      let responseResult = result;
+      res.send(responseResult);
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 메시지 삭제
+router.delete('/:id', function (req, res, next) {
+  // getReadCountByMessageId
+  // deleteMessageRead
+  // delete
+  let id = req.params.id;
+  dbService
+    .selectQueryById(queryIdPrefix + 'getReadCountByMessageId', { id: id })
+    .then((result) => {
+      let countInfo = result[0];
+      let readCount = countInfo.readCount;
+      if (readCount < 0) {
+        throw new AppError('읽은 메시지입니다', null, 500);
+      } else {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'deleteMessageRead', {
+            id: id
+          })
+          .then(() =>
+            dbService.selectQueryById(queryIdPrefix + 'delete', {
+              id: id
+            })
+          )
+          .then(() => {
+            res.send({ success: true });
+          });
+      }
+    })
+    .catch(errorRouteHandler(next));
+
+  // dbService
+  //   .delete('wise_say', id)
+  //   .then((data) => {
+  //     res.send(data);
+  //   })
+  //   .catch(errorRouteHandler(next));
 });
 
 module.exports = router;

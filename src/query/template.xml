@@ -309,7 +309,7 @@
   <query id="findSearchCount">
     <![CDATA[
 			SELECT 
-        count(*) as total_count
+        COUNT(1) as total_count
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 

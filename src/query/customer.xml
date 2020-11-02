@@ -102,7 +102,7 @@
             AND id > read_last_message_id 
             AND is_system_message = 0 
             AND message_admin_type = 0
-        ) AS not_read_count, 
+        ) AS no_read_count, 
         vc.* 
       FROM 
         v_customer vc 

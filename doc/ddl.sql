@@ -359,6 +359,24 @@ CREATE TABLE IF NOT EXISTS `message_read` (
 -- company_id, room_id, message_id, speaker_id
 -- U : room_id, message_id, speaker_id
 
+-- minwon_history <--- new table
+CREATE TABLE IF NOT EXISTS `minwon_history` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
+  `category_small_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 소분류 id(category_small table)',
+  `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
+  `gasapp_member_number` varchar(255) NOT NULL COMMENT '가스앱 회원번호',
+  `use_contract_num` varchar(255) DEFAULT NULL COMMENT '사용계약번호',
+  `tel_number` varchar(255) DEFAULT NULL COMMENT '고객 핸드폰 번호',
+  `memo` varchar(2047) DEFAULT NULL COMMENT '메모',
+  `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id, update_member_id, category_small_id
+
 /*
 
 -- data migration query
