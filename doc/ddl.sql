@@ -377,6 +377,34 @@ CREATE TABLE IF NOT EXISTS `minwon_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- company_id, update_member_id, category_small_id
 
+-- link_menu <--- 링크 메뉴
+CREATE TABLE IF NOT EXISTS `link_menu` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
+  `name` varchar(255) NOT NULL COMMENT '링크 프로토콜(web, app, tel)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id, update_member_id
+
+-- link_detail <--- 링크 상세
+CREATE TABLE IF NOT EXISTS `link_detail` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
+  `link_protocol` varchar(255) NOT NULL COMMENT '링크 프로토콜(web, app, tel)',
+  `link_text` varchar(255) NOT NULL COMMENT '링크 text',
+  `link_url` varchar(255) DEFAULT NULL COMMENT '링크 url',
+  `enable` tinyint(1) NOT NULL DEFAULT 0 COMMENT '활성화 여부(0, 1)',
+  `menu_id` bigint(5) unsigned NOT NULL COMMENT '속해있는 메뉴 id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id, update_member_id, menu_id
+
 /*
 
 -- data migration query
@@ -649,6 +677,23 @@ ALTER TABLE message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_i
 ALTER TABLE message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES chat_message(id);
 ALTER TABLE message_read ADD CONSTRAINT message_read_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id,message_id,speaker_id);
+
+-- minwon_history
+ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
+ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES sdtprototype.category_small(id);
+
+
+-- link_menu
+ALTER TABLE link_menu ADD CONSTRAINT link_menu_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
+ALTER TABLE link_menu ADD CONSTRAINT link_menu_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+
+
+-- link_detail
+ALTER TABLE link_detail ADD CONSTRAINT link_detail_company_FK FOREIGN KEY (company_id) REFERENCES sdtprototype.company(id);
+ALTER TABLE link_detail ADD CONSTRAINT link_detail_member_FK FOREIGN KEY (update_member_id) REFERENCES sdtprototype.`member`(id);
+ALTER TABLE link_detail ADD CONSTRAINT link_detail_link_menu_FK FOREIGN KEY (menu_id) REFERENCES sdtprototype.link_menu(id);
+
 
 
 */
