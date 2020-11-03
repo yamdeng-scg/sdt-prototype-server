@@ -1,4 +1,5 @@
 SELECT *
   FROM keyword2
-  WHERE  company_id = :companyId
-    AND name = :name
+  WHERE id IN (SELECT keyword_id
+                  FROM template_keyword
+                WHERE template_id = :templateId)

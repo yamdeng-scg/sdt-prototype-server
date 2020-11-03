@@ -30,9 +30,6 @@ router.get('/', function (req, res, next) {
 
 // 메시지 삭제
 router.delete('/:id', function (req, res, next) {
-  // getReadCountByMessageId
-  // deleteMessageRead
-  // delete
   let id = req.params.id;
   dbService
     .selectQueryById(queryIdPrefix + 'getReadCountByMessageId', { id: id })
@@ -57,13 +54,6 @@ router.delete('/:id', function (req, res, next) {
       }
     })
     .catch(errorRouteHandler(next));
-
-  // dbService
-  //   .delete('wise_say', id)
-  //   .then((data) => {
-  //     res.send(data);
-  //   })
-  //   .catch(errorRouteHandler(next));
 });
 
 module.exports = router;

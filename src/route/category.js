@@ -7,58 +7,6 @@ const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'category.';
 const _ = require('lodash');
 
-/*
-
-1.전체 목록 : 3개 모두
- : / GET
-
-2.카테고리 대분류 목록
- : /large GET
-
-3.카테고리 중분류 목록
- : /middle GET
-
-4.카테고리 소분류 목록
- : /small GET
-
-5.카테고리 대분류 등록
- : /large POST
-
-6.카테고리 대분류 수정
- : /large/:id PUT
-
-7.카테고리 대분류 삭제
- : /large/:id DELETE
-
-8.카테고리 대분류 상세
- : /large/:id GET
-
-9.카테고리 중분류 등록
- : /middle POST
-
-10.카테고리 중분류 수정
- : /middle/:id PUT
-
-11.카테고리 중분류 삭제
- : /middle/:id DELETE
-
-12.카테고리 중분류 상세
- : /middle/:id GET
-
-13.카테고리 중분류 등록
- : /small POST
-
-14.카테고리 중분류 수정
- : /small/:id PUT
-
-15.카테고리 중분류 삭제
- : /small/:id DELETE
-
-16.카테고리 중분류 상세
- : /small/:id GET
-
-*/
-
 // 카테고리 전체 목록
 router.get('/', function (req, res, next) {
   let paramObject = req.paramObject;

@@ -404,7 +404,8 @@ CREATE OR REPLACE PROCEDURE make_message(
   IN _message VARCHAR(2047),
   IN _message_admin_type TINYINT,
   IN _is_employee TINYINT,
-  IN _message_detail VARCHAR(255)
+  IN _message_detail VARCHAR(255),
+  IN _template_id INT
 )
 BEGIN
 
@@ -421,6 +422,7 @@ BEGIN
            -상담자 전송 여부 : _message_admin_type TINYINT
            -메시지 사용자 유형 : _is_employee TINYINT(0:사용자, 1:상담사)
            -메시지 상세 정보(링크 상세정보) : _message_detail VARCHAR(255)
+           -템플릿 id : _template_id INT
 
         */
         DECLARE v_message_id INT;
@@ -433,8 +435,8 @@ BEGIN
          WHERE room_id = _room_id;
 
         -- message insert
-        INSERT chat_message(company_id, room_id, speaker_id, message_type, is_system_message, message, message_admin_type, is_employee, message_detail, not_read_count)
-          VALUES(_company_id, _room_id, _speaker_id, _message_type, _is_system_message, _message, _message_admin_type, _is_employee, _message_detail, (case when _message_admin_type = 1 then 0 else v_speakercnt - 1 end) );
+        INSERT chat_message(company_id, room_id, speaker_id, message_type, is_system_message, message, message_admin_type, is_employee, message_detail, template_id, not_read_count)
+          VALUES(_company_id, _room_id, _speaker_id, _message_type, _is_system_message, _message, _message_admin_type, _is_employee, _message_detail, _template_id, (case when _message_admin_type = 1 then 0 else v_speakercnt - 1 end) );
                  
         SET v_message_id = LAST_INSERT_ID();
 

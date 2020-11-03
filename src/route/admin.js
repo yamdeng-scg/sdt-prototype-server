@@ -75,7 +75,7 @@ router.post('/link-detail', function (req, res, next) {
   let dbParam = {
     updateMemberId: paramObject.updateMemberId,
     companyId: paramObject.companyId,
-    linkText: paramObject.linkUrl,
+    linkText: paramObject.linkText,
     linkProtocol: paramObject.linkProtocol,
     linkUrl: paramObject.linkUrl,
     enable: paramObject.enable,
@@ -95,7 +95,7 @@ router.put('/link-detail/:id', function (req, res, next) {
   let paramObject = req.paramObject;
   let dbParam = {
     updateMemberId: paramObject.updateMemberId,
-    linkText: paramObject.linkUrl,
+    linkText: paramObject.linkText,
     linkProtocol: paramObject.linkProtocol,
     linkUrl: paramObject.linkUrl,
     enable: paramObject.enable,

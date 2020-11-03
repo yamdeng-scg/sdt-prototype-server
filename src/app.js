@@ -21,6 +21,8 @@ const minwonRoute = require('./route/minwon');
 const categoryRoute = require('./route/category');
 const keywordRoute = require('./route/keyword');
 const adminRoute = require('./route/admin');
+const templateRoute = require('./route/template');
+const autoMessageRoute = require('./route/autoMessage');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -52,6 +54,8 @@ app.use(CONFIG.API_PREFIX_URL + '/minwon', minwonRoute);
 app.use(CONFIG.API_PREFIX_URL + '/category', categoryRoute);
 app.use(CONFIG.API_PREFIX_URL + '/keyword', keywordRoute);
 app.use(CONFIG.API_PREFIX_URL + '/admin', adminRoute);
+app.use(CONFIG.API_PREFIX_URL + '/template', templateRoute);
+app.use(CONFIG.API_PREFIX_URL + '/auto-message', autoMessageRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)

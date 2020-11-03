@@ -167,7 +167,7 @@
 		]]>
 	</query>
 	<query id="create">
-    CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail) 
+    CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail, :templateId) 
 	</query>
 	<query id="getReadCountByMessageId">
 		SELECT COUNT(id) AS readCount 

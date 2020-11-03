@@ -2,7 +2,7 @@
 <querys>
   <query id="findIdsByAI">
     SELECT 
-      vc.name AS name, 
+      vc.name AS category_small_name, 
       vc.category_large_id, 
       vc.category_large_name, 
       vc.category_middle_id, 
@@ -33,7 +33,7 @@
   <query id="findAll">
     <![CDATA[
 			SELECT 
-        vc.name AS name, 
+        vc.name AS category_small_name, 
         vc.category_large_id, 
         vc.category_large_name, 
         vc.category_middle_id, 
@@ -67,7 +67,7 @@
   <query id="findByCategoryLargeId">
     <![CDATA[
 			SELECT 
-        vc.name AS name, 
+        vc.name AS category_small_name, 
         vc.category_large_id, 
         vc.category_large_name, 
         vc.category_middle_id, 
@@ -102,7 +102,7 @@
   <query id="findByCategoryMiddleId">
     <![CDATA[
 			SELECT 
-        vc.name AS name, 
+        vc.name AS category_small_name, 
         vc.category_large_id, 
         vc.category_large_name, 
         vc.category_middle_id, 
@@ -137,7 +137,7 @@
   <query id="findByCategorySmallId">
     <![CDATA[
 			SELECT 
-        vc.name AS name, 
+        vc.name AS category_small_name, 
         vc.category_large_id, 
         vc.category_large_name, 
         vc.category_middle_id, 
@@ -171,7 +171,7 @@
   </query>
   <query id="findByFavoriteLoginMemberId">
     SELECT 
-      vc.name AS name, 
+      vc.name AS category_small_name, 
       vc.category_large_id, 
       vc.category_large_name, 
       vc.category_middle_id, 
@@ -200,7 +200,7 @@
   <query id="findSearch">
     <![CDATA[
 			SELECT 
-        vc.name AS name, 
+        vc.name AS category_small_name, 
         vc.category_large_id, 
         vc.category_large_name, 
         vc.category_middle_id, 
@@ -394,12 +394,16 @@
 		]]>
   </query>
   <query id="create">
-    INSERT INTO template2 (company_id, category_small_id, ask, reply, link, image_path, image_name, member_id, update_member_id)
-              VALUES (:companyId, :categorySmallId, :ask, :reply, :link, :imagePath, :imageName, :loginId, :loginId)
+    INSERT INTO template2 (company_id, category_small_id, ask, reply, link, link_protocol, image_path, image_name, member_id, update_member_id)
+              VALUES (:companyId, :categorySmallId, :ask, :reply, :link, :linkProtocol, :imagePath, :imageName, :loginId, :loginId)
   </query>
   <query id="createTemplateKeyword">
     INSERT INTO template_keyword(company_id, keyword_id, template_id, update_member_id)
         VALUES (:companyId, :keywordId, :templateId, :loginId)
+  </query>
+  <query id="createTemplateFavorite">
+    INSERT INTO template_favorite(company_id, template_id, member_id)
+        VALUES (:companyId, :templateId, :loginId)
   </query>
   <query id="update">
     UPDATE 
@@ -409,7 +413,8 @@
       member_id = :loginId, 
       ask = :ask, 
       reply = :reply, 
-      link = :link, 
+      link = :link,
+      link_protocol = :linkProtocol,
       image_path = :imagePath, 
       image_name = :imageName,
       update_member_id = :loginId
@@ -429,7 +434,7 @@
   <query id="deleteFavoriteToMember">
     DELETE 
       FROM template_favorite
-    WHERE template_id = :id
+    WHERE template_id = :templateId
       AND member_id = :loginId
   </query>
   <query id="deleteFavoriteToTemplate">
@@ -441,6 +446,7 @@
     SELECT *
       FROM   auto_message
       WHERE company_id = :companyId
+  ORDER BY type ASC
   </query>
   <query id="createAutoMessage">
     INSERT INTO auto_message(company_id, type, message, update_member_id)
@@ -463,11 +469,20 @@
           vc.category_middle_id   AS category_middle_id, 
           vc.category_large_name  AS category_large_name, 
           vc.category_middle_name AS category_middle_name, 
-          t.*
+          t.*,
+          (
+            SELECT GROUP_CONCAT(keyword_id)
+                FROM template_keyword
+            WHERE template_id = t.id
+          ) AS keywordIds,
+          (SELECT COUNT(1)
+            FROM template_favorite
+           WHERE template_id = t.id
+             AND member_id = :loginId) as is_favorite
     FROM   template2 t 
           LEFT OUTER JOIN v_category vc 
                         ON t.category_small_id = vc.id 
-    WHERE  t.id = :id 
+    WHERE  t.id = :id
   </query>
   <query id="getTemplateKeyword">
     SELECT *
@@ -494,5 +509,10 @@
             AND type = 2
       ORDER  BY RAND() 
       LIMIT  1
+  </query>
+  <query id="deleteTemplateKeyword">
+    DELETE
+      FROM template_keyword
+    WHERE template_id = :templateId 
   </query>
 </querys>
