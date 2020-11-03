@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS `category_large` (
   `name` varchar(255) DEFAULT NULL COMMENT '카테고리명',
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
+  `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id, company_id
@@ -63,6 +64,7 @@ CREATE TABLE IF NOT EXISTS `category_middle` (
   `category_large_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_large table)',
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
+  `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id, company_id, category_large_id
@@ -79,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `category_small` (
   `category_middle_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 대분류 id(category_middle table)',
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
+  `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- update_member_id, company_id, category_middle_id
@@ -443,18 +446,18 @@ update member
    set member.name = Speaker.name;
 
 -- category_large
-INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name)
-    SELECT id, createdate, workdate, CONCAT(cid, ''), name,  mwcode, mwname
+INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name, sort_index)
+    SELECT id, createdate, workdate, CONCAT(cid, ''), name,  mwcode, mwname, id
     FROM catelg;
 
 -- category_middle
-INSERT INTO category_middle (id, create_date, update_date, company_id, category_large_id,  name, minwon_code, minwon_name)
-    SELECT id, createdate, workdate, CONCAT(cid, ''), catelg, name,  mwcode, mwname
+INSERT INTO category_middle (id, create_date, update_date, company_id, category_large_id,  name, minwon_code, minwon_name, sort_index)
+    SELECT id, createdate, workdate, CONCAT(cid, ''), catelg, name,  mwcode, mwname, id
     FROM catemd;
 
 -- category_small
-INSERT INTO category_small (id, create_date, update_date, company_id, category_middle_id,  name, minwon_code, minwon_name)
-    SELECT id, createdate, workdate, CONCAT(cid, ''), catemd, name,  mwcode, mwname
+INSERT INTO category_small (id, create_date, update_date, company_id, category_middle_id,  name, minwon_code, minwon_name, sort_index)
+    SELECT id, createdate, workdate, CONCAT(cid, ''), catemd, name,  mwcode, mwname, id
     FROM catesm
     where catemd != 82;
 
@@ -594,7 +597,7 @@ ALTER TABLE category_small ADD CONSTRAINT category_small_member_FK FOREIGN KEY (
 ALTER TABLE category_small ADD CONSTRAINT category_small_category_middle_FK FOREIGN KEY (category_middle_id) REFERENCES category_middle(id);
 
 -- customer2
-ALTER TABLE customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;;
+ALTER TABLE customer2 ADD CONSTRAINT customer2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE customer2 ADD CONSTRAINT customer2_speaker2_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 CREATE UNIQUE INDEX customer2_gasapp_member_number_IDX USING BTREE ON customer2 (gasapp_member_number);
 
@@ -631,7 +634,7 @@ CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (membe
 -- template2
 ALTER TABLE template2 ADD CONSTRAINT template2_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE template2 ADD CONSTRAINT template2_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
-ALTER TABLE template2 ADD CONSTRAINT template2_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
+ALTER TABLE template2 ADD CONSTRAINT template2_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
 ALTER TABLE template2 ADD CONSTRAINT template2_member_FK_1 FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 
 -- auto_message
@@ -664,7 +667,7 @@ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN K
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
-ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
+ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_2 FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 
@@ -697,7 +700,7 @@ CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id,messa
 -- minwon_history
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
-ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
+ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
 
 -- link_menu
 ALTER TABLE link_menu ADD CONSTRAINT link_menu_company_FK FOREIGN KEY (company_id) REFERENCES company(id);

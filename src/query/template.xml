@@ -16,6 +16,15 @@
         WHERE 
           tk.template_id = t.id
       ) AS keyword_ids, 
+      (
+        SELECT 
+          GROUP_CONCAT(k.name) 
+        FROM 
+          template_keyword tk 
+          INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+        WHERE 
+          tk.template_id = t.id
+      ) AS keyword_names, 
       t.*, 
       (
         CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 end
@@ -46,7 +55,16 @@
             INNER JOIN keyword2 k ON tk.keyword_id = k.id 
           WHERE 
             tk.template_id = t.id
-        ) AS keyword_ids, 
+        ) AS keyword_ids,
+        (
+          SELECT 
+            GROUP_CONCAT(k.name) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_names,
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
@@ -80,7 +98,16 @@
             INNER JOIN keyword2 k ON tk.keyword_id = k.id 
           WHERE 
             tk.template_id = t.id
-        ) AS keyword_ids, 
+        ) AS keyword_ids,
+        (
+          SELECT 
+            GROUP_CONCAT(k.name) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_names,
         t.*, 
         (
           CASE WHEN f.member_id = 1 THEN 1 ELSE 0 END
@@ -115,7 +142,16 @@
             INNER JOIN keyword2 k ON tk.keyword_id = k.id 
           WHERE 
             tk.template_id = t.id
-        ) AS keyword_ids, 
+        ) AS keyword_ids,
+        (
+          SELECT 
+            GROUP_CONCAT(k.name) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_names,
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
@@ -150,7 +186,16 @@
             INNER JOIN keyword2 k ON tk.keyword_id = k.id 
           WHERE 
             tk.template_id = t.id
-        ) AS keyword_ids, 
+        ) AS keyword_ids,
+        (
+          SELECT 
+            GROUP_CONCAT(k.name) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_names,
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
@@ -184,7 +229,16 @@
           INNER JOIN keyword2 k ON tk.keyword_id = k.id 
         WHERE 
           tk.template_id = t.id
-      ) AS keyword_ids, 
+      ) AS keyword_ids,
+      (
+        SELECT 
+          GROUP_CONCAT(k.name) 
+        FROM 
+          template_keyword tk 
+          INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+        WHERE 
+          tk.template_id = t.id
+      ) AS keyword_names,
       t.*, 
       1 AS is_favortie 
     FROM 
@@ -213,7 +267,16 @@
             INNER JOIN keyword2 k ON tk.keyword_id = k.id 
           WHERE 
             tk.template_id = t.id
-        ) AS keyword_ids, 
+        ) AS keyword_ids,
+        (
+          SELECT 
+            GROUP_CONCAT(k.name) 
+          FROM 
+            template_keyword tk 
+            INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+          WHERE 
+            tk.template_id = t.id
+        ) AS keyword_names, 
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
@@ -228,7 +291,7 @@
           CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :checkMyAdd = 1 THEN t.create_member_id = :loginId ELSE 1 = 1 END
+          CASE WHEN :checkMyAdd = 1 THEN t.member_id = :loginId ELSE 1 = 1 END
         ) 
         AND (
           CASE WHEN :categoryLargeId IS NULL THEN 1 = 1 ELSE vc.category_large_id = :categoryLargeId END
@@ -240,13 +303,13 @@
           CASE WHEN :categorySmallId IS NULL THEN 1 = 1 ELSE vc.id = :categorySmallId END
         ) 
         AND (
-          CASE WHEN :keywordType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+          CASE WHEN :searchType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+          CASE WHEN :searchType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'memberName' THEN t.member_id IN (
+          CASE WHEN :searchType = 'memberName' THEN t.member_id IN (
             SELECT 
               id 
             FROM 
@@ -256,24 +319,26 @@
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'keyword' THEN t.id IN (
+          CASE WHEN :searchType = 'keyword' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
               template_keyword 
-            WHERE 
-              keyword_id IN (
+            WHERE
+              template_keyword.company_id = :companyId
+              AND keyword_id IN (
                 SELECT 
                   id 
                 FROM 
                   keyword2 
-                WHERE 
-                  name = :searchValue
+                WHERE
+                  company_id = :companyId
+                  AND name = :searchValue
               )
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
+          CASE WHEN :searchType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
           OR t.reply LIKE CONCAT('%', :searchValue, '%') 
           OR t.member_id IN (
             SELECT 
@@ -320,7 +385,7 @@
           CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :checkMyAdd = 1 THEN t.create_member_id = :loginId ELSE 1 = 1 END
+          CASE WHEN :checkMyAdd = 1 THEN t.member_id = :loginId ELSE 1 = 1 END
         ) 
         AND (
           CASE WHEN :categoryLargeId IS NULL THEN 1 = 1 ELSE vc.category_large_id = :categoryLargeId END
@@ -332,13 +397,13 @@
           CASE WHEN :categorySmallId IS NULL THEN 1 = 1 ELSE vc.id = :categorySmallId END
         ) 
         AND (
-          CASE WHEN :keywordType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+          CASE WHEN :searchType = 'ask' THEN t.ask LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+          CASE WHEN :searchType = 'reply' THEN t.reply LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'memberName' THEN t.member_id IN (
+          CASE WHEN :searchType = 'memberName' THEN t.member_id IN (
             SELECT 
               id 
             FROM 
@@ -348,24 +413,26 @@
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'keyword' THEN t.id IN (
+          CASE WHEN :searchType = 'keyword' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
               template_keyword 
-            WHERE 
-              keyword_id IN (
+            WHERE
+              template_keyword.company_id = :companyId
+              AND keyword_id IN (
                 SELECT 
                   id 
                 FROM 
                   keyword2 
-                WHERE 
-                  name = :searchValue
+                WHERE
+                  company_id = :companyId
+                  AND name = :searchValue
               )
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :keywordType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
+          CASE WHEN :searchType = 'all' THEN t.ask LIKE CONCAT('%', :searchValue, '%') 
           OR t.reply LIKE CONCAT('%', :searchValue, '%') 
           OR t.member_id IN (
             SELECT 
@@ -397,11 +464,11 @@
     INSERT INTO template2 (company_id, category_small_id, ask, reply, link, link_protocol, image_path, image_name, member_id, update_member_id)
               VALUES (:companyId, :categorySmallId, :ask, :reply, :link, :linkProtocol, :imagePath, :imageName, :loginId, :loginId)
   </query>
-  <query id="createTemplateKeyword">
+  <query id="createKeyword">
     INSERT INTO template_keyword(company_id, keyword_id, template_id, update_member_id)
         VALUES (:companyId, :keywordId, :templateId, :loginId)
   </query>
-  <query id="createTemplateFavorite">
+  <query id="createFavorite">
     INSERT INTO template_favorite(company_id, template_id, member_id)
         VALUES (:companyId, :templateId, :loginId)
   </query>
@@ -474,7 +541,16 @@
             SELECT GROUP_CONCAT(keyword_id)
                 FROM template_keyword
             WHERE template_id = t.id
-          ) AS keywordIds,
+          ) AS keyword_ids,
+          (
+            SELECT 
+              GROUP_CONCAT(k.name) 
+            FROM 
+              template_keyword tk 
+              INNER JOIN keyword2 k ON tk.keyword_id = k.id 
+            WHERE 
+              tk.template_id = t.id
+          ) AS keyword_names,
           (SELECT COUNT(1)
             FROM template_favorite
            WHERE template_id = t.id
@@ -510,7 +586,7 @@
       ORDER  BY RAND() 
       LIMIT  1
   </query>
-  <query id="deleteTemplateKeyword">
+  <query id="deleteKeyword">
     DELETE
       FROM template_keyword
     WHERE template_id = :templateId 

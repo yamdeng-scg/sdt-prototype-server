@@ -24,6 +24,7 @@ const adminRoute = require('./route/admin');
 const templateRoute = require('./route/template');
 const autoMessageRoute = require('./route/autoMessage');
 const linkRoute = require('./route/link');
+const manualRoute = require('./route/manual');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -58,6 +59,7 @@ app.use(CONFIG.API_PREFIX_URL + '/admin', adminRoute);
 app.use(CONFIG.API_PREFIX_URL + '/template', templateRoute);
 app.use(CONFIG.API_PREFIX_URL + '/auto-message', autoMessageRoute);
 app.use(CONFIG.API_PREFIX_URL + '/link', linkRoute);
+app.use(CONFIG.API_PREFIX_URL + '/manual', manualRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)

@@ -4,31 +4,37 @@
     SELECT *
       FROM category_large
       WHERE company_id = :companyId
-      ORDER BY name ASC
+      ORDER BY sort_index ASC
   </query>
   <query id="findCategoryMiddle">
-    SELECT *
-      FROM category_middle
-      WHERE company_id = :companyId
-      ORDER BY name ASC
+    SELECT m.*, 
+       l.NAME AS category_large_name 
+      FROM   category_middle m 
+            INNER JOIN category_large l 
+                    ON m.category_large_id = l.id 
+      WHERE  m.company_id = :companyId
+      ORDER  BY m.sort_index ASC
   </query>
   <query id="findCategoryMiddleByLargeId">
-    SELECT *
-      FROM category_middle
-      WHERE category_large_id = :largeId
-      ORDER BY name ASC
+    SELECT m.*, 
+           l.NAME AS category_large_name 
+      FROM   category_middle m 
+            INNER JOIN category_large l 
+                    ON m.category_large_id = l.id 
+      WHERE  category_large_id = :largeId 
+      ORDER  BY m.sort_index ASC 
   </query>
   <query id="findCategorySmall">
     SELECT *
       FROM v_category
       WHERE company_id = :companyId
-      ORDER BY name ASC
+      ORDER BY sort_index ASC
   </query>
   <query id="findCategorySmallByMiddleId">
     SELECT *
       FROM v_category
       WHERE category_middle_id = :middleId
-      ORDER BY name ASC
+      ORDER BY sort_index ASC
   </query>
   <query id="createCategoryLarge">
     INSERT INTO (company_id, name, minwon_code, minwon_name, update_member_id)
@@ -86,13 +92,16 @@
       WHERE  id = :id
   </query>
   <query id="getCategoryMiddle">
-    SELECT *
-      FROM   category_middle
-      WHERE  id = :id
+    SELECT m.*, 
+       l.NAME AS category_large_name 
+      FROM   category_middle m 
+            INNER JOIN category_large l 
+                    ON m.category_large_id = l.id 
+      WHERE  m.id = :id 
   </query>
   <query id="getCategorySmall">
     SELECT *
-      FROM   category_small
+      FROM   v_category
       WHERE  id = :id
   </query>
 </querys>

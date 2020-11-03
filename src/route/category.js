@@ -177,107 +177,66 @@ router.get('/small', function (req, res, next) {
   }
 });
 
-// 명언 등록 or command
-// 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
-router.post('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .executeQueryById(queryId, jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .insert('wise_say', jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
+// 카테고리 CRUD 시작
+
+// 대분류 등록
+router.post('/large', function (req, res, next) {
+  // categoryLargeId
+  // categoryMiddleId
+  // companyId;
+  // updateMemberId;
+  // name;
+  // sortIndex
+  let paramObject = req.paramObject;
+  let dbParam = {
+    updateMemberId: paramObject.updateMemberId,
+    companyId: paramObject.companyId,
+    name: paramObject.name
+  };
+  dbService
+    .insert('link_menu', dbParam)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch(errorRouteHandler(next));
 });
 
-// 명언 수정
-router.put('/:id', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
+// 대분류 수정
+router.put('/large/:id', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {
+    updateMemberId: paramObject.updateMemberId,
+    name: paramObject.name
+  };
+  dbService
+    .update('category_large', dbParam, id)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch(errorRouteHandler(next));
+});
+
+// 대분류 상세
+router.get('/large/:id', function (req, res, next) {
   let id = req.params.id;
   dbService
-    .update('wise_say', jsonBody, id)
-    .then((data) => {
-      res.send(data);
+    .selectOne('category_large', id)
+    .then((result) => {
+      res.send(result);
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 수정 전체
-router.put('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  dbService
-    .updateAll('wise_say', jsonBody)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 상세
-router.get('/:id', function (req, res, next) {
+// 대분류 삭제
+router.delete('/large/:id', function (req, res, next) {
   let id = req.params.id;
   dbService
-    .selectOne('wise_say', id)
-    .then((data) => {
-      res.send(data);
+    .delete('category_large', id)
+    .then((result) => {
+      res.send(result);
     })
     .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제(전체)
-router.delete('/', function (req, res, next) {
-  dbService
-    .deleteAll('wise_say')
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제
-router.delete('/:id', function (req, res, next) {
-  let id = req.params.id;
-  dbService
-    .delete('wise_say', id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
-router.get('/', function (req, res, next) {
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .selectQueryById(queryId, queryParameter)
-      .then((result) => {
-        let responseResult = result;
-        if (queryId === 'getWiseSay') {
-          responseResult = result[0];
-        }
-        res.send(responseResult);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .select('wise_say')
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
 });
 
 module.exports = router;

@@ -4,137 +4,177 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const _ = require('lodash');
+const queryIdPrefix = 'manual.';
 
-/*
-
-1.등록된 manual의 태그 목록 가져오기
- : /?query=findTagAll GET
-
-2.매뉴얼 검색
- : / GET
- : /?query=findSearch GET
-
-3.다음 매뉴얼
- : /?query=nextManual GET
-
-4.매뉴얼 즐겨찾기 추가
- : /:id/favorite POST
-
-5.매뉴얼 즐겨찾기 삭제
- : /:id/favorite DELETE
-
-6.매뉴얼 생성
- : / POST
-
-7.매뉴얼 수정
- : /:id PUT
-
-8.매뉴얼 삭제
- : /:id DELETE
-
-*/
-
-// 명언 등록 or command
-// 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
-router.post('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .executeQueryById(queryId, jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .insert('wise_say', jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
-});
-
-// 명언 수정
-router.put('/:id', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let id = req.params.id;
+// 태그 목록
+router.post('/tags', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    loginId: paramObject.loginId,
+    manualIndex: paramObject.manualIndex || 1
+  };
   dbService
-    .update('wise_say', jsonBody, id)
-    .then((data) => {
-      res.send(data);
+    .selectQueryById(queryIdPrefix + 'findTagAll', dbParam)
+    .then((result) => {
+      let tagStringList = [];
+      result.forEach((info) => {
+        let tags = _.replace(info.tags, /–/g, '-');
+        let infoArray = _.split(tags, '-');
+        tagStringList = tagStringList.concat(infoArray);
+      });
+      res.send(_.uniq(tagStringList));
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 수정 전체
-router.put('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
+// 매뉴얼 검색
+router.get('/', function (req, res, next) {
+  let paramObject = req.paramObject;
+  const pageSize = paramObject.pageSize ? Number(req.query.pageSize) : 5000000;
+  const page = paramObject.page ? Number(paramObject.page) : 1;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    loginId: paramObject.loginId,
+    checkFavorite: paramObject.checkFavorite,
+    tag: paramObject.tag || null,
+    searchValue: paramObject.searchValue || '',
+    limit: pageSize * (page - 1),
+    pageSize: pageSize
+  };
   dbService
-    .updateAll('wise_say', jsonBody)
-    .then((data) => {
-      res.send(data);
+    .selectQueryById(queryIdPrefix + 'findSearchCount', dbParam)
+    .then((totalCountQueryResult) => {
+      const totalCount = totalCountQueryResult[0].totalCount;
+      let result = {};
+      result.totalCount = totalCount;
+      return dbService
+        .selectQueryById(queryIdPrefix + 'findSearch', dbParam)
+        .then((data) => {
+          result.data = data;
+          res.send(result);
+        });
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 상세
+// 메뉴얼 상세
 router.get('/:id', function (req, res, next) {
   let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    loginId: paramObject.loginId,
+    id: id,
+    manualIndex: paramObject.manualIndex || 1
+  };
   dbService
-    .selectOne('wise_say', id)
-    .then((data) => {
-      res.send(data);
+    .selectQueryById(queryIdPrefix + 'getDetail', dbParam)
+    .then((result) => {
+      res.send(result[0]);
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 삭제(전체)
-router.delete('/', function (req, res, next) {
+// 매뉴얼 등록
+router.post('/', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let dbParam = {};
+  dbParam.updateMemberId = paramObject.loginId;
+  dbParam.companyId = paramObject.companyId;
+  dbParam.manualIndex = paramObject.manualIndex || 1;
+  dbParam.pageNo = paramObject.pageNo;
+  dbParam.pageCode = paramObject.pageCode;
+  dbParam.title = paramObject.title;
+  dbParam.content = paramObject.content;
+  dbParam.pdfImagePath = paramObject.pdfImagePath;
   dbService
-    .deleteAll('wise_say')
-    .then((data) => {
-      res.send(data);
+    .selectQueryById(queryIdPrefix + 'getNextPageNumber', dbParam)
+    .then((result) => {
+      const maxPageNumber = result[0].maxPageNumber;
+      dbParam.pageNumber = paramObject.pageNumber || maxPageNumber;
+      return dbService
+        .insert('manual', dbParam)
+        .then((result) => {
+          res.send(result);
+        })
+        .catch(errorRouteHandler(next));
+    });
+});
+
+// 매뉴얼 수정
+router.put('/:id', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {};
+  dbParam.updateMemberId = paramObject.loginId;
+  dbParam.pageNumber = paramObject.pageNumber;
+  dbParam.pageNo = paramObject.pageNo;
+  dbParam.pageCode = paramObject.pageCode;
+  dbParam.title = paramObject.title;
+  dbParam.content = paramObject.content;
+  dbParam.pdfImagePath = paramObject.pdfImagePath;
+  dbService
+    .update('manual', dbParam, id)
+    .then((result) => {
+      res.send(result);
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 삭제
+// 매뉴얼 삭제
 router.delete('/:id', function (req, res, next) {
   let id = req.params.id;
   dbService
-    .delete('wise_say', id)
-    .then((data) => {
-      res.send(data);
+    .delete('manual', id)
+    .then((result) => {
+      res.send(result);
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
-router.get('/', function (req, res, next) {
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
+// 매뉴얼 즐겨찾기 추가 / 삭제
+router.put('/:id/favorite', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = req.paramObject;
+  let value = paramObject.value;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    loginId: paramObject.loginId,
+    manualId: id
+  };
+  if (value) {
     dbService
-      .selectQueryById(queryId, queryParameter)
-      .then((result) => {
-        let responseResult = result;
-        if (queryId === 'getWiseSay') {
-          responseResult = result[0];
-        }
-        res.send(responseResult);
+      .executeQueryById(queryIdPrefix + 'createFavorite', dbParam)
+      .then(() => {
+        res.send({ success: true });
       })
       .catch(errorRouteHandler(next));
   } else {
     dbService
-      .select('wise_say')
-      .then((result) => {
-        res.send(result);
+      .executeQueryById(queryIdPrefix + 'deleteFavoriteToMember', dbParam)
+      .then(() => {
+        res.send({ success: true });
       })
       .catch(errorRouteHandler(next));
   }
+});
+
+// 매뉴얼 채번
+router.post('/getNextPageNumber', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    manualIndex: paramObject.manualIndex || 1
+  };
+  dbService
+    .selectQueryById(queryIdPrefix + 'getNextPageNumber', dbParam)
+    .then((result) => {
+      const maxPageNumber = result[0].maxPageNumber;
+      res.send({ nextPageNumber: maxPageNumber });
+    })
+    .catch(errorRouteHandler(next));
 });
 
 module.exports = router;

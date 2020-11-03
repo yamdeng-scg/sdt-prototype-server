@@ -21,7 +21,7 @@ router.post('/link-menu', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// 링크 메뉴 등록
+// 링크 메뉴 수정
 router.put('/link-menu/:id', function (req, res, next) {
   let id = req.params.id;
   let paramObject = req.paramObject;

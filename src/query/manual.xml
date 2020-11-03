@@ -2,17 +2,20 @@
 <querys>
 	<query id="findTagAll">
 		<![CDATA[
-			SELECT id,
-						tags
+			SELECT DISTINCT tags
 			FROM  manual
 			WHERE company_id = :companyId
-						and tags > ''
+						AND manual_index = :manualIndex
+						AND tags != '' AND tags IS NOT NULL
 		]]>
 	</query>
 	<query id="findSearch">
 		<![CDATA[
 			SELECT 
-				f.id AS favorite_id, 
+				(SELECT COUNT(1)
+            FROM manual_favorite
+           WHERE manual_id = m.id
+             AND member_id = :loginId) as is_favorite,
 				m.* 
 			FROM 
 				manual m 
@@ -24,20 +27,19 @@
 					CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
 				) 
 				AND (
-					CASE WHEN IFNULL(:searchValue1, '') = '' THEN 1 = 1 ELSE (
+					CASE WHEN IFNULL(:searchValue, '') = '' THEN 1 = 1 ELSE (
 						m.title LIKE CONCAT(
 							'%', 
-							IFNULL(:searchValue1, ''), 
+							IFNULL(:searchValue, ''), 
 							'%'
 						) 
-						OR m.page_no = :searchValue1
+						OR m.content LIKE CONCAT(
+							'%', 
+							IFNULL(:searchValue, ''), 
+							'%'
+						) 
 					) END
-				) 
-				AND m.content LIKE CONCAT(
-					'%', 
-					IFNULL(:searchValue2, ''), 
-					'%'
-				) 
+				)
 				AND m.tags LIKE CONCAT(
 					'%', 
 					IFNULL(:tag, ''), 
@@ -63,25 +65,24 @@
 					CASE WHEN :checkFavorite = 1 THEN f.member_id = :loginId ELSE 1 = 1 END
 				) 
 				AND (
-					CASE WHEN IFNULL(:searchValue1, '') = '' THEN 1 = 1 ELSE (
+					CASE WHEN IFNULL(:searchValue, '') = '' THEN 1 = 1 ELSE (
 						m.title LIKE CONCAT(
 							'%', 
-							IFNULL(:searchValue1, ''), 
+							IFNULL(:searchValue, ''), 
 							'%'
 						) 
-						OR m.page_no = :searchValue1
+						OR m.content LIKE CONCAT(
+							'%', 
+							IFNULL(:searchValue, ''), 
+							'%'
+						) 
 					) END
-				) 
-				AND m.content LIKE CONCAT(
-					'%', 
-					IFNULL(:searchValue2, ''), 
-					'%'
-				) 
+				)
 				AND m.tags LIKE CONCAT(
 					'%', 
 					IFNULL(:tag, ''), 
 					'%'
-				)
+				) 
 		]]>
 	</query>
 	<query id="nextManual">
@@ -102,7 +103,7 @@
 	<query id="deleteFavoriteToMember">
     DELETE
 		  FROM manual_favorite
-		WHERE manual_id = :id
+		WHERE manual_id = :manualId
       AND member_id = :loginId
 	</query>
 	<query id="deleteFavoriteToManual">
@@ -130,5 +131,32 @@
     DELETE 
 		  FORM manual
 		 WHERE id = :id
+	</query>
+	<query id="getDetail">
+		<![CDATA[
+			SELECT *,
+				(SELECT COUNT(1)
+            FROM manual_favorite
+           WHERE manual_id = m.id
+             AND member_id = :loginId) as is_favorite,
+				(SELECT MIN(page_number) 
+					FROM   manual m2 
+					WHERE  company_id = :companyId
+								AND manual_index = :manualIndex 
+								AND id < m.id) AS previous_page, 
+				(SELECT MIN(page_number) 
+					FROM   manual m2 
+					WHERE  company_id = :companyId
+								AND manual_index = :manualIndex
+								AND id > m.id) AS next_page 
+			FROM   manual m 
+			WHERE  m.id = :id
+		]]>
+	</query>
+	<query id="getNextPageNumber">
+    SELECT IFNULL(MAX(page_number), 0)  + 1 AS max_page_number 
+			FROM   manual 
+			WHERE  company_id = :companyId 
+						AND manual_index = :manualIndex 
 	</query>
 </querys>
