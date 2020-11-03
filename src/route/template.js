@@ -239,4 +239,20 @@ router.post('/findByFavoriteLoginMemberId', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
+// :loginId
+// :companyId
+
+// :checkFavorite
+// :checkMyAdd
+
+// :categoryLargeId
+// :categoryMiddleId
+// :categorySmallId
+
+// :keywordType
+// :searchValue
+
+// :limit
+// :pageSize
+
 module.exports = router;
