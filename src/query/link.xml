@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+  <query id="findDetilByMenuIdAndEnableStatus">
+    SELECT *
+      FROM link_detail
+      WHERE company_id = :companyId
+        AND menu_id = :menuId
+        AND enable = 1
+      ORDER BY link_text ASC
+  </query>
+  <query id="findMenuAll">
+    SELECT *
+      FROM link_menu
+      WHERE company_id = :companyId
+      ORDER BY name ASC
+  </query>
+  <query id="findDetailAll">
+    SELECT *
+      FROM link_detail
+      WHERE company_id = :companyId
+  </query>
+</querys>
