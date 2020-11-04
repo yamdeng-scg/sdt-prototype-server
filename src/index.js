@@ -2,6 +2,7 @@
 
 const logger = require('./util/logger');
 const process = require('process');
+const socketService = require('./service/socket');
 
 // PORT 아규먼트가 전달이 않되어있을때는 8080 PORT를 default로 server run
 let serverListenPort = process.env.PORT || 8090;
@@ -25,17 +26,9 @@ app.listen(serverListenPort, () => {
 
 // socket.io event listen
 io.on('connection', (socket) => {
-  console.log('connection socket : ' + socket);
-  socket.emit('connection_success', 'socket connected!!');
-
-  socket.on('chat message', (msg) => {
-    console.log('message : ' + msg);
-    io.emit('chat message', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+  logger.info('connection socket : ' + socket);
+  socketService.connect(socket);
+  socket.emit('receive-event', 'welcome');
 });
 
 // 전역 promise 오류(reject) catch
