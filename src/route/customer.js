@@ -4,145 +4,83 @@ const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
+const queryIdPrefix = 'customer.';
 
-/*
-
-1.고객 정보 수정(욕설, 부적절한 메시지 사용 최신화)
- : /:id/updateSwearInsultCount PUT
-
-2.고객 관심고객으로 수정
- : /:id/enableBlackStatus PUT
-
-3.고객 관심고객 해제
- : /:id/disbleBlackStatus PUT
-
-4.고객의 욕설 count 증가
- : /:id/plusSwearCount PUT
-
-5.고객의 부적절한 count 증가
- : /:id/plusInsultCount PUT
-
-6.고객 상세
- : /:id GET
-
-(X) 7.고객 상세(spaker)
- : ?queryId=getBySpeakerId&speakerId=:speakerId GET
-
-(X) 8.고객 상세(gasapp_member_number)
- : ?queryId=getByGasappMemberNumber&gasappMemberNumber=:gasappMemberNumber GET
-
- 9.관심고객 목록
-  : ?queryId=findBlockMember GET
-
-(X) 10.등록 : regist
- : / POST
-
-(X) 11.상세 정보(방 포함)
- : ?queryId=getDetailRoom GET
-
-*/
-
-// 명언 등록 or command
-// 명언 command execute : query : updateWiseSay, updateWiseSayLikeContent
-router.post('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .executeQueryById(queryId, jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
+// 관심고객 지정 / 해제
+router.put('/:id/block', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {
+    id: id,
+    blockType: paramObject.blockType,
+    remark: paramObject.remark,
+    loginId: paramObject.loginId,
+    companyId: paramObject.companyId
+  };
+  let queryId = '';
+  if (!paramObject.blockType) {
+    queryId = 'disableBlock';
   } else {
-    dbService
-      .insert('wise_say', jsonBody)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
+    queryId = 'enableBlock';
   }
+  dbService
+    .executeQueryById(queryIdPrefix + queryId, dbParam)
+    .then(() => {
+      return dbService.selectOne('v_customer', id).then((result) => {
+        res.send(result);
+      });
+    })
+    .catch(errorRouteHandler(next));
 });
 
-// 명언 수정
-router.put('/:id', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
+// 관심고객 해제
+router.delete('/:id/block', function (req, res, next) {
   let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {
+    id: id,
+    blockType: paramObject.blockType,
+    remark: paramObject.remark,
+    loginId: paramObject.loginId,
+    companyId: paramObject.companyId
+  };
   dbService
-    .update('wise_say', jsonBody, id)
-    .then((data) => {
-      res.send(data);
+    .executeQueryById(queryIdPrefix + 'disableBlock', dbParam)
+    .then(() => {
+      return dbService.selectOne('v_customer', id).then((result) => {
+        res.send(result);
+      });
     })
     .catch(errorRouteHandler(next));
 });
 
-// 명언 수정 전체
-router.put('/', function (req, res, next) {
-  let jsonBody = Object.assign({}, req.body);
-  dbService
-    .updateAll('wise_say', jsonBody)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 상세
-router.get('/:id', function (req, res, next) {
-  let id = req.params.id;
-  dbService
-    .selectOne('wise_say', id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제(전체)
-router.delete('/', function (req, res, next) {
-  dbService
-    .deleteAll('wise_say')
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 삭제
-router.delete('/:id', function (req, res, next) {
-  let id = req.params.id;
-  dbService
-    .delete('wise_say', id)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// 명언 조회 : query : findWiseSayAll, getWiseSay, findWiseSayByContent
+// 고객 검색 : 고객명, 휴대폰번호, 사유, 메모, 지정자
 router.get('/', function (req, res, next) {
-  let queryParameter = req.query;
-  let queryId = queryParameter.queryId;
-  if (queryId) {
-    dbService
-      .selectQueryById(queryId, queryParameter)
-      .then((result) => {
-        let responseResult = result;
-        if (queryId === 'getWiseSay') {
-          responseResult = result[0];
-        }
-        res.send(responseResult);
-      })
-      .catch(errorRouteHandler(next));
-  } else {
-    dbService
-      .select('wise_say')
-      .then((result) => {
-        res.send(result);
-      })
-      .catch(errorRouteHandler(next));
-  }
+  let paramObject = req.paramObject;
+  const pageSize = paramObject.pageSize ? Number(req.query.pageSize) : 5000000;
+  const page = paramObject.page ? Number(paramObject.page) : 1;
+  let dbParam = {
+    companyId: paramObject.companyId,
+    loginId: paramObject.loginId,
+    searchType: paramObject.searchType || 'all',
+    searchValue: paramObject.searchValue || '',
+    limit: pageSize * (page - 1),
+    pageSize: pageSize
+  };
+  dbService
+    .selectQueryById(queryIdPrefix + 'findSearchCount', dbParam)
+    .then((totalCountQueryResult) => {
+      const totalCount = totalCountQueryResult[0].totalCount;
+      let result = {};
+      result.totalCount = totalCount;
+      return dbService
+        .selectQueryById(queryIdPrefix + 'findSearch', dbParam)
+        .then((data) => {
+          result.data = data;
+          res.send(result);
+        });
+    })
+    .catch(errorRouteHandler(next));
 });
 
 module.exports = router;

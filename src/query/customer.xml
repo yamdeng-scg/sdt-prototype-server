@@ -1,5 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
+  <query id="findSearch">
+    <![CDATA[
+			SELECT vc.*,
+            m.name as block_member_name 
+				FROM   v_customer vc
+               LEFT OUTER JOIN member m
+               ON vc.block_member_id = m.id
+				WHERE  vc.company_id = :companyId AND vc.is_block = 1
+					AND (
+						CASE WHEN :searchType = 'name' THEN vc.name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'telNumber' THEN vc.tel_number LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'blockType' THEN vc.block_type LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'remark' THEN vc.remark LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'blockMemberName' THEN m.name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'all' THEN
+            vc.name LIKE CONCAT('%', :searchValue, '%') OR vc.tel_number LIKE CONCAT('%', :searchValue, '%')
+            OR vc.block_type LIKE CONCAT('%', :searchValue, '%') OR vc.remark LIKE CONCAT('%', :searchValue, '%')
+            OR m.name LIKE CONCAT('%', :searchValue, '%')
+            ELSE 1 = 1 END
+					)
+				ORDER BY 
+					vc.create_date DESC 
+				LIMIT 
+					:limit,
+					:pageSize
+		]]>
+  </query>
+  <query id="findSearchCount">
+    <![CDATA[
+			SELECT COUNT(*) as totalCount
+				FROM   v_customer vc
+               LEFT OUTER JOIN member m
+               ON vc.block_member_id = m.id
+				WHERE  vc.company_id = :companyId AND vc.is_block = 1
+					AND (
+						CASE WHEN :searchType = 'name' THEN vc.name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'telNumber' THEN vc.tel_number LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'blockType' THEN vc.block_type LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'remark' THEN vc.remark LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+          AND (
+						CASE WHEN :searchType = 'blockMemberName' THEN m.name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'all' THEN
+            vc.name LIKE CONCAT('%', :searchValue, '%') OR vc.tel_number LIKE CONCAT('%', :searchValue, '%')
+            OR vc.block_type LIKE CONCAT('%', :searchValue, '%') OR vc.remark LIKE CONCAT('%', :searchValue, '%')
+            OR m.name LIKE CONCAT('%', :searchValue, '%')
+            ELSE 1 = 1 END
+					)
+		]]>
+  </query>
   <query id="updateSwearInsultCount">
     UPDATE customer_company 
       SET    swear_count = :swearCount, 
@@ -8,7 +76,7 @@
       WHERE  company_id = :companyId 
             AND customer_id = :id
   </query>
-  <query id="enableBlackStatus">
+  <query id="enableBlock">
     UPDATE customer_company 
       SET    block_member_id = :loginId, 
             block_date = NOW(), 
@@ -19,7 +87,7 @@
       WHERE  company_id = :companyId 
             AND customer_id = :id
   </query>
-  <query id="disbleBlackStatus">
+  <query id="disableBlock">
     UPDATE customer_company 
       SET    block_member_id = NULL, 
             block_date = NULL, 
@@ -54,10 +122,13 @@
       WHERE  gasapp_member_number = :gasappMemberNumber
   </query>
   <query id="findBlockMember">
-    SELECT *
-      FROM  v_customer
-      WHERE company_id = :companyId
-            AND is_block = 1
+    SELECT vc.*, 
+           m.name AS block_member_name 
+      FROM   v_customer vc 
+            LEFT OUTER JOIN member m 
+                          ON vc.block_member_id = m.id 
+      WHERE  vc.company_id = :companyId 
+            AND vc.is_block = 1
   </query>
   <query id="getDetail">
     SELECT * 
@@ -66,50 +137,5 @@
   </query>
   <query id="regist">
     CALL regist_customer(:companyId, :gasappMemberNumber, :name, :telNumber) 
-  </query>
-  <query id="getDetailRoom">
-    <![CDATA[
-      SELECT 
-        r.member_id, 
-        r.state AS room_state, 
-        (
-          SELECT 
-            read_last_message_id 
-          FROM 
-            room_speaker 
-          WHERE 
-            room_speaker.room_id = r.id 
-            AND speaker_id = sp.id
-        ) AS read_last_message_id, 
-        (
-          SELECT 
-            DATEDIFF(
-              NOW(), 
-              MAX(create_date)
-            ) 
-          FROM 
-            chat_message 
-          WHERE 
-            room_id = r.id
-        ) AS end_after_day, 
-        (
-          SELECT 
-            COUNT(id) 
-          FROM 
-            chat_message 
-          WHERE 
-            room_id = r.id 
-            AND id > read_last_message_id 
-            AND is_system_message = 0 
-            AND message_admin_type = 0
-        ) AS no_read_count, 
-        vc.* 
-      FROM 
-        v_customer vc 
-        INNER JOIN room r ON vc.room_id = r.id 
-        INNER JOIN speaker2 sp ON vc.speaker_id = sp.id 
-      WHERE
-              vc.company_id = :companyId AND vc.gasapp_member_number = :gasappMemberNumber
-        ]]>
   </query>
 </querys>

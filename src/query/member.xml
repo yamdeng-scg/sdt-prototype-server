@@ -1,11 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
+	<query id="findSearch">
+		<![CDATA[
+			SELECT * 
+				FROM   member
+				WHERE  company_id = :companyId 
+					AND auth_level > 2
+					AND (
+						CASE WHEN :searchType = 'name' THEN name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'loginName' THEN login_name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'all' THEN name LIKE CONCAT('%', :searchValue, '%') OR login_name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+				ORDER BY 
+					create_date DESC 
+				LIMIT 
+					:limit,
+					:pageSize
+		]]>
+	</query>
+	<query id="findSearchCount">
+		<![CDATA[
+			SELECT COUNT(1) as total_count 
+				FROM   member
+				WHERE  company_id = :companyId 
+					AND auth_level > 2
+					AND (
+						CASE WHEN :searchType = 'name' THEN name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'loginName' THEN login_name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+					AND (
+						CASE WHEN :searchType = 'all' THEN name LIKE CONCAT('%', :searchValue, '%') OR login_name LIKE CONCAT('%', :searchValue, '%') ELSE 1 = 1 END
+					)
+		]]>
+	</query>
 	<query id="findNotAdmin">
 		<![CDATA[
 			SELECT * 
 				FROM   member
 				WHERE  company_id = :companyId 
-							AND auth_level > 0
+							AND auth_level > 2
 		]]>
 	</query>
 	<query id="findCanJoin">

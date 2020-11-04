@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<querys>
+	<query id="member">
+		<![CDATA[
+			SELECT
+					(SELECT COUNT(1) 
+						FROM   member 
+						WHERE  is_admin = 0) AS total_count, 
+					(SELECT COUNT(1) 
+						FROM   member 
+						WHERE  auth_level = 4) AS speaker_count, 
+					(SELECT COUNT(DISTINCT member_id) 
+						FROM   room 
+						WHERE  company_id = company.id
+									AND member_id IS NOT NULL 
+									AND state < 2) AS ing_count, 
+					(SELECT COUNT(1) 
+						FROM   member 
+						WHERE  auth_level = 3) AS manager_count 
+			FROM   company 
+			WHERE  id = :companyId
+		]]>
+	</query>
+</querys>
