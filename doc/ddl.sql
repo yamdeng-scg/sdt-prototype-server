@@ -423,6 +423,64 @@ CREATE TABLE IF NOT EXISTS `template_use_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- company_id, update_member_id, room_id, template_id
 
+-- stats_company <--- new table
+CREATE TABLE IF NOT EXISTS `stats_company` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `save_date` varchar(10) NOT NULL COMMENT '기준일 (YYYY-MM-DD)',
+  `chatbot_use_count` int(10) unsigned DEFAULT 0 COMMENT '챗봇 이용 고객 건수',
+  `talk_system_enter_count` int(10) unsigned DEFAULT 0 COMMENT '채팅상담시스템 인입 고객 건수',
+  `new_count` int(10) unsigned DEFAULT 0 COMMENT '신규 접수 건수',
+  `ready_count` int(10) unsigned DEFAULT 0 COMMENT '대기 상담 건수',
+  `ing_count` int(10) unsigned DEFAULT 0 COMMENT '진행 상담 건수',
+  `close_count` int(10) unsigned DEFAULT 0 COMMENT '종료 상담 건수',
+  `out_count` int(10) unsigned DEFAULT 0 COMMENT '고객 이탈 건수',
+  `speak_count` int(10) unsigned DEFAULT 0 COMMENT '총 상담건수',
+  `max_ready_minute` int(10) unsigned DEFAULT 0 COMMENT '최장 고객 대기시간',
+  `max_speak_minute` int(10) unsigned DEFAULT 0 COMMENT '최장 상담시간',
+  `avg_ready_minute` int(10) unsigned DEFAULT 0 COMMENT '평균 고객 대기시간',
+  `avg_speak_minute` int(10) unsigned DEFAULT 0 COMMENT '평균 상담시간',
+  `avg_member_speak_count` int(10) unsigned DEFAULT 0 COMMENT '상담원 평균 응대 건수',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id
+
+-- stats_member <--- new table
+CREATE TABLE IF NOT EXISTS `stats_member` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `member_id` bigint(5) unsigned DEFAULT NULL COMMENT '사용자 id(member table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `save_date` varchar(10) NOT NULL COMMENT '기준일 (YYYY-MM-DD)',
+  `ing_count` int(10) unsigned DEFAULT 0 COMMENT '진행 상담 건수',
+  `close_count` int(10) unsigned DEFAULT 0 COMMENT '종료 상담 건수',
+  `new_count` int(10) unsigned DEFAULT 0 COMMENT '신규 접수 건수',
+  `speak_count` int(10) unsigned DEFAULT 0 COMMENT '총 상담건수',
+  `max_ready_minute` int(10) unsigned DEFAULT 0 COMMENT '최장 고객 대기시간',
+  `max_speak_minute` int(10) unsigned DEFAULT 0 COMMENT '최장 상담시간',
+  `avg_ready_minute` int(10) unsigned DEFAULT 0 COMMENT '평균 고객 대기시간',
+  `avg_speak_minute` int(10) unsigned DEFAULT 0 COMMENT '평균 상담시간',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id, member_id
+
+-- stats_hashtag <--- new table
+CREATE TABLE IF NOT EXISTS `stats_hashtag` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `save_date` varchar(10) NOT NULL COMMENT '기준일 (YYYY-MM-DD)',
+  `name` varchar(10) NOT NULL COMMENT '태그명(카테고리 소분류, 메시지 상세...)',
+  `issue_count` int(10) unsigned DEFAULT 0 COMMENT 'count',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- company_id
+
+
 /*
 
 -- data migration query
@@ -718,9 +776,15 @@ ALTER TABLE template_use_history ADD CONSTRAINT template_use_history_member_FK F
 ALTER TABLE template_use_history ADD CONSTRAINT template_use_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE SET NULL;
 ALTER TABLE template_use_history ADD CONSTRAINT template_use_history_template2_FK FOREIGN KEY (template_id) REFERENCES template2(id) ON DELETE CASCADE;
 
+-- stats_company
+ALTER TABLE stats_company ADD CONSTRAINT stats_company_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 
+-- stats_member
+ALTER TABLE stats_member ADD CONSTRAINT stats_member_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
+ALTER TABLE stats_member ADD CONSTRAINT stats_member_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id);
 
-
+-- stats_hashtag
+ALTER TABLE stats_hashtag ADD CONSTRAINT stats_hashtag_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 
 
 */
