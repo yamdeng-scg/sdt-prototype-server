@@ -178,13 +178,6 @@ router.get('/small', function (req, res, next) {
 });
 
 // 카테고리 CRUD 시작
-// categoryLargeId
-// categoryMiddleId
-// companyId;
-// updateMemberId;
-// name;
-// sortIndex
-
 // 대분류 등록
 router.post('/large', function (req, res, next) {
   let paramObject = req.paramObject;
@@ -277,8 +270,14 @@ router.post('/middle', function (req, res, next) {
     .then((sortIndexQueryResult) => {
       const sortIndex = sortIndexQueryResult[0].sortIndex;
       dbParam.sortIndex = sortIndex;
-      return dbService.insert('category_middle', dbParam).then((result) => {
-        res.send(result);
+      return dbService.insertOnly('category_middle', dbParam).then((result) => {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'getCategoryMiddle', {
+            id: result.id
+          })
+          .then((result) => {
+            res.send(result[0]);
+          });
       });
     })
     .catch(errorRouteHandler(next));
@@ -295,8 +294,14 @@ router.put('/middle/:id', function (req, res, next) {
   };
   dbService
     .update('category_middle', dbParam, id)
-    .then((result) => {
-      res.send(result);
+    .then(() => {
+      return dbService
+        .selectQueryById(queryIdPrefix + 'getCategoryMiddle', {
+          id: id
+        })
+        .then((result) => {
+          res.send(result[0]);
+        });
     })
     .catch(errorRouteHandler(next));
 });
@@ -335,8 +340,14 @@ router.put('/middle/:id/sort-index', function (req, res, next) {
   dbService
     .executeQueryById(queryIdPrefix + 'updateMiddleSortIndexToAfter', dbParam)
     .then(() => {
-      return dbService.update('category_middle', dbParam, id).then((result) => {
-        res.send(result);
+      return dbService.updateOnly('category_middle', dbParam, id).then(() => {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'getCategoryMiddle', {
+            id: id
+          })
+          .then((result) => {
+            res.send(result[0]);
+          });
       });
     })
     .catch(errorRouteHandler(next));
@@ -357,8 +368,14 @@ router.post('/small', function (req, res, next) {
     .then((sortIndexQueryResult) => {
       const sortIndex = sortIndexQueryResult[0].sortIndex;
       dbParam.sortIndex = sortIndex;
-      return dbService.insert('category_small', dbParam).then((result) => {
-        res.send(result);
+      return dbService.insertOnly('category_small', dbParam).then((result) => {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'getCategorySmall', {
+            id: result.id
+          })
+          .then((result) => {
+            res.send(result[0]);
+          });
       });
     })
     .catch(errorRouteHandler(next));
@@ -374,9 +391,15 @@ router.put('/small/:id', function (req, res, next) {
     categoryMiddleId: paramObject.categoryMiddleId
   };
   dbService
-    .update('category_small', dbParam, id)
-    .then((result) => {
-      res.send(result);
+    .updateOnly('category_small', dbParam, id)
+    .then(() => {
+      return dbService
+        .selectQueryById(queryIdPrefix + 'getCategorySmall', {
+          id: id
+        })
+        .then((result) => {
+          res.send(result[0]);
+        });
     })
     .catch(errorRouteHandler(next));
 });
@@ -415,8 +438,14 @@ router.put('/small/:id/sort-index', function (req, res, next) {
   dbService
     .executeQueryById(queryIdPrefix + 'updateSmallSortIndexToAfter', dbParam)
     .then(() => {
-      return dbService.update('category_small', dbParam, id).then((result) => {
-        res.send(result);
+      return dbService.updateOnly('category_small', dbParam, id).then(() => {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'getCategorySmall', {
+            id: id
+          })
+          .then((result) => {
+            res.send(result[0]);
+          });
       });
     })
     .catch(errorRouteHandler(next));
