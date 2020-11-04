@@ -4,7 +4,11 @@ const logger = require('../util/logger');
 const AppError = require('../error/AppError');
 const jwt = require('jsonwebtoken');
 const CONFIG = require('../config');
-const disableAuthPrefixUrls = ['/auth/login', '/api/company'];
+const disableAuthPrefixUrls = [
+  '/auth/login',
+  '/api/company',
+  '/auth/admin/login'
+];
 
 module.exports = function hanlder(req, res, next) {
   try {
@@ -15,7 +19,7 @@ module.exports = function hanlder(req, res, next) {
         byPassAuth = true;
       }
     });
-    let paramObject = Object.assign({}, req.query, req.body);
+    let paramObject = {};
     if (!byPassAuth) {
       let loginProfile = jwt.verify(
         req.headers.authorization,
@@ -35,6 +39,7 @@ module.exports = function hanlder(req, res, next) {
         paramObject = Object.assign(paramObject, profileCommonParam);
       }
     }
+    Object.assign(paramObject, req.query, req.body);
     req.paramObject = paramObject;
     next();
   } catch (err) {
