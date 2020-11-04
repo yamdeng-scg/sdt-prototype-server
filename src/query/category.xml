@@ -104,4 +104,37 @@
       FROM   v_category
       WHERE  id = :id
   </query>
+  <query id="getLastLargeSortIndex">
+    SELECT IFNULL(MAX(sort_index), 0) + 1 as sort_index
+      FROM   category_large 
+      WHERE  company_id = :companyId 
+  </query>
+  <query id="getLastMiddleSortIndex">
+    SELECT IFNULL(MAX(sort_index), 0) + 1 as sort_index
+      FROM   category_middle 
+      WHERE  category_large_id = :categoryLargeId 
+  </query>
+  <query id="getLastSmallSortIndex">
+    SELECT IFNULL(MAX(sort_index), 0) + 1 as sort_index
+      FROM   category_small 
+      WHERE  category_middle_id = :categoryMiddleId
+  </query>
+  <query id="updateLargeSortIndexToAfter">
+    UPDATE category_large 
+      SET    sort_index = sort_index + 1
+      WHERE  company_id = :companyId 
+            AND sort_index >= :sortIndex
+  </query>
+  <query id="updateMiddleSortIndexToAfter">
+    UPDATE category_middle 
+      SET    sort_index = sort_index + 1
+      WHERE  category_large_id = :categoryLargeId 
+            AND sort_index >= :sortIndex  
+  </query>
+  <query id="updateSmallSortIndexToAfter">
+    UPDATE category_small 
+      SET    sort_index = sort_index + 1 
+      WHERE  category_middle_id = :categoryMiddleId
+            AND sort_index >= :sortIndex
+  </query>
 </querys>
