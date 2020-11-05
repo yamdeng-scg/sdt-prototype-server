@@ -79,7 +79,7 @@ let queryInfo = {};
 service.initQuery = function () {
   let directoryName = path.join(__dirname, '../query');
   fs.readdirSync(directoryName).forEach((fileName) => {
-    logger.log(fileName);
+    logger.info(fileName);
     let queryPrefixName = fileName.substr(0, fileName.indexOf('.'));
     const xmlData = fs.readFileSync(
       path.join(directoryName, fileName),
@@ -99,7 +99,7 @@ service.initQuery = function () {
         : query._text;
     });
   });
-  logger.log(queryInfo);
+  logger.info(queryInfo);
 };
 
 service.connect = function () {

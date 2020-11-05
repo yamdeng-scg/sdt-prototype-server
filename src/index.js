@@ -17,18 +17,18 @@ try {
   process.exit(-1);
 }
 
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-
-app.listen(serverListenPort, () => {
-  logger.info('Sdt Prototype Server ' + serverListenPort);
-});
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 // socket.io event listen
 io.on('connection', (socket) => {
   logger.info('connection socket : ' + socket);
   socketService.connect(socket);
   socket.emit('receive-event', 'welcome');
+});
+
+server.listen(serverListenPort, () => {
+  logger.info('Sdt Prototype Server ' + serverListenPort);
 });
 
 // 전역 promise 오류(reject) catch

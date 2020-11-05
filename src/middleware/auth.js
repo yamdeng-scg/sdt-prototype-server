@@ -7,7 +7,8 @@ const CONFIG = require('../config');
 const disableAuthPrefixUrls = [
   '/auth/login',
   '/api/company',
-  '/auth/admin/login'
+  '/auth/admin/login',
+  '/socket.io'
 ];
 
 module.exports = function hanlder(req, res, next) {

@@ -136,7 +136,9 @@ DELIMITER ;
 DELIMITER //
 CREATE OR REPLACE PROCEDURE join_room(
 	IN _room_id INT,
-	IN _speaker_id INT
+	IN _speaker_id INT,
+  OUT o_read_last_message_id INT,
+  OUT o_max_message_id_ INT
 ) BEGIN
         /*
           
@@ -153,12 +155,12 @@ CREATE OR REPLACE PROCEDURE join_room(
         DECLARE v_is_coustomer INT;
 
         -- 가장 최근에 작성된 message max id
-        SELECT MAX(id) INTO v_max_message_id 
+        SELECT IFNULL(MAX(id), 0) INTO v_max_message_id 
           FROM chat_message
          WHERE room_id = _room_id;
         
         -- 방에 사용자 정보가 존재하는지 조회
-        SELECT room_speaker_id, read_last_message_id INTO v_room_speaker_id, v_read_last_message_id 
+        SELECT id, IFNULL(read_last_message_id, 0) INTO v_room_speaker_id, v_read_last_message_id 
           FROM room_speaker 
          WHERE room_id = _room_id AND speaker_id = _speaker_id;
 
@@ -172,7 +174,6 @@ CREATE OR REPLACE PROCEDURE join_room(
             -- 방에 사용자가 정보가 존재하지 않은 경우 : room_speaker 테이블 insert
             INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_coustomer)
                 VALUES(_room_id, _speaker_id, v_max_message_id, v_is_coustomer);
-            SET v_room_speaker_id = LAST_INSERT_ID();
         ELSE
             -- 방에 사용자가 정보가 존재하는 경우 : 마지막 읽은 메시지 최신화
             UPDATE room_speaker
@@ -183,8 +184,7 @@ CREATE OR REPLACE PROCEDURE join_room(
         -- 마지막 메시지까지 모두 읽음 처리
         UPDATE chat_message 
            SET not_read_count = not_read_count - 1
-         WHERE room_id = _room_id AND id <= IFNULL(v_max_message_id, 0);
-        -- where room_id = _room_id and id between IFNULL(v_read_last_message_id, 0) and IFNULL(v_max_message_id, 0);
+         WHERE room_id = _room_id AND id BETWEEN IFNULL(v_read_last_message_id, 0) AND IFNULL(v_max_message_id, 0);
 
         -- 사용자의 메시지 읽음 처리 하기
         UPDATE message_read
@@ -197,6 +197,8 @@ CREATE OR REPLACE PROCEDURE join_room(
             UPDATE room
                SET chatid=(SELECT MAX(id) FROM room_join_history WHERE room=_room_id) WHERE id= _room_id;
         END IF;
+        SET o_read_last_message_id = v_read_last_message_id;
+        SET o_max_message_id_ = v_max_message_id;
 END;
 //
 

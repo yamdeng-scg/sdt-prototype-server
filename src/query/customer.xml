@@ -113,13 +113,15 @@
   </query>
   <query id="getBySpeakerId">
     SELECT *
-    FROM   customer2
+    FROM   v_customer
     WHERE  speaker_id = :speakerId
+      AND company_id = :company_id
   </query>
   <query id="getByGasappMemberNumber">
     SELECT *
-      FROM   customer2
+      FROM   v_customer
       WHERE  gasapp_member_number = :gasappMemberNumber
+        AND  company_id = :companyId
   </query>
   <query id="findBlockMember">
     SELECT vc.*, 
