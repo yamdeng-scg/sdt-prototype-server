@@ -34,7 +34,7 @@ CREATE OR REPLACE PROCEDURE regist_member(
         INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 0);
         SET v_speaker_id = LAST_INSERT_ID();
         
-        INSERT INTO member(company_id, speaker_id, login_name, name, auth_level) VALUES(_cid, v_speakerid, _login_name, _name, _auth_level);
+        INSERT INTO member(company_id, speaker_id, login_name, name, auth_level) VALUES(_company_id, v_speaker_id, _login_name, _name, _auth_level);
     ELSE
         -- 회원이 존재하면 member, speaker 테이블의 이름 값 컬럼을 update
         UPDATE member
