@@ -169,6 +169,9 @@
 	<query id="create">
     CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail, :templateId) 
 	</query>
+	<query id="read_message">
+    CALL read_message(:roomId, :speakerId, :startId, :endId) 
+	</query>
 	<query id="getReadCountByMessageId">
 		SELECT COUNT(id) AS readCount 
 			FROM   message_read 
@@ -198,10 +201,20 @@
 					message_read
 				WHERE
 					message_id = m.id
-					AND read_date is null
+					AND read_date IS NULL
 			) not_read_count,
-			r.name as room_name,
-			s.name as speaker_name
+			r.name AS room_name,
+			s.name AS speaker_name,
+			r.is_online,
+			(
+			    SELECT
+			      gasapp_member_number
+			    FROM
+			      v_customer
+			    WHERE
+			      room_id = r.id
+			      AND company_id = r.company_id
+			) AS gasapp_member_number
 		FROM 
 			room r 
 			INNER JOIN chat_message m ON r.id = m.room_id

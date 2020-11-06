@@ -155,6 +155,7 @@ CREATE OR REPLACE PROCEDURE join_room(
       매개변수
         -방 id : _room_id INT
         -채팅 사용자 id : _speaker_id INT
+        
       반환
         -이전 읽은 메시지 id : o_read_last_message_id
         -마지막 메시지 id : o_max_message_id_
@@ -508,6 +509,40 @@ BEGIN
           SET state = 0, end_date = null, join_message_id = v_message_id
         WHERE id = _room_id;
     END IF;
+
+    -- 메시지 상세 조회
+    SELECT
+			m.*,
+			(
+				CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
+			) AS is_customer,
+			(
+				SELECT
+					COUNT(1)
+				FROM
+					message_read
+				WHERE
+					message_id = m.id
+					AND read_date IS NULL
+			) not_read_count,
+			r.name AS room_name,
+			s.name AS speaker_name,
+			r.is_online,
+			(
+			    SELECT
+			      gasapp_member_number
+			    FROM
+			      v_customer
+			    WHERE
+			      room_id = r.id
+			      AND company_id = r.company_id
+			) AS gasapp_member_number
+		FROM 
+			room r 
+			INNER JOIN chat_message m ON r.id = m.room_id
+			LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
+		WHERE 
+			m.id = v_message_id;
 
 END;
 //
