@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 // const _ = require('lodash');
 const errorSocketHandler = require('../error/socketHandler');
 const Config = require('../config');
-const AppError = require('../error/AppError');
+const SocketError = require('../error/SocketError');
 const logger = require('../util/logger');
 const dbService = require('./db');
 
@@ -117,12 +117,12 @@ service.loginMember = function (socket) {
             member: profile
           });
         } else {
-          service.sendError(socket, new AppError('존재하지 않는 ID 입니다'));
+          service.sendError(socket, new SocketError('존재하지 않는 ID 입니다'));
         }
       })
       .catch(errorSocketHandler(socket));
   } catch (err) {
-    service.sendError(socket, new AppError('인증정보가 존재하지 않습니다'));
+    service.sendError(socket, new SocketError('인증정보가 존재하지 않습니다'));
   }
 };
 

@@ -362,6 +362,7 @@
 						mb.name as member_name
 					FROM 
 						room r
+						INNER JOIN room_join_history rjh ON r.chatid = rjh.id
 						INNER JOIN (
 							SELECT 
 								DISTINCT(room_id), 
@@ -373,15 +374,15 @@
 								AND message_admin_type = 0 
 								AND message LIKE concat('%', :message, '%')
 						) messasge_search ON r.id = messasge_search.message_search_room_id
-						LEFT OUTER JOIN member mb ON r.last_member_id = mb.id
+						LEFT OUTER JOIN member mb ON rjh.member_id = mb.id
 														AND mb.name LIKE concat('%', :memberName, '%')
 					WHERE 
 						r.company_id = :companyId 
 						AND r.state = 8
 						AND (
-							CASE WHEN :memberId IS NULL THEN 1 = 1 ELSE last_member_id = :memberId END
+							CASE WHEN :memberId IS NULL THEN 1 = 1 ELSE rjh.member_id = :memberId END
 						) 
-						AND date_format(end_date, '%Y-%m-%d') BETWEEN :startDate 
+						AND date_format(r.end_date, '%Y-%m-%d') BETWEEN :startDate 
 						AND :endDate
 				) AS sub_room 
 				LEFT OUTER JOIN chat_message ON sub_room.recent_message_id = chat_message.id 
@@ -620,5 +621,12 @@
       WHERE
               vc.company_id = :companyId AND vc.gasapp_member_number = :gasappMemberNumber
         ]]>
+	</query>
+	<query = "updpateJoinHistoryBychatId">
+		UPDATE room_join_history
+		   SET join_history_json = :joinHistoryJson
+		 WHERE id = (SELECT chatid
+		               FROM room
+									WHERE id = :roomId) AND end_date IS NOT NULL
 	</query>
 </querys>
