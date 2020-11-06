@@ -622,7 +622,7 @@
               vc.company_id = :companyId AND vc.gasapp_member_number = :gasappMemberNumber
         ]]>
 	</query>
-	<query = "updpateJoinHistoryBychatId">
+	<query id="updpateJoinHistoryBychatId">
 		UPDATE room_join_history
 		   SET join_history_json = :joinHistoryJson
 		 WHERE id = (SELECT chatid

@@ -427,10 +427,11 @@ service.executeQueryById = function (queryId, paramObject) {
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    connection.query(queryString, paramObject, (error) => {
+    connection.query(queryString, paramObject, (error, result) => {
       if (error) {
         reject(error);
       } else {
+        logger.debug('executeQueryById result : ' + JSON.stringify(result));
         resolve({ success: true });
       }
     });
@@ -465,13 +466,18 @@ service.executeQueryByStr = function (queryString, paramObject) {
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
   return new Promise((resolve, reject) => {
-    let executeSql = connection.query(queryString, paramObject, (error) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve({ success: true });
+    let executeSql = connection.query(
+      queryString,
+      paramObject,
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          logger.debug('executeQueryById result : ' + JSON.stringify(result));
+          resolve({ success: true });
+        }
       }
-    });
+    );
     logger.debug('executeSql : ' + executeSql.sql);
   });
 };
