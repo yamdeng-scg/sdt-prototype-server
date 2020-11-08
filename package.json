@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env RUN_ENV=local NODE_ENV=development node src/index.js"
+    "start": "cross-env NODE_ENV=local node src/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,12 +17,13 @@
   },
   "homepage": "https://github.com/yamdeng-scg/sdt-prototype-server#readme",
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
     "jsonwebtoken": "^8.5.1",

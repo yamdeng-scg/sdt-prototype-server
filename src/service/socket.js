@@ -7,6 +7,7 @@ const Config = require('../config');
 const SocketError = require('../error/SocketError');
 const logger = require('../util/logger');
 const dbService = require('./db');
+const companyService = require('./company');
 
 const service = {};
 
@@ -72,23 +73,63 @@ service.connect = function (socket) {
 };
 
 service.loginCustomer = function (socket) {
-  // 고객 로그인 시키고 socket에 정보 셋팅하고 welcome 메시지 보내기
   // securityKey=1aec31172508a8
-  let sockeyConnectQuery = socket.handshake.query;
-  let appId = sockeyConnectQuery.appId;
-  let companyId = sockeyConnectQuery.companyId || '1';
-  dbService
-    .selectQueryById('customer.getByGasappMemberNumber', {
-      companyId: companyId,
-      gasappMemberNumber: appId
-    })
-    .then((result) => {
-      let customerInfo = result[0];
-      socket.profile = customerInfo;
-      socket.isCustomer = true;
-      socket.emit('welcome', {
-        customer: customerInfo,
-        message: 'aaa'
+  let socketConnectQuery = socket.handshake.query;
+  let appId = socketConnectQuery.appId;
+  let companyId = socketConnectQuery.companyId || '1';
+  let name = socketConnectQuery.name;
+  let telNumber = socketConnectQuery.telNumber;
+  companyService
+    .getAppProfile(appId, name, telNumber)
+    .then((profile) => {
+      let dbParam = {
+        companyId: companyId,
+        loginName: profile.loginName,
+        name: profile.name,
+        authLevel: profile.authLevel || 9
+      };
+      return dbService.executeQueryById('customer.regist', dbParam).then(() => {
+        return dbService
+          .selectQueryById('customer.getByGasappMemberNumber', {
+            companyId: companyId,
+            gasappMemberNumber: appId
+          })
+          .then((result) => {
+            let promiseList = [];
+            let autoMessage1 = null;
+            let autoMessage2 = null;
+
+            promiseList.push(
+              dbService
+                .selectQueryById('template.getAutoMessageRandom', {
+                  companyId: companyId,
+                  type: 1
+                })
+                .then((result) => {
+                  autoMessage1 = result[0];
+                })
+            );
+            promiseList.push(
+              dbService
+                .selectQueryById('template.getAutoMessageRandom', {
+                  companyId: companyId,
+                  type: 2
+                })
+                .then((result) => {
+                  autoMessage2 = result[0];
+                })
+            );
+            return Promise.all(promiseList).then(() => {
+              let customerInfo = result[0];
+              socket.companyId = companyId;
+              socket.profile = customerInfo;
+              socket.isCustomer = true;
+              socket.emit('welcome', {
+                customer: customerInfo,
+                autoMessageList: [autoMessage1, autoMessage2]
+              });
+            });
+          });
       });
     })
     .catch(errorSocketHandler(socket));
@@ -98,7 +139,7 @@ service.loginMember = function (socket) {
   // 회원 로그인 시키고 socket에 정보 셋팅하고 welcome 메시지 보내기
   let sockeyConnectQuery = socket.handshake.query;
   let memberId = sockeyConnectQuery.memberId;
-  // let companyId = sockeyConnectQuery.companyId || '1';
+  let companyId = sockeyConnectQuery.companyId || '1';
   let token = sockeyConnectQuery.token;
   let profileId = memberId;
   let profile = null;
@@ -111,6 +152,7 @@ service.loginMember = function (socket) {
       .then((result) => {
         if (result.length > 0) {
           let profile = result[0];
+          socket.companyId = companyId;
           socket.profile = profile;
           socket.isCustomer = false;
           socket.emit('welcome', {

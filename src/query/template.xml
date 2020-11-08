@@ -565,6 +565,13 @@
       FROM   auto_message
     WHERE  id = :id
   </query>
+  <query id="getAutoMessageRandom">
+    SELECT *
+      FROM   auto_message
+    WHERE  company_id = :company_id
+      AND  type = :type
+   ORDER BY RAND() limit 1
+  </query>
   <query id="getAutoMessageByMatchWait">
     SELECT * 
       FROM   auto_message 

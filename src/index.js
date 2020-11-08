@@ -3,6 +3,18 @@
 const logger = require('./util/logger');
 const process = require('process');
 const socketService = require('./service/socket');
+const path = require('path');
+const dotenv = require('dotenv');
+
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: path.join(__dirname, '../.env.production') });
+} else if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: path.join(__dirname, '../.env.development') });
+} else if (process.env.NODE_ENV === 'local') {
+  dotenv.config({ path: path.join(__dirname, '../.env') });
+} else {
+  throw new Error('process.env.NODE_ENV를 설정하지 않았습니다!');
+}
 
 // PORT 아규먼트가 전달이 않되어있을때는 8080 PORT를 default로 server run
 let serverListenPort = process.env.PORT || 8090;

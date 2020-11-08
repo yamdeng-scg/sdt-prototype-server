@@ -12,7 +12,7 @@
 
 const config = require('../config/config');
 const process = require('process');
-const isLocalRun = process.env.RUN_ENV === 'local' ? true : false;
+const isDevRun = process.env.NODE_ENV === 'production' ? false : true;
 const chalk = require('chalk');
 const winston = require('winston');
 
@@ -24,7 +24,7 @@ if (process.env.LOG_FILE_NAME) {
 // fileLogTransport
 const DailyRotateFile = require('winston-daily-rotate-file');
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
   transports: [
     new winston.transports.Console(),
     new DailyRotateFile({
@@ -42,7 +42,7 @@ module.exports = {
       level: 'debug',
       message: message
     });
-    if (isLocalRun) {
+    if (isDevRun) {
       console.log(chalk.blue(message));
     }
   },
@@ -51,7 +51,7 @@ module.exports = {
       level: 'info',
       message: message
     });
-    if (isLocalRun) {
+    if (isDevRun) {
       console.log(chalk.green(message));
     }
   },
@@ -60,7 +60,7 @@ module.exports = {
       level: 'warn',
       message: message
     });
-    if (isLocalRun) {
+    if (isDevRun) {
       console.log(chalk.yellow(message));
     }
   },
@@ -69,7 +69,7 @@ module.exports = {
       level: 'error',
       message: message
     });
-    if (isLocalRun) {
+    if (isDevRun) {
       console.log(chalk.red(message));
     }
   }

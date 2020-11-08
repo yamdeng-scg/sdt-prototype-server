@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `room` (
   `member_id` bigint(5) unsigned DEFAULT NULL COMMENT '담당 회원 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `state` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:대기 or 방 최초 생성, 1:진행,8:종료,9:폐쇄 <--- (0:진행중,1:종료대기,2:종료,9:폐쇄)',
-  `join_message_id` bigint(5) unsigned DEFAULT NULL COMMENT 'join 시작(또는 재시작) 메시지 id(chate_message table)',
+  `join_message_id` bigint(5) unsigned DEFAULT NULL COMMENT 'join 시작(또는 재시작) 메시지 id(chat_message table)',
   `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
   `join_history_json` varchar(2047) DEFAULT NULL COMMENT 'join 이전 history(json)',
   `is_online` tinyint(1) NOT NULL DEFAULT 0 COMMENT '고객의 온라인 상태',

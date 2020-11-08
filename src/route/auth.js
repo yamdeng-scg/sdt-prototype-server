@@ -6,6 +6,7 @@ const _ = require('lodash');
 // const logger = require('../util/logger');
 const Config = require('../config');
 const dbService = require('../service/db');
+const companyService = require('../service/company');
 const express = require('express');
 const router = express.Router();
 const AppError = require('../error/AppError');
@@ -15,35 +16,53 @@ const queryIdPrefix = 'member.';
 // 로그인
 router.post('/login', function (req, res, next) {
   let paramObject = req.paramObject;
-  let queryId = queryIdPrefix + 'getByLoginName';
-  dbService
-    .selectQueryById(queryId, paramObject)
-    .then((result) => {
-      if (result.length > 0) {
-        let profile = result[0];
-        let filterProfile = _.pick(
-          profile,
-          'id',
-          'companyId',
-          'companyUseConfigJson',
-          'companyName',
-          'isAdmin',
-          'authLevel',
-          'loginName',
-          'state',
-          'profileImageId',
-          'speakerId',
-          'name'
-        );
-        let authJsonWebToken = jwt.sign(
-          Object.assign({}, filterProfile),
-          Config.JSONTOKEN_SECRETKEY,
-          { expiresIn: Config.JSONTOKEN_EXPIRE }
-        );
-        res.send({ token: authJsonWebToken, profile: profile });
-      } else {
-        return Promise.reject(new AppError('존재하지 않는 ID 입니다'));
-      }
+  companyService
+    .getMemberProfile(
+      paramObject.companyId,
+      paramObject.loginName,
+      paramObject.password,
+      paramObject.name
+    )
+    .then((profile) => {
+      let dbParam = {
+        companyId: paramObject.companyId,
+        name: profile.name,
+        loginName: profile.loginName,
+        deptName: profile.deptName,
+        authLevel: 9
+      };
+      return dbService.executeQueryById(queryIdPrefix + 'regist', dbParam);
+    })
+    .then(() => {
+      return dbService
+        .selectQueryById(queryIdPrefix + 'getByLoginName', paramObject)
+        .then((result) => {
+          if (result.length > 0) {
+            let profile = result[0];
+            let filterProfile = _.pick(
+              profile,
+              'id',
+              'companyId',
+              'companyUseConfigJson',
+              'companyName',
+              'isAdmin',
+              'authLevel',
+              'loginName',
+              'state',
+              'profileImageId',
+              'speakerId',
+              'name'
+            );
+            let authJsonWebToken = jwt.sign(
+              Object.assign({}, filterProfile),
+              Config.JSONTOKEN_SECRETKEY,
+              { expiresIn: Config.JSONTOKEN_EXPIRE }
+            );
+            res.send({ token: authJsonWebToken, profile: profile });
+          } else {
+            return Promise.reject(new AppError('존재하지 않는 ID 입니다'));
+          }
+        });
     })
     .catch(errorRouteHandler(next));
 });
