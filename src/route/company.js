@@ -6,16 +6,6 @@ const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'company.';
 
-/*
-
-  1.회사 목록
-    : / GET
-
-  2.회사 상세
-    : /:id GET
-
- */
-
 // 회사 목록
 router.get('/', function (req, res, next) {
   dbService

@@ -869,7 +869,6 @@ drop table category_middle;
 drop table category_small;
 drop table customer2;
 drop table customer_company;
-drop table wise_say;
 drop table keyword2;
 drop table manual;
 drop table manual_favorite;

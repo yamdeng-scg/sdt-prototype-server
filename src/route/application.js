@@ -7,17 +7,7 @@ const AppError = require('../error/AppError');
 const errorRouteHandler = require('../error/routeHandler');
 const _ = require('lodash');
 
-// 명언 전체
-router.get('/', function (req, res, next) {
-  dbService
-    .select('wise_say')
-    .then((result) => {
-      res.send(result);
-    })
-    .catch(errorRouteHandler(next));
-});
-
-// server, db, modbus alive check
+// server, db live check
 router.get('/health', function (req, res) {
   dbService.connection.ping((error) => {
     let dbAlive = false;
@@ -41,7 +31,7 @@ router.get('/selectTable/:table_name', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// // table 컬럼정보를 json 키값으로 반환 : 기본값 존재시 해당 기본값으로 셋팅
+// table 컬럼정보를 json 키값으로 반환 : 기본값 존재시 해당 기본값으로 셋팅
 router.get('/tableInfoToJson1', function (req, res, next) {
   dbService
     .selectQueryById('getTableInfoToObjectDefaultValue', [req.query.tableName])
@@ -74,7 +64,7 @@ router.get('/tableInfoToJson1', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// // table 컬럼정보를 json 키값으로 반환
+// table 컬럼정보를 json 키값으로 반환
 router.get('/tableInfoToJson2', function (req, res, next) {
   dbService
     .selectQueryById('getTableInfoToObjectDefaultValue', [req.query.tableName])
@@ -99,7 +89,7 @@ router.get('/tableInfoToJson2', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// // 전체 table 수정
+// 전체 table 수정
 router.put('/updateTableAll', function (req, res, next) {
   const table = req.body.table;
   const updateInfo = req.body.updateInfo;
@@ -111,7 +101,7 @@ router.put('/updateTableAll', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// // 테이블 한건 수정
+// 테이블 한건 수정
 router.put('/updateTableByColumnInfo', function (req, res, next) {
   const table = req.body.table;
   const updateInfo = req.body.updateInfo;
@@ -125,7 +115,7 @@ router.put('/updateTableByColumnInfo', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// // 테이블 insert
+// 테이블 insert
 router.post('/insertTable', function (req, res, next) {
   const table = req.body.table;
   const insertInfo = req.body.insertInfo;

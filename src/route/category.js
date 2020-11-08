@@ -426,7 +426,6 @@ router.delete('/small/:id', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
-// async, awwait
 // 소분류 정렬 정보 수정
 router.put('/small/:id/sort-index', function (req, res, next) {
   let id = req.params.id;

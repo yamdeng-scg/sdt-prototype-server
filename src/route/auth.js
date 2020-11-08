@@ -12,16 +12,6 @@ const AppError = require('../error/AppError');
 const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'member.';
 
-/*
-
-  1.로그인
-    : /login POST
-
-  2.로그인한 사용자 정보
-    : /profile GET
-
- */
-
 // 로그인
 router.post('/login', function (req, res, next) {
   let paramObject = req.paramObject;

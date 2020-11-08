@@ -10,25 +10,6 @@ const queryIdPrefix = 'room.';
 
 /*
 
-(roomJoinHistory) 5.이전 상담 검색
-  : /?query=findSearchJoinHistory GET
-
-10.방 상세 정보(speaker id 기준)
- : /?query=getDetailBySpeakerId
-
-11.고객의 조인 히스토리 정보 최신화
- : /:id/updateJoinHistory PUT
-
-12.방 종료 상세 정보 : getRoomJoinHistoryDetail
- : /:id/roomJoinHistory/:roomJoinHistoryId GET
-
-13.메시지 조회
- : /?query=findSearchRangeById GET
-
-*/
-
-/*
-
   방 조회
   
   1.현재 시간 방 통계 정보 : getCurrentTimeStats
@@ -37,7 +18,7 @@ const queryIdPrefix = 'room.';
 
   3.대기인 방 목록 : findReadyState
 
-  4.종료인 방 검색 : findSearchCloseStateㄴ
+  4.종료인 방 검색 : findSearchCloseState
 
 */
 router.get('/', function (req, res, next) {

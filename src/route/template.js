@@ -5,7 +5,6 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const logger = require('../util/logger');
-const _ = require('lodash');
 const queryIdPrefix = 'template.';
 const convertKeywordIds = function (template) {
   if (template) {

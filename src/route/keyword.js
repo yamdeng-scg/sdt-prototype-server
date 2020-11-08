@@ -6,19 +6,6 @@ const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'keyword.';
 
-/*
-
-1.전체 목록 : findAll
- : / GET
-
-2.생성
- : / POST
-
-3.상세
- : /:id GET
-
-*/
-
 // 키워드 생성 : 이름으로 키워드 등록
 router.post('/', function (req, res, next) {
   let paramObject = req.paramObject;
