@@ -493,11 +493,6 @@
       FROM template2
     WHERE id = :id
   </query>
-  <query id="deleteKeyword">
-    DELETE 
-      FROM template_keywword
-    WHERE template_id = :id
-  </query>
   <query id="deleteFavoriteToMember">
     DELETE 
       FROM template_favorite

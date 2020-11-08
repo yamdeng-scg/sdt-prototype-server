@@ -12,7 +12,8 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+						room_id = r.id
+						AND message_id = m.id
 						AND read_date is null
 				) no_read_count,
 				r.name as room_name,
@@ -23,7 +24,7 @@
 				LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
 			WHERE
 				r.id = :roomId
-				AND m.id >= r.join_message_id
+				AND m.id >= IFNULL(r.join_message_id, 0)
 			ORDER BY
 				m.id 
 		]]>
@@ -39,9 +40,10 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+						room_id = r.id
+						AND message_id = m.id
 						AND read_date is null
-				) not_read_count,
+				) no_read_count,
 				r.name as room_name,
 				s.name as speaker_name
 			FROM  room r 
@@ -72,7 +74,8 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+						room_id = r.id
+						AND message_id = m.id
 						AND read_date is null
 				) no_read_count,
 				r.name as room_name,
@@ -84,7 +87,7 @@
 					m.create_date > DATE_SUB(NOW(), INTERVAL :intervalDay DAY) 
 					OR m.id > (
 						SELECT 
-							MIN(read_last_message_id) 
+							IFNULL(MIN(read_last_message_id), 0) 
 						FROM
 							room_speaker 
 						WHERE 
@@ -130,7 +133,7 @@
 				LEFT OUTER JOIN speaker2 s ON m.speaker_id = s.id
 			WHERE 
 				r.id = :roomId 
-				AND m.id >= r.join_message_id
+				AND m.id >= IFNULL(r.join_message_id, 0)
 			ORDER BY 
 				m.id DESC 
 			LIMIT 
@@ -169,7 +172,7 @@
 	<query id="create">
     CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail, :templateId) 
 	</query>
-	<query id="read_message">
+	<query id="readMessage">
     CALL read_message(:roomId, :speakerId, :startId, :endId) 
 	</query>
 	<query id="getReadCountByMessageId">
@@ -200,9 +203,10 @@
 				FROM
 					message_read
 				WHERE
-					message_id = m.id
+					room_id = r.id
+					AND message_id = m.id
 					AND read_date IS NULL
-			) not_read_count,
+			) no_read_count,
 			r.name AS room_name,
 			s.name AS speaker_name,
 			r.is_online,

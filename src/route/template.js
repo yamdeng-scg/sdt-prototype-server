@@ -106,7 +106,7 @@ router.put('/:id', function (req, res, next) {
   dbParam.imagePath = paramObject.imagePath;
   dbParam.imageName = paramObject.imageName;
   dbService
-    .executeQueryById(queryIdPrefix + 'deleteTemplateKeyword', {
+    .executeQueryById(queryIdPrefix + 'deleteKeyword', {
       templateId: id
     })
     .then(() => {
@@ -312,7 +312,9 @@ router.put('/:id/favorite', function (req, res, next) {
       .then(() => {
         res.send({ success: true });
       })
-      .catch(errorRouteHandler(next));
+      .catch(() => {
+        res.send({ success: true });
+      });
   } else {
     dbService
       .executeQueryById(queryIdPrefix + 'deleteFavoriteToMember', dbParam)

@@ -14,7 +14,8 @@ let connection = mysql.createConnection({
   user: config.db.user,
   password: config.db.password,
   port: config.db.port,
-  database: config.db.database
+  database: config.db.database,
+  multipleStatements: true
 });
 
 let reconnectIntervalId = null;
@@ -421,21 +422,31 @@ service.deleteAll = function (tableName) {
 };
 
 // insert, update, delete by queryId
-service.executeQueryById = function (queryId, paramObject) {
+service.executeQueryById = function (queryId, paramObject, isTogetherResult) {
   let queryString = queryInfo[queryId];
   logger.debug(
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
+
   return new Promise((resolve, reject) => {
     connection.query(queryString, paramObject, (error, result) => {
       if (error) {
         reject(error);
       } else {
         logger.debug('executeQueryById result : ' + JSON.stringify(result));
-        resolve({ success: true });
+        if (isTogetherResult) {
+          resolve({ success: true, result: result });
+        } else {
+          resolve({ success: true });
+        }
       }
     });
   });
+};
+
+// insert, update, delete by queryId
+service.executeQueryByIdTogetherResult = function (queryId, paramObject) {
+  service.service.executeQueryById(queryId, paramObject, true);
 };
 
 // select by queryId
@@ -461,7 +472,11 @@ service.selectQueryById = function (queryId, paramObject) {
 };
 
 // insert, update, delete by queryString
-service.executeQueryByStr = function (queryString, paramObject) {
+service.executeQueryByStr = function (
+  queryString,
+  paramObject,
+  isTogetherResult
+) {
   logger.debug(
     'query : ' + queryString + ' @ argument : ' + JSON.stringify(paramObject)
   );
@@ -473,13 +488,22 @@ service.executeQueryByStr = function (queryString, paramObject) {
         if (error) {
           reject(error);
         } else {
-          logger.debug('executeQueryById result : ' + JSON.stringify(result));
-          resolve({ success: true });
+          logger.debug('executeQueryByStr result : ' + JSON.stringify(result));
+          if (isTogetherResult) {
+            resolve({ success: true, result: result });
+          } else {
+            resolve({ success: true });
+          }
         }
       }
     );
     logger.debug('executeSql : ' + executeSql.sql);
   });
+};
+
+// insert, update, delete by queryString
+service.executeQueryByStrTogetherResult = function (queryString, paramObject) {
+  service.service.executeQueryByStr(queryString, paramObject, true);
 };
 
 // select by queryString

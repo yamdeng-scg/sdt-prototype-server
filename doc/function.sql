@@ -84,12 +84,12 @@ CREATE OR REPLACE PROCEDURE regist_customer(
     -- 기존 등록된 고객 조회
       SELECT id INTO v_customer_id
         FROM customer2
-      WHERE gasapp_member_no = _gasapp_member_number;
+      WHERE gasapp_member_number = _gasapp_member_number;
 
     -- 기존 등록된 회사별 고객 상세 조회
       SELECT id, speaker_id, room_id INTO v_customer_company_id, v_speaker_id, v_room_id
         FROM v_customer
-      WHERE company_id = _company_id AND gasapp_member_no = _gasapp_member_no;
+      WHERE company_id = _company_id AND gasapp_member_number = _gasapp_member_number;
 
     -- 고객 존재 여부에 따라 분기
     IF v_customer_id IS NULL THEN
@@ -97,7 +97,7 @@ CREATE OR REPLACE PROCEDURE regist_customer(
         INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 1);
         SET v_speaker_id = LAST_INSERT_ID();
 
-        INSERT INTO customer2(company_id, gasapp_member_number, name, tel_number, speaker_id) VALUES (_company_id, _gasapp_member_number, _name, _tel_number, v_speaker_id);
+        INSERT INTO customer2(gasapp_member_number, name, tel_number, speaker_id) VALUES (_gasapp_member_number, _name, _tel_number, v_speaker_id);
         SET v_customer_id = LAST_INSERT_ID();
         
         -- 방의 상태를 종료로 초기화 : 8
@@ -147,7 +147,7 @@ CREATE OR REPLACE PROCEDURE join_room(
 	IN _room_id INT,
 	IN _speaker_id INT,
   OUT o_read_last_message_id INT,
-  OUT o_max_message_id_ INT
+  OUT o_max_message_id INT
 ) BEGIN
     /*
       
@@ -170,23 +170,23 @@ CREATE OR REPLACE PROCEDURE join_room(
     DECLARE v_max_message_id INT;
     DECLARE v_room_speaker_id INT;
     DECLARE v_read_last_message_id INT;
-    DECLARE v_is_coustomer INT;
+    DECLARE v_is_customer INT;
     DECLARE v_chatid INT;
 
     -- 가장 최근에 작성된 message id
-    SELECT IFNULL(MAX(id), 0) INTO v_max_message_id 
+    SELECT MAX(id) INTO v_max_message_id 
       FROM chat_message
       WHERE room_id = _room_id;
     
     -- 방에 사용자 정보가 존재하는지 조회
-    SELECT id, IFNULL(read_last_message_id, 0) INTO v_room_speaker_id, v_read_last_message_id 
+    SELECT id, read_last_message_id INTO v_room_speaker_id, v_read_last_message_id 
       FROM room_speaker 
       WHERE room_id = _room_id AND speaker_id = _speaker_id;
 
     -- 메시지 사용자의 고객 여부 정보 가져오기 
-    SELECT is_customer INTO v_is_coustomer
+    SELECT is_customer INTO v_is_customer
       FROM speaker2
-      WHERE speaker_id = _speaker_id;
+      WHERE id = _speaker_id;
 
     -- 방에 사용자가 정보가 존재하는 지에 따라 분기
     IF v_room_speaker_id IS NOT NULL THEN
@@ -199,24 +199,24 @@ CREATE OR REPLACE PROCEDURE join_room(
         -- 마지막 메시지까지 모두 읽음 처리
         UPDATE chat_message 
             SET not_read_count = not_read_count - 1
-          WHERE room_id = _room_id AND id BETWEEN v_read_last_message_id AND v_max_message_id;
+          WHERE room_id = _room_id AND id BETWEEN IFNULL(v_read_last_message_id, 0) AND v_max_message_id;
 
         -- 사용자의 메시지 읽음 처리 하기
         UPDATE message_read
             SET read_date = now()
-          WHERE room_id = _room_id AND speaker_id = _speaker_id AND id <= v_max_message_id;
+          WHERE room_id = _room_id AND speaker_id = _speaker_id AND message_id <= v_max_message_id;
 
         -- chatid 조회 : 최초 상담은 chatid가 존재하지 않을 수 있음(2차 검증용임)
         SELECT chatid INTO v_chatid FROM room WHERE id = _room_id;
         IF v_chatid IS NULL THEN
             UPDATE room
-                SET chatid=(SELECT MAX(id) FROM room_join_history WHERE room = _room_id) WHERE id = _room_id;
+                SET chatid=(SELECT MAX(id) FROM room_join_history WHERE room_id = _room_id) WHERE id = _room_id;
         END IF;
 
     END IF;
 
     SET o_read_last_message_id = v_read_last_message_id;
-    SET o_max_message_id_ = v_max_message_id;
+    SET o_max_message_id = v_max_message_id;
 END;
 //
 
@@ -255,9 +255,7 @@ CREATE OR REPLACE PROCEDURE close_room(
     -- 방의 사용자 정보 삭제시키기(사용자 유형이 상담사인 경우만 삭제)
     DELETE 
       FROM room_speaker 
-      WHERE room_id = _room_id AND speaker_id IN (SELECT speaker_id
-                                                FROM room_speaker INNER JOIN speaker2 ON room_speaker.speaker_id = speaker2.id
-                                                WHERE room_speaker.room_id = _room_id AND speaker2.is_customer = 0);
+      WHERE room_id = _room_id AND is_customer = 0;
 
     -- 방 정보 최신화 시키기
     UPDATE room
@@ -389,7 +387,7 @@ CREATE OR REPLACE PROCEDURE match_room(
       FROM member WHERE id = _member_id;
 
     -- 가장 최근에 작성된 message max id
-    SELECT IFNULL(MAX(id), 0) INTO v_max_message_id 
+    SELECT MAX(id) INTO v_max_message_id
       FROM chat_message
       WHERE room_id = _room_id;
 
@@ -397,7 +395,7 @@ CREATE OR REPLACE PROCEDURE match_room(
     IF v_member_id IS NULL THEN
         -- 방 종료 history 최신화 : 상담사가 종료된 상담을 다시 시작을 하고 고객이 작성한 메시지가 없을 경우 join_message_id와 join_history_json 정보는 이전 걸로 유지된다
         INSERT INTO room_join_history (room_id, start_message_id, member_id, join_history_json, company_id, update_member_id)
-            SELECT id, join_message_id, _member_id, join_history_json, company_id, _member_id
+            SELECT id, join_message_id, member_id, join_history_json, company_id, member_id
               FROM room
               WHERE id = _room_id;
         SET v_chatid = Last_Insert_ID();
@@ -407,15 +405,14 @@ CREATE OR REPLACE PROCEDURE match_room(
           WHERE id = _room_id;
 
         -- room_speaker 테이블 insert
-        INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_coustomer)
-            VALUES(_room_id, _speaker_id, v_max_message_id, 0);
+        INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_customer)
+            VALUES(_room_id, v_speaker_id, v_max_message_id, 0);
         
         -- 방의 사용자 정보 삭제시키기(사용자 유형이 상담사인 경우만 삭제하고 상담할 상담사는 제외) : 정상적인 경우에는 필요없음 2차 검증
         DELETE 
           FROM room_speaker 
-          WHERE room_id = _room_id AND speaker_id IN (SELECT speaker_id
-                                                    FROM room_speaker INNER JOIN speaker2 ON room_speaker.speaker_id = speaker2.id
-                                                    WHERE room_speaker.room_id = _room_id AND speaker2.is_customer = 0)
+          WHERE room_id = _room_id
+                AND is_customer = 0
                 AND speaker_id != v_speaker_id;
                 
         -- 메세지 읽음 정보 삭제(사용자 유형이 상담사인 경우만 삭제하고 상담할 상담사는 제외) : 정상적인 경우에는 필요없음 2차 검증
@@ -479,7 +476,7 @@ BEGIN
 
     -- message insert
     INSERT chat_message(company_id, room_id, speaker_id, message_type, is_system_message, message, message_admin_type, is_employee, message_detail, template_id, not_read_count)
-      VALUES(_company_id, _room_id, _speaker_id, _message_type, _is_system_message, _message, _message_admin_type, _is_employee, _message_detail, _template_id, (case when _message_admin_type = 1 then 0 else v_speakercnt - 1 end) );
+      VALUES(_company_id, _room_id, _speaker_id, _message_type, _is_system_message, _message, _message_admin_type, _is_employee, _message_detail, _template_id, (case when _message_admin_type = 1 then 0 else v_speaker_count - 1 end) );
               
     SET v_message_id = LAST_INSERT_ID();
 
@@ -487,27 +484,27 @@ BEGIN
 
         -- 메시지 작성자는 읽은 메시지 정보를 최신화 시킴.
         UPDATE room_speaker
-            SET read_last_message_id = read_last_message_id, read_last_message_id = v_message_id
-          WHERE room = _room_id AND speaker_id = _speaker_id;
+            SET old_last_message_id = read_last_message_id, read_last_message_id = v_message_id
+          WHERE room_id = _room_id AND speaker_id = _speaker_id;
 
         -- 메시지 읽음 테이블 insert : speaker_id는 제외하고 
         INSERT INTO message_read (company_id, room_id, message_id, speaker_id)
               SELECT _company_id, room_id, v_message_id, speaker_id
                 FROM room_speaker
               WHERE speaker_id != _speaker_id;
-
-    END IF;
-    
-    -- room 상태 가져오기
-    SELECT state INTO v_room_state
-      FROM room
-      WHERE id = _room_id;
-      
-    -- 방 상태가 종료 이상인 경우 : 상태를 대기로, 종료일, 조인 메시지 id를 최신화
-    IF v_room_state > 1 THEN
-        UPDATE room
-          SET state = 0, end_date = null, join_message_id = v_message_id
-        WHERE id = _room_id;
+        
+        -- room 상태 가져오기
+        SELECT state INTO v_room_state
+          FROM room
+          WHERE id = _room_id;
+          
+        -- 방 상태가 종료 이상인 경우 : 상태를 대기로, 종료일, 조인 메시지 id를 최신화
+        IF v_room_state > 1 THEN
+            UPDATE room
+              SET state = 0, end_date = null, join_message_id = v_message_id
+            WHERE id = _room_id;
+        END IF;
+        
     END IF;
 
     -- 메시지 상세 조회
@@ -594,7 +591,7 @@ CREATE OR REPLACE PROCEDURE read_message(
         -- 사용자의 메시지 읽음 처리 하기
         UPDATE message_read
             SET read_date = now()
-          WHERE room_id = _room_id AND speaker_id = _speaker_id AND id <= IFNULL(_end_id, 0);
+          WHERE room_id = _room_id AND speaker_id = _speaker_id AND message_id <= IFNULL(_end_id, 0);
 
     END IF;
 

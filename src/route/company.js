@@ -30,7 +30,7 @@ router.get('/', function (req, res, next) {
 router.get('/:id', function (req, res, next) {
   let id = req.params.id;
   let paramObject = { id: id };
-  let queryId = queryIdPrefix + 'getByLoginName';
+  let queryId = queryIdPrefix + 'getDetail';
   dbService
     .selectQueryById(queryId, paramObject)
     .then((data) => {

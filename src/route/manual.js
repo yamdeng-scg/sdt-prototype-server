@@ -150,7 +150,9 @@ router.put('/:id/favorite', function (req, res, next) {
       .then(() => {
         res.send({ success: true });
       })
-      .catch(errorRouteHandler(next));
+      .catch(() => {
+        res.send({ success: true });
+      });
   } else {
     dbService
       .executeQueryById(queryIdPrefix + 'deleteFavoriteToMember', dbParam)

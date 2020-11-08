@@ -406,11 +406,10 @@
 				mb2.name AS last_member_name,
 				(SELECT GROUP_CONCAT(DISTINCT message_detail)
            FROM chat_message
-        	WHERE room_id = :roomId AND id BETWEEN rjh.start_message_id 
+        	WHERE room_id = :roomId AND id BETWEEN IFNULL(rjh.start_message_id, 0) 
               AND rjh.end_message_id) AS tags
 			FROM 
-				room_join_history rjh 
-				INNER JOIN chat_message m ON rjh.start_message_id = m.id 
+				room_join_history rjh
 				LEFT OUTER JOIN member mb ON mb.id = rjh.member_id 
 				LEFT OUTER JOIN speaker2 sp ON mb.speaker_id = sp.id
 				LEFT OUTER JOIN member mb2 ON mb2.id = rjh.last_member_id
@@ -424,7 +423,7 @@
 						chat_message 
 					WHERE 
 						room_id = :roomId 
-						AND id BETWEEN rjh.start_message_id 
+						AND id BETWEEN IFNULL(rjh.start_message_id, 0) 
 						AND rjh.end_message_id 
 						AND is_system_message = 0 
 						AND message_admin_type = 0 
@@ -539,7 +538,7 @@
 		]]>
 	</query>
 	<query id="joinRoom">
-    CALL join_room(:roomId, :speakerId)
+		CALL join_room(:roomId, :speakerId, @readLastMessageId, @maxMessageId); SELECT @readLastMessageId, @maxMessageId;
 	</query>
 	<query id="closeRoom">
     CALL close_room(:roomId, :loginId) 
@@ -584,7 +583,7 @@
         r.state AS room_state, 
         (
           SELECT 
-            read_last_message_id 
+            IFNULL(read_last_message_id, 0) 
           FROM 
             room_speaker 
           WHERE 
@@ -609,8 +608,7 @@
             chat_message 
           WHERE 
             room_id = r.id 
-            AND id > read_last_message_id 
-            AND is_system_message = 0 
+            AND id > read_last_message_id
             AND message_admin_type = 0
         ) AS no_read_count, 
         vc.* 
