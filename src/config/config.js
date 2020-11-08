@@ -20,10 +20,10 @@ config.LOG_MAX_FILE_COUNT = 3;
 // db connection info
 config.db = {
   host: 'localhost',
-  user: 'cstalk',
-  password: 'cstalk12#$',
+  user: 'scglab2',
+  password: '1234',
   port: 3306,
-  database: 'cstalk'
+  database: 'sdtprototype'
 };
 
 // 메시지 조회 기간
