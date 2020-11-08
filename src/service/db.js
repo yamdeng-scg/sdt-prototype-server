@@ -120,56 +120,8 @@ service.connect = function () {
 
 // common insert
 service.insert = function (tableName, insertArgumentInfo) {
-  let applyQueryArgument = helper.changeKeyToUnderScore(insertArgumentInfo);
-  return new Promise((resolve, reject) => {
-    let argumentKeys = _.keys(applyQueryArgument);
-    let insertFullQueryString = 'INSERT INTO ' + tableName + ' (';
-    let insertColumnQueryString = '';
-    argumentKeys.forEach((keyName) => {
-      if (keyName === 'usage') {
-        keyName = '`usage`';
-      }
-      if (insertColumnQueryString) {
-        insertColumnQueryString = insertColumnQueryString + ', ' + keyName;
-      } else {
-        insertColumnQueryString = keyName;
-      }
-    });
-    insertFullQueryString =
-      insertFullQueryString + insertColumnQueryString + ') VALUES (';
-    let insertValueQueryString = '';
-    argumentKeys.forEach((keyName) => {
-      if (keyName === 'usage') {
-        keyName = '`usage`';
-      }
-      if (insertValueQueryString) {
-        insertValueQueryString = insertValueQueryString + ', ' + ':' + keyName;
-      } else {
-        insertValueQueryString = ':' + keyName;
-      }
-    });
-    insertFullQueryString =
-      insertFullQueryString + insertValueQueryString + ')';
-    logger.debug(
-      'query : ' +
-        insertFullQueryString +
-        ' @ argument : ' +
-        JSON.stringify(applyQueryArgument)
-    );
-    connection.query(
-      insertFullQueryString,
-      applyQueryArgument,
-      (error, results) => {
-        if (error) {
-          reject(error);
-          return Promise.reject(error);
-        } else {
-          return resolve({ insertId: results.insertId });
-        }
-      }
-    );
-  }).then((result) => {
-    return service.selectOne(tableName, result.insertId);
+  return service.insertOnly(tableName, insertArgumentInfo).then((result) => {
+    return service.selectOne(tableName, result.id);
   });
 };
 
@@ -233,37 +185,8 @@ service.update = function (
   idValue,
   idColumnName
 ) {
-  let applyQueryArgument = helper.changeKeyToUnderScore(updateArgumentInfo);
-  let argumentKeys = _.keys(applyQueryArgument);
-  let updateFullQueryString = 'UPDATE ' + tableName + ' SET ';
-  let updateSetQueryString = '';
-  argumentKeys.forEach((keyName) => {
-    if (keyName === 'usage') {
-      keyName = '`usage`';
-    }
-    if (updateSetQueryString) {
-      updateSetQueryString =
-        updateSetQueryString + ', ' + keyName + '= :' + keyName;
-    } else {
-      updateSetQueryString = keyName + '= :' + keyName;
-    }
-  });
-  idColumnName = idColumnName || 'id';
-  updateFullQueryString =
-    updateFullQueryString +
-    updateSetQueryString +
-    ' WHERE ' +
-    idColumnName +
-    ' = ' +
-    idValue;
-  logger.debug(
-    'query : ' +
-      updateFullQueryString +
-      ' @ argument : ' +
-      JSON.stringify(applyQueryArgument)
-  );
   return service
-    .executeQueryByStr(updateFullQueryString, applyQueryArgument)
+    .updateOnly(tableName, updateArgumentInfo, idValue, idColumnName)
     .then(() => service.selectOne(tableName, idValue));
 };
 
