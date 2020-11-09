@@ -568,7 +568,7 @@
   <query id="getAutoMessageRandom">
     SELECT *
       FROM   auto_message
-    WHERE  company_id = :company_id
+    WHERE  company_id = :companyId
       AND  type = :type
    ORDER BY RAND() limit 1
   </query>

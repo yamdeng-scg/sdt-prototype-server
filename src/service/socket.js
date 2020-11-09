@@ -11,6 +11,10 @@ const companyService = require('./company');
 
 const service = {};
 
+service.sendEvent = function (socket, eventName, data) {
+  socket.emit(eventName, data);
+};
+
 service.connect = function (socket) {
   let sockeyConnectQuery = socket.handshake.query;
   let appId = sockeyConnectQuery.appId;
@@ -23,8 +27,23 @@ service.connect = function (socket) {
     service.loginMember(socket);
   }
 
-  socket.on('room-detail', (msg) => {
-    logger.info('message : ' + msg);
+  socket.on('room-detail', (data, socketCallBack) => {
+    let dbParam = { id: data.roomId };
+    dbService
+      .selectQueryById('room.getDetail', dbParam)
+      .then((result) => {
+        socketCallBack(result[0]);
+        service.sendEvent(socket, 'room-detail', result[0]);
+      })
+      .catch(errorSocketHandler(socket));
+    // let dbParam = { speakerId: data.speakerId };
+    // dbService
+    //   .selectQueryById('room.getDetailBySpeakerId', dbParam)
+    //   .then((result) => {
+    //     socketCallBack(result[0]);
+    //     service.sendEvent(socket, 'room-detail', result[0]);
+    //   })
+    //   .catch(errorSocketHandler(socket));
   });
 
   socket.on('join', (msg) => {
@@ -84,9 +103,9 @@ service.loginCustomer = function (socket) {
     .then((profile) => {
       let dbParam = {
         companyId: companyId,
-        loginName: profile.loginName,
+        telNumber: profile.telNumber,
         name: profile.name,
-        authLevel: profile.authLevel || 9
+        gasappMemberNumber: appId
       };
       return dbService.executeQueryById('customer.regist', dbParam).then(() => {
         return dbService
