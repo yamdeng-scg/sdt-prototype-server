@@ -5,9 +5,9 @@ const SocketError = require('./SocketError');
 module.exports = function (socket) {
   return function (error) {
     if (error instanceof SocketError) {
-      socket.emit('error', error);
+      socket.emit('app-error', error);
     } else {
-      socket.emit('error', new SocketError('socket error : ', [error]));
+      socket.emit('app-error', new SocketError('socket error : ', [error]));
     }
   };
 };

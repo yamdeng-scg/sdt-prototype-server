@@ -369,7 +369,7 @@ service.executeQueryById = function (queryId, paramObject, isTogetherResult) {
 
 // insert, update, delete by queryId
 service.executeQueryByIdTogetherResult = function (queryId, paramObject) {
-  service.service.executeQueryById(queryId, paramObject, true);
+  return service.executeQueryById(queryId, paramObject, true);
 };
 
 // select by queryId
@@ -426,7 +426,7 @@ service.executeQueryByStr = function (
 
 // insert, update, delete by queryString
 service.executeQueryByStrTogetherResult = function (queryString, paramObject) {
-  service.service.executeQueryByStr(queryString, paramObject, true);
+  return service.executeQueryByStr(queryString, paramObject, true);
 };
 
 // select by queryString

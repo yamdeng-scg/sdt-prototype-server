@@ -552,7 +552,7 @@
 	<query id="updateOnline">
     UPDATE room 
 			SET    is_online = :isOnline 
-			WHERE  id = :id 
+			WHERE  id = :roomId 
 	</query>
 	<query id="getDetailBySpeakerId">
 		<![CDATA[

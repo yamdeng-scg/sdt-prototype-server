@@ -32,6 +32,8 @@ try {
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+socketService.setSocketIo(io);
+
 // socket.io event listen
 io.on('connection', (socket) => {
   logger.info('connection socket : ' + socket);
