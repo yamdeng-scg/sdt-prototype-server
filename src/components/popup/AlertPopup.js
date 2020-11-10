@@ -1,14 +1,14 @@
 import React from 'react';
 
-class NoticePopup extends React.Component {
+class AlertPopupjs extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    return <div>NoticePopup</div>;
+    return <div>AlertPopupjs</div>;
   }
 }
 
-export default NoticePopup;
+export default AlertPopupjs;
