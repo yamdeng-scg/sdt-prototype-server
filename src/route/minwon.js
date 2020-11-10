@@ -18,7 +18,8 @@ router.post('/', function (req, res, next) {
     memo: paramObject.telNumber,
     chatid: paramObject.chatid,
     gasappMemberNumber: paramObject.gasappMemberNumber,
-    updateMemberId: paramObject.loginId
+    updateMemberId: paramObject.loginId,
+    roomId: paramObject.roomId
   };
   dbService
     .insert('minwon_history', dbQueryParam)

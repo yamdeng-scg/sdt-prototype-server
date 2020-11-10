@@ -334,6 +334,7 @@ CREATE TABLE IF NOT EXISTS `minwon_history` (
   `tel_number` varchar(255) DEFAULT NULL COMMENT '고객 핸드폰 번호',
   `memo` varchar(2047) DEFAULT NULL COMMENT '메모',
   `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
+  `room_id` int(10) unsigned DEFAULT NULL COMMENT '방 id(room table)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='민원 이력';
 
@@ -768,6 +769,7 @@ CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id,messa
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
+ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
 
 -- link_menu
 ALTER TABLE link_menu ADD CONSTRAINT link_menu_company_FK FOREIGN KEY (company_id) REFERENCES company(id);

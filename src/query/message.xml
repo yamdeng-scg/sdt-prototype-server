@@ -176,7 +176,7 @@
     CALL read_message(:roomId, :speakerId, :startId, :endId) 
 	</query>
 	<query id="getReadCountByMessageId">
-		SELECT COUNT(id) AS readCount 
+		SELECT COUNT(id) AS read_count 
 			FROM   message_read 
 			WHERE  message_id = :id
 				AND read_date IS NOT NULL 

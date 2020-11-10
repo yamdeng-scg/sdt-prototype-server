@@ -154,6 +154,14 @@ service.connect = function (socket) {
       .then((dbResult) => {
         let newMessage = dbResult.result[0][0];
         service.sendEventByRoomId(roomId, 'message', newMessage);
+        if (socket.isCustomer) {
+          // 고객이 작성한 메시지이고 조인 메시지id와 마지막 생성된 메시지가 동일한 경우에
+          if (newMessage.joinMessasgeId === newMessage.id) {
+            service.sendEventByRoomId('speaker' + companyId, 'receive-event', {
+              eventName: 'reload-ready-room'
+            });
+          }
+        }
       });
   });
 
