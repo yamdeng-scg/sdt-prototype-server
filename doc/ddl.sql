@@ -465,6 +465,18 @@ CREATE TABLE IF NOT EXISTS `action_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='액션 히스토리';
 
 
+-- talk_review <--- new table : 고객 리뷰
+CREATE TABLE IF NOT EXISTS `talk_review` (
+  `id` bigint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT 'PK',
+  `company_id` varchar(10) DEFAULT NULL COMMENT '회사 id(company table)',
+  `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
+  `gasapp_member_number` varchar(255) NOT NULL COMMENT '가스앱 회원번호',
+  `review_score` smallint(5) unsigned NOT NULL DEFAULT 1 COMMENT '리뷰 점수',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='고객 리뷰';
+
+
 /*
 
 -- data migration query
