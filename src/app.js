@@ -7,6 +7,7 @@ const compress = require('compression');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const favicon = require('serve-favicon');
+const history = require('connect-history-api-fallback');
 const authRoute = require('./route/auth');
 const companyRoute = require('./route/company');
 const applicationRoute = require('./route/application');
@@ -34,6 +35,15 @@ appInit(app);
 
 app
   .use(compress())
+  .use(
+    history({
+      index: '/index.html',
+      rewrites: [
+        { from: /\/manual/, to: '/manual.html' },
+        { from: /\/admin/, to: '/admin.html' }
+      ]
+    })
+  )
   .use(express.static(__dirname + '/../public'))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
