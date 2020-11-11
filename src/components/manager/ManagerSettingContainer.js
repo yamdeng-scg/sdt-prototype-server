@@ -1,13 +1,12 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import ManagerMenu from './ManagerMenu';
-import StatsContiner from './StatsContiner';
-import EmployeeList from './EmployeeList';
-import TemplateCategory from './TemplateCategory';
+import ManagerSettingLeftMenu from './ManagerSettingLeftMenu';
+import MemberList from './MemberList';
+import TemplateCategoryContainer from './TemplateCategoryContainer';
 import AutoMessage from './AutoMessage';
 import BlackCustomerList from './BlackCustomerList';
 
-class ManagerContainer extends React.Component {
+class ManagerSettingContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -17,24 +16,15 @@ class ManagerContainer extends React.Component {
     let { match } = this.props;
     return (
       <div>
-        <ManagerMenu />
+        <ManagerSettingLeftMenu />
         <Switch>
           <Route
-            exact
-            path={match.path}
-            render={(props) => <StatsContiner {...props} />}
-          />
-          <Route
-            path={`${match.path}/stats`}
-            render={(props) => <StatsContiner {...props} />}
-          />
-          <Route
-            path={`${match.path}/emps`}
-            render={(props) => <EmployeeList {...props} />}
+            path={`${match.path}/members`}
+            render={(props) => <MemberList {...props} />}
           />
           <Route
             path={`${match.path}/category`}
-            render={(props) => <TemplateCategory {...props} />}
+            render={(props) => <TemplateCategoryContainer {...props} />}
           />
           <Route
             path={`${match.path}/autoMessage`}
@@ -50,4 +40,4 @@ class ManagerContainer extends React.Component {
   }
 }
 
-export default ManagerContainer;
+export default ManagerSettingContainer;

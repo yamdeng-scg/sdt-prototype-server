@@ -1,14 +1,14 @@
 import React from 'react';
 
-class TalkHistory extends React.Component {
+class TopHeader extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    return <div>TalkHistory</div>;
+    return <div>TopHeader</div>;
   }
 }
 
-export default TalkHistory;
+export default TopHeader;

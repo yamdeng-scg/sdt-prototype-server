@@ -2,7 +2,7 @@ import AppStore from './AppStore';
 import UiStore from './UiStore';
 import ChatStore from './ChatStore';
 import LoginStore from './LoginStore';
-import PdfManualStore from './PdfManualStore';
+import ManualStore from './ManualStore';
 import TemplateStore from './TemplateStore';
 import AutoMessageStore from './manager/AutoMessageStore';
 import BlackCustomerStore from './manager/BlackCustomerStore';
@@ -16,7 +16,7 @@ class RootStore {
     this.uiStore = new UiStore(this);
     this.chatStore = new ChatStore(this);
     this.loginStore = new LoginStore(this);
-    this.pdfManualStore = new PdfManualStore(this);
+    this.manualStore = new ManualStore(this);
     this.templateStore = new TemplateStore(this);
     this.autoMessageStore = new AutoMessageStore(this);
     this.blackCustomerStore = new BlackCustomerStore(this);

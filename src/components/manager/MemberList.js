@@ -1,14 +1,14 @@
 import React from 'react';
 
-class EmployeeList extends React.Component {
+class MemberList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    return <div>EmployeeList</div>;
+    return <div>MemberList</div>;
   }
 }
 
-export default EmployeeList;
+export default MemberList;

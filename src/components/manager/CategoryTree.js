@@ -1,14 +1,14 @@
 import React from 'react';
 
-class PDFManualList extends React.Component {
+class CategoryTree extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    return <div>PDFManualList</div>;
+    return <div>CategoryTree</div>;
   }
 }
 
-export default PDFManualList;
+export default CategoryTree;

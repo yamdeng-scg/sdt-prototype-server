@@ -1,14 +1,14 @@
 import React from 'react';
 
-class StatsContiner extends React.Component {
+class CategoryForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
   }
 
   render() {
-    return <div>StatsContiner</div>;
+    return <div>CategoryForm</div>;
   }
 }
 
-export default StatsContiner;
+export default CategoryForm;

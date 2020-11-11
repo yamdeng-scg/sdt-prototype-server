@@ -1,6 +1,6 @@
 import { observable, action } from 'mobx';
 
-class PdfManualStore {
+class ManualStore {
   // 로딩바 display
   @observable displayLoadingBar = false;
 
@@ -12,4 +12,4 @@ class PdfManualStore {
   handle() {}
 }
 
-export default PdfManualStore;
+export default ManualStore;

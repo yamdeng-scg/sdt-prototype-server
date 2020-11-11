@@ -11,7 +11,7 @@ import ManagerSettingContainer from '../manager/ManagerSettingContainer';
 @withRouter
 @inject('appStore', 'uiStore')
 @observer
-class Main extends React.Component {
+class AdminMain extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -62,4 +62,4 @@ class Main extends React.Component {
   }
 }
 
-export default Main;
+export default AdminMain;

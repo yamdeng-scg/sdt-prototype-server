@@ -3,8 +3,6 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import RoomList from './RoomList';
-import ChatAreaContainer from './ChatAreaContainer';
-import WiseSaying from './WiseSaying';
 
 @withRouter
 @inject('chatStore')
@@ -23,9 +21,7 @@ class ChatContainer extends React.Component {
         <Col span={6}>
           <RoomList />
         </Col>
-        <Col span={18}>
-          {chatCustomerInfo ? <ChatAreaContainer /> : <WiseSaying />}
-        </Col>
+        <Col span={18}>{chatCustomerInfo ? null : null}</Col>
       </Row>
     );
   }
