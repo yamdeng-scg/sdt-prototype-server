@@ -10,60 +10,6 @@ import AppHistory from './utils/AppHistory';
 import ErrorService from 'src/services/ErrorService';
 import Login from './components/Login';
 
-/*
-
- 1.Login.js : 권한여부 관련 같이 표기
- 2.Main.js : 로그인 권한이 있는 사용자
-  -SideBar.js
- @.이하부터는 body 바뀌는 부분임
- 3.채팅 컨테이너 : /chat ChatContainer.js
-  -좌측 방목록 : RoomList.js
-  -상단 사용자 정보 : CurrentUserInfo.js
-  -가운데 채팅 영역 : ChatAreaContainer.js
-   ㄴ.MessageList.js
-   ㄷ.SendMessageInput.js
-   ㄹ.ChatAreaBottom.js
-     -ChatAreaBottomReplySearch.js
-     -ChatAreaBottomFav.js
-     -ChatAreaBottomLink.js
-     -ChatAreaBottomWarning.js
-  -우측 계약 정보 영역 : ContractAreaContainer.js
-   ㄱ.ContractDeftail.js
-   ㄴ.TalkHistory.js
-
- 4.나의 답변템플릿 / 즐겨찾기 답변템플릿 / 전체 답변템플릿 : /template TemplateContainer.js
-  -TemplateMenu.js
-  -TemplateSearch.js
-
- 5.답변 도우미(new까지 고려) : /pdfmanual PDFManualContainer.js
-  -좌측 목록 : PDFManualList.js
-  -우측 상세 : PDFManualDetail.js
-
- 6.관리자 : /manager or /manager/stats ManagerContainer.js
-  -좌측 공통 영역 : ManagerMenu.js
-  6-1.현재 진행 상황 및 기간 별 통계 : /manager/stats?activeTabIndex=0 StatsContiner.js
-   ㄱ.현재 진행 상황 탭
-    -CurrentIngStats.js
-   ㄴ.기간 별 통계 탭
-    -PeriodStats.js
-  6-2.계정 관리 : /manager/emps EmployeeList.js
-  6-3.답변 템플릿 카테고리 관리 : /manager/category TemplateCategory.js
-  6-4.자동 메시지 관리 : /manager/autoMessage AutoMessage.js
-  6-5.관심고객 관리 : /manager/blackCustomer BlackCustomerList.js
-
- #.팝업 / 레이어
-  1.민원 등록 팝업 : MinwonAddPopup.js
-  2.채팅영역의 챗봇대화 : ChatBotHistroyPopup.js
-  3.템플릿 등록 / 수정 : TemplateFormPopup.js
-  4.상담 상태 변경 : EmpStateChangePopup.js
-  5.종료대기 상태 변경 : ClosingStateSpaceChangePopup.js
-  6.관심고객 지정 및 해제 : BlackCustomerPopup.js
-  7.상담이관 : TalkMovePopup.js
-  8.내 상담으로 가져오기 : TalkMoveSelfPopup.js
-  9.데스크톱 공지 설정 : NoticePopup.js
-
-*/
-
 @withRouter
 @inject('appStore', 'uiStore')
 @observer

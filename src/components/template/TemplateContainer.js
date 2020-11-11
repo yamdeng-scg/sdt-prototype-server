@@ -1,5 +1,5 @@
 import React from 'react';
-import TemplateMenu from './TemplateMenu';
+import TemplateTree from './TemplateTree';
 import TemplateSearch from './TemplateSearch';
 
 class TemplateContainer extends React.Component {
@@ -11,7 +11,7 @@ class TemplateContainer extends React.Component {
   render() {
     return (
       <div>
-        <TemplateMenu />
+        <TemplateTree />
         <TemplateSearch />
       </div>
     );
