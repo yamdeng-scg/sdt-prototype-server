@@ -1,10 +1,20 @@
 import { observable, action } from 'mobx';
 
-class LoginStore {
-  // 로딩바 display
-  @observable loginId = false;
+// {
+//   "loginName": "yamdeng1",
+//   "password": "1234",
+//   "companyId": "1",
+//   "name": "안용성"
+// }
 
-  @observable password = false;
+class LoginStore {
+  @observable loginName = null;
+
+  @observable password = null;
+
+  @observable name = null;
+
+  @observable companyId = null;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
