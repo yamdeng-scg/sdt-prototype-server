@@ -3,6 +3,7 @@ import { Row, Col } from 'antd';
 import MessageList from './MessageList';
 import SendMessageInput from './SendMessageInput';
 import ChatAreaBottom from './ChatAreaBottom';
+import MessageListTop from './MessageListTop';
 
 class MessageContainer extends React.Component {
   constructor(props) {
@@ -13,12 +14,11 @@ class MessageContainer extends React.Component {
   render() {
     return (
       <div style={{ position: 'relative' }}>
+        <MessageListTop />
         <Row>
-          <Col span={24}>
+          <Col span={24} style={{ position: 'relative', padding: '0px 5px' }}>
             <MessageList />
           </Col>
-        </Row>
-        <Row>
           <Col span={24}>
             <SendMessageInput />
           </Col>

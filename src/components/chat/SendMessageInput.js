@@ -12,11 +12,11 @@ class SendMessageInput extends React.Component {
     return (
       <div>
         <TextArea
-          autoSize={true}
+          autoSize={false}
           style={{
-            backgroundColor: '#78bffd'
+            backgroundColor: '#fff'
           }}
-        ></TextArea>
+        ></TextArea>{' '}
         <Button type="primary" shape="round" size="small">
           전송
         </Button>

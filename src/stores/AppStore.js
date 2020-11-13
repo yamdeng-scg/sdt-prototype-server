@@ -5,10 +5,10 @@ class AppStore {
   @observable company = 0;
 
   // 로그인 token
-  @observable token = null;
+  @observable token = 'aa';
 
   // 로그인한 사용자 정보
-  @observable userInfo = null;
+  @observable userInfo = {};
 
   constructor(rootStore) {
     this.rootStore = rootStore;

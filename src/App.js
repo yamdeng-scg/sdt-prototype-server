@@ -9,6 +9,7 @@ import Logger from './utils/Logger';
 import AppHistory from './utils/AppHistory';
 import ErrorService from 'src/services/ErrorService';
 import Login from './components/Login';
+import ModalContainer from './components/layout/ModalContainer';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -100,6 +101,7 @@ class App extends Component {
         <React.Fragment>
           {token ? <Main /> : <Login />}
           {DEV_TOOL_COMPONENT}
+          <ModalContainer />
         </React.Fragment>
       </ErrorBoundary>
     );

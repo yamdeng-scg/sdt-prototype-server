@@ -3,6 +3,9 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import RoomList from './RoomList';
+import MessageContainer from './MessageContainer';
+import ContractDeftail from './ContractDeftail';
+import MyTodayStats from './MyTodayStats';
 
 @withRouter
 @inject('chatStore')
@@ -15,13 +18,32 @@ class ChatContainer extends React.Component {
 
   render() {
     let { chatStore } = this.props;
-    let { chatCustomerInfo } = chatStore;
+    let { currentRoomInfo } = chatStore;
+    let detailMessgeComponent = null;
+    if (!currentRoomInfo) {
+      detailMessgeComponent = (
+        <React.Fragment>
+          <Col span={10}>
+            <MessageContainer />
+          </Col>
+          <Col span={8}>
+            <ContractDeftail />
+          </Col>
+        </React.Fragment>
+      );
+    } else {
+      detailMessgeComponent = (
+        <Col span={18}>
+          <MyTodayStats />
+        </Col>
+      );
+    }
     return (
       <Row style={{ height: '100%' }}>
         <Col span={6}>
           <RoomList />
         </Col>
-        <Col span={18}>{chatCustomerInfo ? null : null}</Col>
+        {detailMessgeComponent}
       </Row>
     );
   }
