@@ -3,6 +3,7 @@ import { inject, observer } from 'mobx-react';
 import { Route, withRouter, Switch } from 'react-router-dom';
 import NotFound from '../NotFound';
 import SideBar from '../layout/SideBar';
+import TopHeader from '../layout/TopHeader';
 import ChatContainer from '../chat/ChatContainer';
 import TemplateContainer from '../template/TemplateContainer';
 import ManualContainer from '../manual/ManualContainer';
@@ -20,12 +21,19 @@ class Main extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div style={{ height: '100%' }}>
+        <div
+          style={{
+            height: '100%',
+            overflow: 'hidden'
+          }}
+        >
+          <TopHeader />
           <SideBar />
           <div
             style={{
               height: '100%',
-              marginLeft: 110
+              marginLeft: 110,
+              marginTop: 50
             }}
           >
             <Switch>

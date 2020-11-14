@@ -9,6 +9,8 @@ import BlackCustomerStore from './manager/BlackCustomerStore';
 import CategoryStore from './manager/CategoryStore';
 import EmpStore from './manager/EmpStore';
 import StatsStore from './manager/StatsStore';
+import AlertModalStore from './AlertModalStore';
+import ModalStore from './ModalStore';
 
 class RootStore {
   constructor() {
@@ -23,6 +25,8 @@ class RootStore {
     this.categoryStore = new CategoryStore(this);
     this.empStore = new EmpStore(this);
     this.statsStore = new StatsStore(this);
+    this.alertModalStore = new AlertModalStore(this);
+    this.modalStore = new ModalStore(this);
   }
 }
 

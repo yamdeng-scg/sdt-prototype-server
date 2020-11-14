@@ -53,3 +53,23 @@ code {
   display: inline-block;
   width: 80%;
 }
+
+.site-badge-count-room .ant-badge-count {
+  background-color: #78bffd;
+  color: #fff;
+}
+
+.ant-modal-body {
+  padding: 0
+}
+
+
+.ant-modal-close-x {
+  line-height: 36px;
+  width: 36px;
+  height: 36px; 
+}
+
+.ant-input-textarea {
+  width :100%;
+}

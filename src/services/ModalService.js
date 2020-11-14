@@ -4,12 +4,12 @@ import ModalType from '../config/ModalType';
 class ModalService {
   // AlertModal 모달 오픈
   alert(modalData) {
-    rootStore.alertModalStore.showModal(ModalType.ALERT, modalData);
+    rootStore.alertModalStore.showModal(ModalType.ALERT_POPUP, modalData);
   }
 
   // ConfirmModal 모달 오픈
   confirm(modalData) {
-    rootStore.alertModalStore.showModal(ModalType.CONFIRM, modalData);
+    rootStore.alertModalStore.showModal(ModalType.CONFRIM_POPUP, modalData);
   }
 
   // AlertModalContainer에 정의한 모달 오픈

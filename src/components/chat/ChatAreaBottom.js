@@ -29,7 +29,6 @@ class ChatAreaBottom extends React.Component {
     }
     return (
       <div>
-        {applyBottomTabComponent}
         <Row style={{ borderTop: '1px solid #f0f0f0', textAlign: 'center' }}>
           <Col
             span={6}
@@ -64,6 +63,7 @@ class ChatAreaBottom extends React.Component {
             경고메시지
           </Col>
         </Row>
+        {applyBottomTabComponent}
       </div>
     );
   }
