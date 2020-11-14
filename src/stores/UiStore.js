@@ -1,5 +1,5 @@
 import { observable, action } from 'mobx';
-import AppHistory from 'src/utils/AppHistory';
+import AppHistory from '../utils/AppHistory';
 
 class UiStore {
   // 로딩바 display

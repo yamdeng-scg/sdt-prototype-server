@@ -6,7 +6,7 @@ import Constant from '../config/Constant';
 import moment from 'moment';
 
 const Logger = {
-  debug: function (message) {
+  debug: function(message) {
     if (process.env.APP_ENV === Constant.APP_ENV_DEVELOPMENT) {
       // eslint-disable-next-line
       console.debug(message);
@@ -31,15 +31,15 @@ const Logger = {
       }
     }
   },
-  info: function (message) {
+  info: function(message) {
     // eslint-disable-next-line
     console.info(message);
   },
-  warn: function (message) {
+  warn: function(message) {
     // eslint-disable-next-line
     console.warn(message);
   },
-  error: function (message) {
+  error: function(message) {
     // eslint-disable-next-line
     console.error(message);
     try {
@@ -61,7 +61,7 @@ const Logger = {
       console.error('Logger error : ' + JSON.stringify(e));
     }
   },
-  log: function (message) {
+  log: function(message) {
     // eslint-disable-next-line
     console.log(message);
   }

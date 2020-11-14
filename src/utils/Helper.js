@@ -144,7 +144,7 @@ function checkIsToady(value, valueFormat) {
 }
 
 // 이미지 파일 업로드 확장자 체크
-const checkImageFileUploadExtension = function (fileObject) {
+const checkImageFileUploadExtension = function(fileObject) {
   const imageExtensionList = ['png', 'jpg', 'jpeg', 'gif', 'bmp'];
   let fileName = fileObject.name;
   let fileExtenstion = '';
@@ -153,7 +153,7 @@ const checkImageFileUploadExtension = function (fileObject) {
     fileExtenstion = fileName
       .substr(fileName.lastIndexOf('.') + 1)
       .toLowerCase();
-    let extensionSearchIndex = _.findIndex(imageExtensionList, (info) => {
+    let extensionSearchIndex = _.findIndex(imageExtensionList, info => {
       return info === fileExtenstion;
     });
     if (extensionSearchIndex !== -1) {

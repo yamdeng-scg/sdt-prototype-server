@@ -57,7 +57,7 @@ class ErrorBoundary extends React.Component {
         <React.Fragment>
           <button
             color="primary"
-            onClick={(event) => this.copyToClipboardByTextArea(textAreaId)}
+            onClick={event => this.copyToClipboardByTextArea(textAreaId)}
           >
             에러 복사
           </button>

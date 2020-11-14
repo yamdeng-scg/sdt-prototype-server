@@ -20,19 +20,19 @@ class ManagerSettingContainer extends React.Component {
         <Switch>
           <Route
             path={`${match.path}/members`}
-            render={(props) => <MemberList {...props} />}
+            render={props => <MemberList {...props} />}
           />
           <Route
             path={`${match.path}/category`}
-            render={(props) => <TemplateCategoryContainer {...props} />}
+            render={props => <TemplateCategoryContainer {...props} />}
           />
           <Route
             path={`${match.path}/autoMessage`}
-            render={(props) => <AutoMessage {...props} />}
+            render={props => <AutoMessage {...props} />}
           />
           <Route
             path={`${match.path}/blackCustomer`}
-            render={(props) => <BlackCustomerList {...props} />}
+            render={props => <BlackCustomerList {...props} />}
           />
         </Switch>
       </div>

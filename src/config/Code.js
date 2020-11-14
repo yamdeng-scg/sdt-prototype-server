@@ -178,10 +178,10 @@ Code.unapprovedReasonCode = [
 // 번호 복사하기 code 목록
 Code.normalPasteCodeList = [{ name: '복사하기', value: '1' }];
 
-Code.getCodeNameByValue = function (codeCategory, codeValue) {
+Code.getCodeNameByValue = function(codeCategory, codeValue) {
   let codeName = null;
   let codeList = Code[codeCategory] || [];
-  let searchIndex = _.findIndex(codeList, (codeInfo) => {
+  let searchIndex = _.findIndex(codeList, codeInfo => {
     if (codeValue === codeInfo.value) {
       return true;
     } else {
