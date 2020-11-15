@@ -1,12 +1,11 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Route, withRouter, Switch } from 'react-router-dom';
+import { Row, Col } from 'antd';
 import NotFound from '../NotFound';
-import SideBar from '../layout/SideBar';
-import ChatContainer from '../chat/ChatContainer';
-import TemplateContainer from '../template/TemplateContainer';
-import ManualContainer from '../manual/ManualContainer';
-import ManagerSettingContainer from '../manager/ManagerSettingContainer';
+import ManualDetail from '../manual/ManualDetail';
+import ManualForm from '../manual/ManualForm';
+import ManualList from '../manual/ManualList';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -20,43 +19,36 @@ class ManualMain extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div style={{ height: '100%' }}>
-          <SideBar />
-          <div
-            style={{
-              height: '100%',
-              marginLeft: 110
-            }}
-          >
+        <Row>
+          <Col span={8}>
+            <ManualList />
+          </Col>
+          <Col span={16}>
             <Switch>
               <Route
                 exact
-                path="/"
-                render={(props) => <ChatContainer {...props} />}
-              />
-              <Route
-                exact
-                path="/chat"
-                render={(props) => <ChatContainer {...props} />}
-              />
-              <Route
-                exact
-                path="/template"
-                render={(props) => <TemplateContainer {...props} />}
-              />
-              <Route
-                exact
                 path="/manual"
-                render={(props) => <ManualContainer {...props} />}
+                render={props => <ManualDetail {...props} />}
               />
               <Route
-                path="/manager"
-                render={(props) => <ManagerSettingContainer {...props} />}
+                exact
+                path="/manual/:id/detail"
+                render={props => <ManualDetail {...props} />}
+              />
+              <Route
+                exact
+                path="/manual/:id/update"
+                render={props => <ManualForm {...props} />}
+              />
+              <Route
+                exact
+                path="/manual/create"
+                render={props => <ManualForm {...props} />}
               />
               <Route component={NotFound} />
             </Switch>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </React.Fragment>
     );
   }

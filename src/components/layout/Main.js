@@ -6,7 +6,7 @@ import SideBar from '../layout/SideBar';
 import TopHeader from '../layout/TopHeader';
 import ChatContainer from '../chat/ChatContainer';
 import TemplateContainer from '../template/TemplateContainer';
-import ManualContainer from '../manual/ManualContainer';
+import CompanyStatsContainer from '../stats/CompanyStatsContainer';
 import ManagerSettingContainer from '../manager/ManagerSettingContainer';
 
 @withRouter
@@ -54,8 +54,8 @@ class Main extends React.Component {
               />
               <Route
                 exact
-                path="/manual"
-                render={props => <ManualContainer {...props} />}
+                path="/stats"
+                render={props => <CompanyStatsContainer {...props} />}
               />
               <Route
                 path="/manager"

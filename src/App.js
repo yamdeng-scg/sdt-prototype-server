@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import DevTools from 'mobx-react-devtools';
 import ErrorBoundary from './components/layout/ErrorBoundary';
 import Main from './components/layout/Main';
+import ManualMain from './components/layout/ManualMain';
 import Constant from './config/Constant';
 import Logger from './utils/Logger';
 import AppHistory from './utils/AppHistory';
@@ -96,10 +97,16 @@ class App extends Component {
     if (process.env.APP_ENV === Constant.APP_ENV_DEVELOPMENT) {
       DEV_TOOL_COMPONENT = <DevTools />;
     }
+    let currrentPathName = this.props.location.pathname;
+    let MainComponent = <Main />;
+    if (currrentPathName.indexOf('manual') !== -1) {
+      MainComponent = <ManualMain />;
+    } else if (currrentPathName.indexOf('viewer') !== -1) {
+    }
     return (
       <ErrorBoundary>
         <React.Fragment>
-          {token ? <Main /> : <Login />}
+          {token ? MainComponent : <Login />}
           {DEV_TOOL_COMPONENT}
           <ModalContainer />
         </React.Fragment>

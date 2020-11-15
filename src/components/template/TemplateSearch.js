@@ -7,7 +7,10 @@ import {
   StarFilled,
   StarOutlined
 } from '@ant-design/icons';
+import { Pagination } from 'antd';
 const { Option } = Select;
+
+const data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
 class TemplateSearch extends React.Component {
   constructor(props) {
@@ -49,30 +52,35 @@ class TemplateSearch extends React.Component {
             </Col>
           </Row>
         </div>
-        <div>
-          <div style={{ padding: 20, borderBottom: '1px solid #e0dcdc' }}>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={12} style={{ textAlign: 'left' }}>
-                요금 &gt; 요금혹인 &gt; 체납
-              </Col>
-              <Col span={12} style={{ textAlign: 'right' }}>
-                YY.MM.DD / 홍길동 <StarOutlined style={{ fontSize: 17 }} />{' '}
-                <Button>편집</Button> <Button>삭제</Button>
-              </Col>
-            </Row>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={4}>* 질문</Col>
-              <Col span={20}>asdasd</Col>
-            </Row>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={4}>* 답변</Col>
-              <Col span={20}>asdasd</Col>
-            </Row>
-            <Row style={{ marginBottom: 10 }}>
-              <Col span={4}>* 키워드</Col>
-              <Col span={20}>asdasd</Col>
-            </Row>
-          </div>
+        <div style={{ maxHeight: 500, overflowY: 'scroll' }}>
+          {data.map(info => (
+            <div style={{ padding: 20, borderBottom: '1px solid #e0dcdc' }}>
+              <Row style={{ marginBottom: 10 }}>
+                <Col span={12} style={{ textAlign: 'left' }}>
+                  요금 &gt; 요금혹인 &gt; 체납
+                </Col>
+                <Col span={12} style={{ textAlign: 'right' }}>
+                  YY.MM.DD / 홍길동 <StarOutlined style={{ fontSize: 17 }} />{' '}
+                  <Button>편집</Button> <Button>삭제</Button>
+                </Col>
+              </Row>
+              <Row style={{ marginBottom: 10 }}>
+                <Col span={4}>* 질문</Col>
+                <Col span={20}>asdasd</Col>
+              </Row>
+              <Row style={{ marginBottom: 10 }}>
+                <Col span={4}>* 답변</Col>
+                <Col span={20}>asdasd</Col>
+              </Row>
+              <Row style={{ marginBottom: 10 }}>
+                <Col span={4}>* 키워드</Col>
+                <Col span={20}>asdasd</Col>
+              </Row>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 25 }}>
+          <Pagination onChange={this.onChange} total={50} />
         </div>
       </div>
     );

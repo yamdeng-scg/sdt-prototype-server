@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import AppHistory from '../utils/AppHistory';
 
 class UiStore {
@@ -14,8 +14,18 @@ class UiStore {
   // 오늘의 통계 정보
   @observable todayStatsInfo = null;
 
+  // 브라우저 inner height
+  @observable clientHeight = document.documentElement.clientHeight;
+
   constructor(rootStore) {
     this.rootStore = rootStore;
+    window.addEventListener('resize', this.handleResizeEvent.bind(this));
+  }
+
+  handleResizeEvent() {
+    runInAction(() => {
+      this.clientHeight = document.documentElement.clientHeight;
+    });
   }
 
   // 히스토리 이동 공통 인터페이스
