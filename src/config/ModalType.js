@@ -22,12 +22,15 @@ ModalType.MANUAL_TAGLIST_POPUP = 'manual-taglist-popup';
 ModalType.MEMBER_STATE_CHANGE_POPUP = 'member-state-change-popup';
 
 // MinwonAddPopup.js
-ModalType.MINWON_ADD_POPUP = 'minwo-add-popup';
+ModalType.MINWON_ADD_POPUP = 'minwon-add-popup';
 
 // TalkMovePopup.js
 ModalType.TALK_MOVE_POPUP = 'talk-move-popup';
 
 // TemplateFormPopup.js
 ModalType.TEMPLATE_FORM_POPUP = 'template-form-popup';
+
+// MinwonHistoryPopup.js
+ModalType.MINWON_HISTORY_POPUP = 'minwon-history-popup';
 
 export default ModalType;

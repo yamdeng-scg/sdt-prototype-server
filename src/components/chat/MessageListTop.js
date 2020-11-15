@@ -18,6 +18,14 @@ class MessageListTop extends React.Component {
     ModalService.openMiddlePopup(ModalType.MINWON_ADD_POPUP, {});
   }
 
+  openMinwonHistoryPopup() {
+    ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {});
+  }
+
+  openJoinHistoryPopup() {
+    ModalService.openMiddlePopup(ModalType.JOIN_HISTORY_POPUP, {});
+  }
+
   render() {
     return (
       <div style={{ borderBottom: '1px solid #f0f0f0', marginBottom: 20 }}>
@@ -36,10 +44,14 @@ class MessageListTop extends React.Component {
         </Row>
         <Row>
           <Col span={12} style={{ padding: 15 }}>
-            <Button block>as</Button>
+            <Button block onClick={this.openMinwonHistoryPopup}>
+              as
+            </Button>
           </Col>
           <Col span={12} style={{ padding: 15 }}>
-            <Button block>as</Button>
+            <Button block onClick={this.openJoinHistoryPopup}>
+              as
+            </Button>
           </Col>
         </Row>
       </div>

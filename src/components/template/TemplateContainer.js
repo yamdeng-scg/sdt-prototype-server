@@ -1,4 +1,5 @@
 import React from 'react';
+import { Row, Col } from 'antd';
 import TemplateTree from './TemplateTree';
 import TemplateSearch from './TemplateSearch';
 
@@ -11,8 +12,14 @@ class TemplateContainer extends React.Component {
   render() {
     return (
       <div>
-        <TemplateTree />
-        <TemplateSearch />
+        <Row>
+          <Col span={6}>
+            <TemplateTree />
+          </Col>
+          <Col span={18}>
+            <TemplateSearch />
+          </Col>
+        </Row>
       </div>
     );
   }

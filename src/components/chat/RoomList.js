@@ -12,7 +12,7 @@ import {
   Typography,
   DatePicker
 } from 'antd';
-import Code from 'src/config/Code';
+import Code from '../../config/Code';
 import { ReloadOutlined } from '@ant-design/icons';
 import ModalService from '../../services/ModalService';
 import ModalType from '../../config/ModalType';
@@ -42,6 +42,7 @@ class RoomList extends React.Component {
     this.openTalkMovePopup = this.openTalkMovePopup.bind(this);
     this.openAlertPopup = this.openAlertPopup.bind(this);
     this.openConfirmPopup = this.openConfirmPopup.bind(this);
+    this.openManualTagListPopup = this.openManualTagListPopup.bind(this);
   }
 
   openHitoryPopup() {
@@ -60,6 +61,10 @@ class RoomList extends React.Component {
     ModalService.openMiddlePopup(ModalType.CONFRIM_POPUP, {});
   }
 
+  openManualTagListPopup() {
+    ModalService.openMiddlePopup(ModalType.MANUAL_TAGLIST_POPUP, {});
+  }
+
   render() {
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     return (
@@ -72,7 +77,7 @@ class RoomList extends React.Component {
         <div
           style={{ padding: 10, borderBottom: '1px solid rgb(240, 240, 240)' }}
         >
-          <p>
+          <p onClick={this.openManualTagListPopup}>
             상담대기 <span>1</span>건
           </p>
           <p>
@@ -115,12 +120,12 @@ class RoomList extends React.Component {
                 overflowY: 'scroll',
                 height: document.documentElement.clientHeight - 285
               }}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item style={{ position: 'relative' }}>
                   <p
                     className="dot-fill"
                     style={{ position: 'absolute', top: 15, left: 10 }}
-                  ></p>{' '}
+                  />{' '}
                   오국환님{' '}
                   <Badge count={25} className="site-badge-count-room" />
                   <Button
@@ -189,7 +194,7 @@ class RoomList extends React.Component {
                   style={{ width: '100%' }}
                   onChange={() => {}}
                 >
-                  {roomListSearcTypeCodeList.map((codeInfo) => {
+                  {roomListSearcTypeCodeList.map(codeInfo => {
                     return (
                       <Option value={codeInfo.value}>{codeInfo.name}</Option>
                     );
@@ -199,7 +204,7 @@ class RoomList extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={(value) => console.log(value)}
+                  onSearch={value => console.log(value)}
                   style={{ width: '100%' }}
                 />
               </Col>
@@ -212,9 +217,9 @@ class RoomList extends React.Component {
             <List
               bordered
               dataSource={data}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item>
-                  <span className="dot-fill"></span> 오국환님{' '}
+                  <span className="dot-fill" /> 오국환님{' '}
                   <Button type="primary" shape="round" size="small">
                     서울도시가스
                   </Button>
@@ -241,7 +246,7 @@ class RoomList extends React.Component {
                   style={{ width: '100%' }}
                   onChange={() => {}}
                 >
-                  {roomListSearcTypeCodeList.map((codeInfo) => {
+                  {roomListSearcTypeCodeList.map(codeInfo => {
                     return (
                       <Option value={codeInfo.value}>{codeInfo.name}</Option>
                     );
@@ -251,7 +256,7 @@ class RoomList extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={(value) => console.log(value)}
+                  onSearch={value => console.log(value)}
                   style={{ width: '100%' }}
                 />
               </Col>
@@ -274,9 +279,9 @@ class RoomList extends React.Component {
             <List
               bordered
               dataSource={data}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item>
-                  <span className="dot-fill"></span> 오국환님{' '}
+                  <span className="dot-fill" /> 오국환님{' '}
                   <Button type="primary" shape="round" size="small">
                     서울도시가스
                   </Button>

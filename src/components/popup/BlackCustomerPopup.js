@@ -37,7 +37,7 @@ class BlackCustomerPopup extends React.Component {
               추가 메모
             </Col>
             <Col span={20}>
-              <TextArea autoSize={false}></TextArea>
+              <TextArea autoSize={false} />
             </Col>
           </Row>
         </div>

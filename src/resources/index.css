@@ -73,3 +73,37 @@ code {
 .ant-input-textarea {
   width :100%;
 }
+
+.member-state-change-popup {
+  width : 350px !important;
+}
+
+.minwon-add-popup {
+  width: 800px !important;
+}
+
+.minwon-history-popup {
+  width: 800px !important;
+}
+
+.join-history-popup {
+  width: 800px !important;
+}
+
+.template-form-popup {
+  width: 800px !important;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #9E9E9E white;
+}
+*::-webkit-scrollbar {
+  width: 2px;
+}
+*::-webkit-scrollbar-track {
+  background: #fff;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #9E9E9E;
+}

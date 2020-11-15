@@ -7,7 +7,7 @@ import Main from './components/layout/Main';
 import Constant from './config/Constant';
 import Logger from './utils/Logger';
 import AppHistory from './utils/AppHistory';
-import ErrorService from 'src/services/ErrorService';
+import ErrorService from './services/ErrorService';
 import Login from './components/Login';
 import ModalContainer from './components/layout/ModalContainer';
 

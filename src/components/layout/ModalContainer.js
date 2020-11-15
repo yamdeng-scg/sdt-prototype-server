@@ -12,6 +12,7 @@ import MemberStateChangePopup from '../popup/MemberStateChangePopup';
 import MinwonAddPopup from '../popup/MinwonAddPopup';
 import TalkMovePopup from '../popup/TalkMovePopup';
 import TemplateFormPopup from '../popup/TemplateFormPopup';
+import MinwonHistoryPopup from '../popup/MinwonHistoryPopup';
 
 @inject('alertModalStore')
 @observer
@@ -51,6 +52,9 @@ class ModalContainer extends React.Component {
       case ModalType.TEMPLATE_FORM_POPUP:
         modalComponent = <TemplateFormPopup modalData={modalData} />;
         break;
+      case ModalType.MINWON_HISTORY_POPUP:
+        modalComponent = <MinwonHistoryPopup modalData={modalData} />;
+        break;
       default:
         break;
     }
@@ -60,6 +64,7 @@ class ModalContainer extends React.Component {
         visible={displayModal}
         footer={null}
         onCancel={() => alertModalStore.hideModal()}
+        className={modalType}
       >
         {modalComponent}
       </Modal>

@@ -13,7 +13,7 @@ import {
   DatePicker,
   Divider
 } from 'antd';
-import Code from 'src/config/Code';
+import Code from '../../config/Code';
 import { ReloadOutlined } from '@ant-design/icons';
 const { Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -67,7 +67,7 @@ class MyTodayStats extends React.Component {
                   style={{ width: '100%' }}
                   onChange={() => {}}
                 >
-                  {roomListSearcTypeCodeList.map((codeInfo) => {
+                  {roomListSearcTypeCodeList.map(codeInfo => {
                     return (
                       <Option value={codeInfo.value}>{codeInfo.name}</Option>
                     );
@@ -77,7 +77,7 @@ class MyTodayStats extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={(value) => console.log(value)}
+                  onSearch={value => console.log(value)}
                   style={{ width: '100%' }}
                 />
               </Col>
@@ -96,9 +96,9 @@ class MyTodayStats extends React.Component {
             <List
               bordered
               dataSource={data}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item>
-                  <span className="dot-fill"></span> 오국환님{' '}
+                  <span className="dot-fill" /> 오국환님{' '}
                   <Button type="primary" shape="round" size="small">
                     서울도시가스
                   </Button>
@@ -131,9 +131,9 @@ class MyTodayStats extends React.Component {
             <List
               bordered
               dataSource={data}
-              renderItem={(item) => (
+              renderItem={item => (
                 <List.Item>
-                  <span className="dot-fill"></span> 오국환님{' '}
+                  <span className="dot-fill" /> 오국환님{' '}
                   <Button type="primary" shape="round" size="small">
                     서울도시가스
                   </Button>

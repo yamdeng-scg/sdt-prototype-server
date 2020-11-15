@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col, Typography, Select } from 'antd';
+import { Row, Col, Typography, Select, Input } from 'antd';
+import { AudioOutlined, SearchOutlined } from '@ant-design/icons';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -24,46 +25,82 @@ class ContractDeftail extends React.Component {
             </Title>
           </Col>
         </Row>
+        <Row
+          style={{
+            padding: 10
+          }}
+        >
+          <Col span={24} style={{ marginBottom: 10 }}>
+            <Select
+              defaultValue="lucy"
+              style={{ width: '100%', textAlign: 'left' }}
+            >
+              <Option value="jack">Jack</Option>
+              <Option value="lucy">Lucy</Option>
+              <Option value="disabled" disabled>
+                Disabled
+              </Option>
+              <Option value="Yiminghe">yiminghe</Option>
+            </Select>
+          </Col>
+          <Col span={8} style={{ textAlign: 'left' }}>
+            사용계약번호
+          </Col>
+          <Col
+            span={16}
+            style={{
+              textAlign: 'right',
+              position: 'relative',
+              marginBottom: 5
+            }}
+          >
+            <Input
+              placeholder="input search text"
+              enterButton={null}
+              allowClear
+              suffix={
+                <SearchOutlined
+                  style={{
+                    fontSize: 16,
+                    color: '#1890ff'
+                  }}
+                />
+              }
+            />
+          </Col>
+        </Row>
+        <div style={{ padding: 30, textAlign: 'center' }}>
+          <Row>
+            <Col span={24}>존재하지 않은 사용계약번호입니다</Col>
+          </Row>
+        </div>
         <div
           style={{
             overflowY: 'scroll',
             height: document.documentElement.clientHeight - 104
           }}
         >
+          <Col span={12} style={{ textAlign: 'left' }}>
+            사용계약번호
+          </Col>
+          <Col
+            span={12}
+            style={{
+              textAlign: 'right',
+              position: 'relative',
+              marginBottom: 5
+            }}
+          >
+            <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
+              12312312321
+            </span>
+            <div>가정용</div>
+          </Col>
           <Row
             style={{
               padding: 10
             }}
           >
-            <Col span={24} style={{ marginBottom: 10 }}>
-              <Select
-                defaultValue="lucy"
-                style={{ width: '100%', textAlign: 'left' }}
-              >
-                <Option value="jack">Jack</Option>
-                <Option value="lucy">Lucy</Option>
-                <Option value="disabled" disabled>
-                  Disabled
-                </Option>
-                <Option value="Yiminghe">yiminghe</Option>
-              </Select>
-            </Col>
-            <Col span={12} style={{ textAlign: 'left' }}>
-              사용계약번호
-            </Col>
-            <Col
-              span={12}
-              style={{
-                textAlign: 'right',
-                position: 'relative',
-                marginBottom: 5
-              }}
-            >
-              <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>
-                12312312321
-              </span>
-              <div>가정용</div>
-            </Col>
             <Col span={12} style={{ textAlign: 'left' }}>
               계약상태
             </Col>

@@ -10,14 +10,21 @@ class SendMessageInput extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{ position: 'relative' }}>
         <TextArea
           autoSize={false}
           style={{
-            backgroundColor: '#fff'
+            backgroundColor: '#fff',
+            position: 'inline-block',
+            width: '85%'
           }}
-        ></TextArea>{' '}
-        <Button type="primary" shape="round" size="small">
+        />{' '}
+        <Button
+          type="primary"
+          shape="round"
+          size="small"
+          style={{ position: 'absolute', bottom: 0, right: 32 }}
+        >
           전송
         </Button>
       </div>
