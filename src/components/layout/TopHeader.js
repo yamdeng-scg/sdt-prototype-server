@@ -56,7 +56,7 @@ class TopHeader extends React.Component {
             style={{ textAlign: 'right', paddingTop: 10, paddingRight: 10 }}
           >
             <span
-              className="inblock font-em2 mrr5"
+              className="inblock mrr5"
               onClick={this.openMemberStateChangePopup}
             >
               상담중
@@ -64,16 +64,16 @@ class TopHeader extends React.Component {
             <span
               className="inblock mrr5 bg-basic"
               style={{
-                padding: 8,
+                padding: 6,
                 marginRight: 70,
                 borderRadius: '50%'
               }}
             />
-            <span className="inblock font-em2">
+            <span className="inblock">
               로그아웃{' '}
               <LogoutOutlined
                 className="color-basic bold"
-                style={{ fontSize: 20 }}
+                style={{ fontSize: 16 }}
               />
             </span>
           </Col>

@@ -9,41 +9,18 @@ class ConfirmPopup extends React.Component {
 
   render() {
     return (
-      <div style={{ paddingTop: 30 }}>
-        <Row
-          style={{
-            textAlign: 'center',
-            paddingBottom: 10,
-            marginBottom: 10,
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
+      <div className="pd-top15">
+        <Row className="center pd-bottom15 bor-bottom">
           <Col span={24}>상담 이관2</Col>
         </Row>
-        <Row style={{ textAlign: 'center', marginBottom: 10 }}>
+        <Row className="center pd-top10 mrb10">
           <Col span={24}>이 상담채팅을 어디로 이관하시겠습니까?</Col>
         </Row>
-        <Row style={{ textAlign: 'center' }}>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#b5b1b1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
-            확인
+        <Row className="center">
+          <Col span={12} className="pd10 bold cancelbtn">
+            취소
           </Col>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#62aef1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
+          <Col span={12} className="pd10 bold okbtn">
             확인
           </Col>
         </Row>

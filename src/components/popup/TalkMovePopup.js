@@ -17,8 +17,8 @@ class TalkMovePopup extends React.Component {
         <Row className="center pd-top10">
           <Col span={24}>이 상담채팅을 어디로 이관하시겠습니까?</Col>
         </Row>
-        <Row style={{ textAlign: 'center', marginBottom: 10 }}>
-          <Col span={24} style={{ padding: 10 }}>
+        <Row className="center mrb10">
+          <Col span={24} className="pd10">
             <Select
               defaultValue="lucy"
               className="left"
@@ -34,10 +34,10 @@ class TalkMovePopup extends React.Component {
           </Col>
         </Row>
         <Row className="center">
-          <Col span={12} className="pd10 bold okbtn">
+          <Col span={12} className="pd10 bold cancelbtn">
             취소
           </Col>
-          <Col span={12} className="pd10 bold cancelbtn">
+          <Col span={12} className="pd10 bold okbtn">
             확인
           </Col>
         </Row>

@@ -117,29 +117,13 @@ class ManualTagListPopup extends React.Component {
 
   render() {
     return (
-      <div style={{ paddingTop: 30 }}>
-        <Row
-          style={{
-            borderBottom: '1px solid #f0f0f0',
-            textAlign: 'center',
-            paddingBottom: 10
-          }}
-        >
+      <div className="pd-top15">
+        <Row className="center pd-bottom15 bor-bottom">
           <Col span={24}>상담도우미 태그</Col>
         </Row>
-        <div style={{ padding: 20, maxHeight: 300, overflowY: 'scroll' }}>
+        <div className="pd10" style={{ maxHeight: 300, overflowY: 'scroll' }}>
           {data.map((info, index) => (
-            <span
-              style={{
-                backgroundColor: index % 2 === 0 ? '#d5d0d0' : '#fff',
-                borderRadius: 10,
-                border: '1px solid black',
-                padding: 5,
-                display: 'inline-block',
-                marginRight: 5,
-                marginBottom: 5
-              }}
-            >
+            <span className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}>
               #캐시
             </span>
           ))}

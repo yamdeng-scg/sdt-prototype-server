@@ -1,10 +1,4 @@
 import React from 'react';
-import { Row, Col, Input } from 'antd';
-import {
-  CloseOutlined,
-  UpCircleTwoTone,
-  DownCircleTwoTone
-} from '@ant-design/icons';
 import EmptyStartImage from '../../resources/images/star_empty.png';
 import CloseImage from '../../resources/images/close.png';
 import ModalType from '../../config/ModalType';
@@ -24,15 +18,15 @@ class MessageList extends React.Component {
   }
 
   render() {
+    let clientHeight = this.props.clientHeight;
     return (
       <React.Fragment>
         <div
           style={{
-            height: 200,
+            height: clientHeight,
             overflowY: 'scroll',
-            paddingBottom: 100,
             position: 'relative',
-            padding: '0px 3px 0px 3px'
+            padding: '0px 3px 50px 3px'
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
@@ -70,7 +64,7 @@ class MessageList extends React.Component {
                 style={{
                   position: 'absolute',
                   left: -70,
-                  bottom: 0,
+                  bottom: -2,
                   textAlign: 'right',
                   color: 'black'
                 }}
@@ -121,7 +115,7 @@ class MessageList extends React.Component {
                     style={{
                       position: 'absolute',
                       right: -70,
-                      bottom: 0,
+                      bottom: -2,
                       textAlign: 'left',
                       color: 'black'
                     }}
@@ -152,63 +146,6 @@ class MessageList extends React.Component {
               </div>
             );
           })}
-        </div>
-        {/* <div style={{ position: 'absolute', bottom: 10, right: 10 }}>
-          <Button type="primary" shape="circle" size="large">
-            검색
-          </Button>{' '}
-          <Button type="primary" shape="circle" size="large">
-            이관
-          </Button>{' '}
-          <Button type="primary" shape="circle" size="large">
-            종료
-          </Button>
-        </div> */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            padding: '0px 10px',
-            marginBottom: 5,
-            zIndex: 10
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: '13px 13px 13px 13px',
-              border: '1px solid #cac8c8',
-              padding: 5,
-              display: 'none'
-            }}
-          >
-            <Row style={{ marginBottom: 5 }}>
-              <Col span={8} offset={8} style={{ textAlign: 'center' }}>
-                대화내용 검색
-              </Col>
-              <Col span={8} style={{ textAlign: 'right' }}>
-                <CloseOutlined />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Input style={{ width: '85%' }} allowClear />{' '}
-                <UpCircleTwoTone style={{ fontSize: 20 }} /> {'  '}
-                <DownCircleTwoTone style={{ fontSize: 20 }} />
-              </Col>
-            </Row>
-          </div>
-          {/* <Button type="primary" shape="circle" size="large">
-            검색
-          </Button>{' '}
-          <Button type="primary" shape="circle" size="large">
-            이관
-          </Button>{' '}
-          <Button type="primary" shape="circle" size="large">
-            종료
-          </Button> */}
         </div>
       </React.Fragment>
     );

@@ -11,6 +11,10 @@ import AppHistory from './utils/AppHistory';
 import ErrorService from './services/ErrorService';
 import Login from './components/Login';
 import ModalContainer from './components/layout/ModalContainer';
+import { ConfigProvider } from 'antd';
+// import moment from 'moment';
+// import 'moment/locale/zh-cn';
+import locale from 'antd/lib/locale/ko_KR';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -105,11 +109,11 @@ class App extends Component {
     }
     return (
       <ErrorBoundary>
-        <React.Fragment>
+        <ConfigProvider locale={locale}>
           {token ? MainComponent : <Login />}
           {DEV_TOOL_COMPONENT}
           <ModalContainer />
-        </React.Fragment>
+        </ConfigProvider>
       </ErrorBoundary>
     );
   }

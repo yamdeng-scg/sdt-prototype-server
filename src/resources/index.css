@@ -98,6 +98,10 @@ code {
   width: 800px !important;
 }
 
+.manual-taglist-popup {
+  max-width: 450px !important;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #9E9E9E white;
@@ -157,6 +161,10 @@ option:first {
   font-size: 2.0em;
 }
 
+.mr0 {
+  margin: 0px;
+}
+
 .mrl5 {
   margin-left: 5px;
 }
@@ -171,6 +179,22 @@ option:first {
 
 .mrr10 {
   margin-right: 10px;
+}
+
+.mrt5 {
+  margin-top: 5px;
+}
+
+.mrb5 {
+  margin-bottom: 5px;
+}
+
+.mrt10 {
+  margin-top: 10px;
+}
+
+.mrb10 {
+  margin-bottom: 10px;
 }
 
 .inblock {
@@ -341,4 +365,26 @@ option:first {
 .cancelbtn {
   background-color: #b5b1b1;
   color: #fff
+}
+
+.tag-enable {
+  background-color: #62aef1;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  padding: 10px;
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  color: #fff
+}
+
+.tag-disable {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 2px dashed #62aef1;
+  padding: 7px;
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  color: #62aef1
 }

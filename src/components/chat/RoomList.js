@@ -17,6 +17,9 @@ import { ReloadOutlined } from '@ant-design/icons';
 import ModalService from '../../services/ModalService';
 import ModalType from '../../config/ModalType';
 
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+
 const { Paragraph, Title } = Typography;
 const { TabPane } = Tabs;
 const { Search } = Input;
@@ -34,6 +37,9 @@ const data = [
   'Los Angeles battles huge wildfires.'
 ];
 
+@withRouter
+@inject('appStore', 'uiStore')
+@observer
 class RoomList extends React.Component {
   constructor(props) {
     super(props);
@@ -67,6 +73,8 @@ class RoomList extends React.Component {
 
   render() {
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
+    let uiStore = this.props.uiStore;
+    let clientHeight = uiStore.clientHeight;
     return (
       <div
         style={{
@@ -75,11 +83,9 @@ class RoomList extends React.Component {
         className="bor-right"
       >
         <div className="pd10 bor-bottom">
-          <p onClick={this.openManualTagListPopup}>
-            <Title level={3} style={{ margin: 0 }} className="text">
-              상담대기 <span className="color-basic">1</span> 건
-            </Title>
-          </p>
+          <Title level={3} className="text mr0">
+            상담대기 <span className="color-basic">1</span> 건
+          </Title>
           <div>
             최장 대기시간{'  '} <span className="red">00:00:25</span>
           </div>
@@ -110,7 +116,7 @@ class RoomList extends React.Component {
               dataSource={data}
               style={{
                 overflowY: 'scroll',
-                height: document.documentElement.clientHeight - 245
+                height: clientHeight - 245
               }}
               renderItem={item => (
                 <List.Item
@@ -125,14 +131,14 @@ class RoomList extends React.Component {
                   />{' '}
                   오국환님{' '}
                   <Badge count={25} className="site-badge-count-room" />
-                  <Button
+                  {/* <Button
                     type="primary"
                     shape="round"
                     size="small"
                     style={{ position: 'absolute', top: 15, right: 15 }}
                   >
                     서울도시가스
-                  </Button>
+                  </Button> */}
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       Ant Design, a design language for background applications
@@ -141,7 +147,7 @@ class RoomList extends React.Component {
                       <span className="red">01:25:20</span>
                     </p>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
+                  <div className="center">
                     <Button
                       shape="round"
                       size="small"
@@ -211,7 +217,7 @@ class RoomList extends React.Component {
               dataSource={data}
               style={{
                 overflowY: 'scroll',
-                height: document.documentElement.clientHeight - 285
+                height: clientHeight - 285
               }}
               renderItem={item => (
                 <List.Item
@@ -226,14 +232,14 @@ class RoomList extends React.Component {
                   />{' '}
                   오국환님{' '}
                   <Badge count={25} className="site-badge-count-room" />
-                  <Button
+                  {/* <Button
                     type="primary"
                     shape="round"
                     size="small"
                     style={{ position: 'absolute', top: 15, right: 15 }}
                   >
                     서울도시가스
-                  </Button>
+                  </Button> */}
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       Ant Design, a design language for background applications
@@ -242,7 +248,7 @@ class RoomList extends React.Component {
                       <span className="red">01:25:20</span>
                     </p>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
+                  <div className="center">
                     <Button
                       shape="round"
                       size="small"
@@ -277,7 +283,7 @@ class RoomList extends React.Component {
             />
           </TabPane>
           <TabPane tab="종료" key="3">
-            <Row style={{ padding: 5 }}>
+            <Row className="pd5">
               <Col span={8}>
                 <Select
                   defaultValue="customerName"
@@ -300,7 +306,7 @@ class RoomList extends React.Component {
                 />
               </Col>
             </Row>
-            <Row style={{ padding: 5 }}>
+            <Row className="pd5">
               <Col span={24}>
                 <RangePicker style={{ width: '90%' }} /> {'   '}
                 <ReloadOutlined
@@ -321,7 +327,7 @@ class RoomList extends React.Component {
               dataSource={data}
               style={{
                 overflowY: 'scroll',
-                height: document.documentElement.clientHeight - 330
+                height: clientHeight - 330
               }}
               renderItem={item => (
                 <List.Item
@@ -336,14 +342,14 @@ class RoomList extends React.Component {
                   />{' '}
                   오국환님{' '}
                   <Badge count={25} className="site-badge-count-room" />
-                  <Button
+                  {/* <Button
                     type="primary"
                     shape="round"
                     size="small"
                     style={{ position: 'absolute', top: 15, right: 15 }}
                   >
                     서울도시가스
-                  </Button>
+                  </Button> */}
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       Ant Design, a design language for background applications
@@ -352,7 +358,7 @@ class RoomList extends React.Component {
                       <span className="red">01:25:20</span>
                     </p>
                   </div>
-                  <div style={{ textAlign: 'center' }}>
+                  <div className="center">
                     <Button
                       shape="round"
                       size="small"
