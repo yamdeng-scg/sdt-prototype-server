@@ -74,6 +74,10 @@ code {
   width :100%;
 }
 
+.talk-move-popup {
+  width : 350px !important;
+}
+
 .member-state-change-popup {
   width : 350px !important;
 }
@@ -117,7 +121,224 @@ code {
   line-height: 20px;
 }
 
-
 .focus-textarea textarea:focus{
   background-color: #fff !important;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.center {
+  text-align: center;
+}
+
+option:first {
+  color: red;
+}
+
+.font-em2 {
+  font-size: 1.2em;
+}
+
+.font-em4 {
+  font-size: 1.4em;
+}
+
+.font-em6 {
+  font-size: 1.6em;
+}
+
+.font-em8 {
+  font-size: 1.8em;
+}
+
+.font-em10 {
+  font-size: 2.0em;
+}
+
+.mrl5 {
+  margin-left: 5px;
+}
+
+.mrr5 {
+  margin-right: 5px;
+}
+
+.mrl10 {
+  margin-left: 10px;
+}
+
+.mrr10 {
+  margin-right: 10px;
+}
+
+.inblock {
+  display: inline-block;
+}
+
+.bg-basic {
+  background-color: #35bffd;
+}
+
+.color-basic {
+  color: #35bffd
+}
+
+.bor-bottom {
+  border-bottom: 1px solid #cdcdcd;
+}
+
+.bor-top {
+  border-top: 1px solid #cdcdcd;
+}
+
+.bor-left {
+  border-left: 1px solid #cdcdcd;
+}
+
+.bor-right {
+  border-right: 1px solid #cdcdcd;
+}
+
+.text {
+  color: #434141 !important;
+}
+
+.red {
+  color: red
+}
+
+.text-under {
+  text-decoration: underline;
+}
+
+.right {
+  text-align: right;
+}
+
+.left {
+  text-align: left;
+}
+
+.pd-top5 {
+  padding-top: 5px;
+}
+
+.pd-top10 {
+  padding-top: 10px;
+}
+
+.pd-top15 {
+  padding-top: 15px;
+}
+
+.pd-top20 {
+  padding-top: 20px;
+}
+
+.pd-top30 {
+  padding-top: 30px;
+}
+
+.pd-bottom5 {
+  padding-bottom: 5px;
+}
+
+.pd-bottom10 {
+  padding-bottom: 10px;
+}
+
+.pd-bottom15 {
+  padding-bottom: 15px;
+}
+
+.pd-bottom20 {
+  padding-bottom: 20px;
+}
+
+.pd-bottom30 {
+  padding-bottom: 30px;
+}
+
+.pd-left5 {
+  padding-left: 5px;
+}
+
+.pd-left10 {
+  padding-left: 10px;
+}
+
+.pd-left15 {
+  padding-left: 15px;
+}
+
+.pd-left20 {
+  padding-left: 20px;
+}
+
+.pd-left30 {
+  padding-left: 30px;
+}
+
+.pd-right5 {
+  padding-right: 5px;
+}
+
+.pd-right10 {
+  padding-right: 10px;
+}
+
+.pd-right15 {
+  padding-right: 15px;
+}
+
+.pd-right20 {
+  padding-right: 20px;
+}
+
+.pd5 {
+  padding: 5px;
+}
+
+.pd10 {
+  padding: 10px;
+}
+
+.pd15 {
+  padding: 15px;
+}
+
+.pd20 {
+  padding: 20px;
+}
+
+.pd25 {
+  padding: 25px;
+}
+
+.pd30 {
+  padding: 30px;
+}
+
+.ant-tabs-nav::before {
+  border: 0px solid black !important;
+}
+
+.none {
+  display: none;
+}
+
+.chatbot-history-popup .ant-modal-content {
+  border-radius: 15px;
+}
+
+.okbtn {
+  background-color: #62aef1;
+  color: #fff
+}
+
+.cancelbtn {
+  background-color: #b5b1b1;
+  color: #fff
 }

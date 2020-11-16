@@ -20,7 +20,7 @@ class ContractDeftail extends React.Component {
           }}
         >
           <Col span={24}>
-            <Title level={3} style={{ margin: 0 }}>
+            <Title level={4} style={{ margin: 0 }} className="text">
               사용계약정보 (4)
             </Title>
           </Col>
