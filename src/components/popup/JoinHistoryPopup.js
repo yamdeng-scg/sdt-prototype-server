@@ -1,6 +1,5 @@
 import React from 'react';
-import { Row, Col, Input, Collapse } from 'antd';
-import { AudioOutlined, SearchOutlined } from '@ant-design/icons';
+import { Row, Col, Collapse } from 'antd';
 import MessageList from '../chat/MessageList';
 const { Panel } = Collapse;
 

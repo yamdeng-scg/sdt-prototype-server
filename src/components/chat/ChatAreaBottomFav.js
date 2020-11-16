@@ -1,12 +1,6 @@
 import React from 'react';
-import { Menu, Row, Col, Tree, Input } from 'antd';
-import {
-  FolderAddOutlined,
-  FolderFilled,
-  FolderOpenOutlined,
-  StarFilled,
-  StarOutlined
-} from '@ant-design/icons';
+import { Row, Col, Input } from 'antd';
+import { StarFilled, StarOutlined } from '@ant-design/icons';
 
 class ChatAreaBottomFav extends React.Component {
   constructor(props) {

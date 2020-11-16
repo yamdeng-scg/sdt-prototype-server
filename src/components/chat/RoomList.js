@@ -203,7 +203,7 @@ class RoomList extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={value => console.log(value)}
+                  onSearch={value => {}}
                   style={{ width: '100%' }}
                 />
               </Col>
@@ -255,7 +255,7 @@ class RoomList extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={value => console.log(value)}
+                  onSearch={value => {}}
                   style={{ width: '100%' }}
                 />
               </Col>

@@ -43,7 +43,7 @@ class ChatAreaBottomReplySearch extends React.Component {
   };
 
   onDragEnter = info => {
-    console.log(info);
+    // console.log(info);
     // expandedKeys 需要受控时设置
     // this.setState({
     //   expandedKeys: info.expandedKeys,
@@ -51,7 +51,7 @@ class ChatAreaBottomReplySearch extends React.Component {
   };
 
   onDrop = info => {
-    console.log(info);
+    // console.log(info);
     const dropKey = info.node.props.eventKey;
     const dragKey = info.dragNode.props.eventKey;
     const dropPos = info.node.props.pos.split('-');

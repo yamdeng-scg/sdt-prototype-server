@@ -1,15 +1,12 @@
 import React from 'react';
-import { Menu, Switch, Divider, List, Typography } from 'antd';
+import { Menu } from 'antd';
 import {
   HomeFilled,
-  CalendarOutlined,
-  AppstoreOutlined,
   SettingFilled,
   BarChartOutlined,
   StarFilled,
   SoundFilled
 } from '@ant-design/icons';
-const { SubMenu } = Menu;
 
 class SideBar extends React.Component {
   constructor(props) {

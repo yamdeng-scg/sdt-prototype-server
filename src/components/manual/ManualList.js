@@ -9,13 +9,7 @@ import {
   Col,
   Button
 } from 'antd';
-import {
-  FolderAddOutlined,
-  FolderFilled,
-  SearchOutlined,
-  StarFilled,
-  StarOutlined
-} from '@ant-design/icons';
+import { SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 const { Title } = Typography;

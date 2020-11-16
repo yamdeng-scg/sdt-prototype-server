@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Row, Col, Tree, Input, Button } from 'antd';
+import { Button } from 'antd';
 
 class ChatAreaBottomWarning extends React.Component {
   constructor(props) {
