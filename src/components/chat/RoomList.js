@@ -70,7 +70,6 @@ class RoomList extends React.Component {
     return (
       <div
         style={{
-          boxShadow: '0 0 50px 10px rgba(175,175,175,.5)',
           height: '100%'
         }}
       >

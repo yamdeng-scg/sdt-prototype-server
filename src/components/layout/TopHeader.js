@@ -23,10 +23,11 @@ class TopHeader extends React.Component {
       <div
         style={{
           width: '100%',
-          height: 70,
+          height: 50,
           position: 'fixed',
           top: 0,
-          left: 0
+          left: 0,
+          borderBottom: '1px solid #f0f0f0'
         }}
       >
         <Row>

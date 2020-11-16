@@ -35,6 +35,23 @@ class MessageList extends React.Component {
             padding: '0px 3px 0px 3px'
           }}
         >
+          <div style={{ textAlign: 'center', marginBottom: 15 }}>
+            <div
+              style={{
+                maxWidth: '80%',
+                display: 'inline-block',
+                textAlign: 'center',
+                padding: '11px 15px 9px',
+                color: 'red'
+              }}
+            >
+              <div>
+                메시지 asdasdasdaasda
+                <br />
+                asdasd
+              </div>
+            </div>
+          </div>
           <div style={{ textAlign: 'right', marginBottom: 15 }}>
             <div
               style={{

@@ -111,3 +111,8 @@ code {
 .none-border .ant-card-grid {
   box-shadow: none;
 }
+
+.side-bar .ant-menu-vertical > .ant-menu-item {
+  height: 70px;
+  line-height: 20px;
+}

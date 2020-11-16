@@ -32,8 +32,8 @@ class Main extends React.Component {
           <div
             style={{
               height: '100%',
-              marginLeft: 110,
-              marginTop: 50
+              marginLeft: 100,
+              marginTop: 70
             }}
           >
             <Switch>

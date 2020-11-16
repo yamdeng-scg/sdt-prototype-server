@@ -20,7 +20,7 @@ class ChatContainer extends React.Component {
     let { chatStore } = this.props;
     let { currentRoomInfo } = chatStore;
     let detailMessgeComponent = null;
-    if (currentRoomInfo) {
+    if (!currentRoomInfo) {
       detailMessgeComponent = (
         <React.Fragment>
           <Col span={10}>
