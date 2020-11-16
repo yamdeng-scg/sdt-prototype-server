@@ -5,6 +5,7 @@ import MemberUnitStatsList from './MemberUnitStatsList';
 import TagTypeRankList from './TagTypeRankList';
 import TalkUseHistoryChart from './TalkUseHistoryChart';
 import MemberReviewChart from './MemberReviewChart';
+import UseHistorySummary from './UseHistorySummary';
 const { RangePicker } = DatePicker;
 
 class CompanyStatsContainer extends React.Component {
@@ -30,6 +31,9 @@ class CompanyStatsContainer extends React.Component {
             <Row style={{ height: 500, overflowY: 'scroll' }}>
               <Col span={24}>
                 <TalkIngSummary />
+              </Col>
+              <Col span={24}>
+                <UseHistorySummary />
               </Col>
               <Col span={24}>상담처리 분석 TalkCloseummary</Col>
               <Col style={{ borderBottom: '1px solid #f0f0f0' }} span={24}>

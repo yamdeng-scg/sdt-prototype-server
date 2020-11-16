@@ -8,6 +8,7 @@ import ChatContainer from '../chat/ChatContainer';
 import TemplateContainer from '../template/TemplateContainer';
 import CompanyStatsContainer from '../stats/CompanyStatsContainer';
 import ManagerSettingContainer from '../manager/ManagerSettingContainer';
+import LinkManageContainer from '../link/LinkManageContainer';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -33,7 +34,7 @@ class Main extends React.Component {
             style={{
               height: '100%',
               marginLeft: 100,
-              marginTop: 70
+              marginTop: 50
             }}
           >
             <Switch>
@@ -60,6 +61,10 @@ class Main extends React.Component {
               <Route
                 path="/manager"
                 render={props => <ManagerSettingContainer {...props} />}
+              />
+              <Route
+                path="/link"
+                render={props => <LinkManageContainer {...props} />}
               />
               <Route component={NotFound} />
             </Switch>

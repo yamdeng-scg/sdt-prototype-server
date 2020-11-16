@@ -119,7 +119,7 @@ class ChatAreaBottomReplySearch extends React.Component {
         <Col span={10} style={{ borderRight: '1px solid black' }}>
           <Tree
             style={{ overflowY: 'auto', height: 500 }}
-            className2="draggable-tree"
+            className="draggable-tree"
             defaultExpandedKeys={this.state.expandedKeys}
             draggable
             blockNode
