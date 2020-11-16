@@ -97,7 +97,12 @@ class MemberUnitStatsList extends React.Component {
       <div>
         <div>상담사별 분석</div>
         <div>
-          <Table columns={columns} dataSource={data} pagination={false} />
+          <Table
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            size="small"
+          />
         </div>
       </div>
     );

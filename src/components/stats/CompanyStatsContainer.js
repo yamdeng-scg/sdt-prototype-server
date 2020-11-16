@@ -3,6 +3,8 @@ import { Row, Col, DatePicker, Button } from 'antd';
 import TalkIngSummary from './TalkIngSummary';
 import MemberUnitStatsList from './MemberUnitStatsList';
 import TagTypeRankList from './TagTypeRankList';
+import TalkUseHistoryChart from './TalkUseHistoryChart';
+import MemberReviewChart from './MemberReviewChart';
 const { RangePicker } = DatePicker;
 
 class CompanyStatsContainer extends React.Component {
@@ -42,12 +44,16 @@ class CompanyStatsContainer extends React.Component {
             <Row>
               <Col span={24}>타이틀: border bottom 줌</Col>
             </Row>
-            <Row>
-              <Col span={24}>상담 이용 추이 TalkUseHistoryChart</Col>
+            <Row style={{ height: 500, overflowY: 'scroll' }}>
+              <Col span={24}>
+                <TalkUseHistoryChart />
+              </Col>
               <Col span={24}>
                 <TagTypeRankList />
               </Col>
-              <Col span={24}>고객 만족도 MemberReviewChart</Col>
+              <Col span={24}>
+                <MemberReviewChart />
+              </Col>
             </Row>
           </Col>
         </Row>
