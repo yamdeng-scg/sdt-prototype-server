@@ -1,19 +1,17 @@
 import React from 'react';
 import { Row, Col, Input, Tree } from 'antd';
 import {
-  FolderAddOutlined,
-  FolderFilled,
-  FolderOpenOutlined,
   StarFilled,
-  StarOutlined
+  StarOutlined,
+  CaretDownOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
-import { AudioOutlined, SearchOutlined } from '@ant-design/icons';
 import CreatableSelect from 'react-select/creatable';
 const components = {
   DropdownIndicator: null
 };
 
-const createOption = (label: string) => ({
+const createOption = label => ({
   label,
   value: label
 });
@@ -161,30 +159,24 @@ class TemplateFormPopup extends React.Component {
   render() {
     const { inputValue, value } = this.state;
     return (
-      <div style={{ paddingTop: 30 }}>
-        <Row
-          style={{
-            borderBottom: '1px solid #f0f0f0',
-            textAlign: 'center',
-            paddingBottom: 10
-          }}
-        >
+      <div className="pd-top15">
+        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
           <Col span={24}>템플릿 등록</Col>
         </Row>
-        <div style={{ padding: 10 }}>
-          <Row>
+        <div className="pd15">
+          <Row className="mrl10 mrb10">
             <Col span={24}>
-              <span style={{ fontWeight: 'bold' }}>
-                카테고리를 검색하거나, 아래 분류를 통해 직접 선택하여 템플릿을
+              <span className="bold">
+                * 카테고리를 검색하거나, 아래 분류를 통해 직접 선택하여 템플릿을
                 등록해주세요
               </span>
             </Col>
           </Row>
-          <Row>
+          <Row className="mrb5">
             <Col span={8}>
-              <span style={{ fontWeight: 'bold' }}>카테고리 검색</span>
+              <span className="bold">카테고리 검색</span>
             </Col>
-            <Col span={16} style={{ paddingLeft: 10 }}>
+            <Col span={16} className="pd-left10">
               <Input
                 placeholder="input search text"
                 enterButton={null}
@@ -201,12 +193,12 @@ class TemplateFormPopup extends React.Component {
               />
             </Col>
           </Row>
-          <Row>
+          <Row className="mrb5">
             <Col span={8}>
-              <span style={{ fontWeight: 'bold' }}>카테고리 분류</span>
+              <span className="bold">카테고리 분류</span>
             </Col>
           </Row>
-          <Row>
+          <Row className="mrb5">
             <Col span={8}>
               <Tree
                 style={{ overflowY: 'auto', height: 350 }}
@@ -217,12 +209,19 @@ class TemplateFormPopup extends React.Component {
                 onDragEnter={this.onDragEnter}
                 onDrop={this.onDrop}
                 treeData={this.state.gData}
+                switcherIcon={
+                  <CaretDownOutlined
+                    style={{ fontSize: '16px', color: 'gray' }}
+                  />
+                }
               />
             </Col>
             <Col span={16} style={{ paddingLeft: 10 }}>
               <Row>
-                <Col span={24}>선택한 카테고리</Col>
-                <Col span={24}>
+                <Col span={24} className="mrb10">
+                  <span className="bold font-em1">선택한 카테고리</span>
+                </Col>
+                <Col span={24} className="mrb10">
                   <Input
                     placeholder="input search text"
                     allowClear
@@ -232,8 +231,10 @@ class TemplateFormPopup extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col span={24}>고객질문</Col>
-                <Col span={24}>
+                <Col span={24} className="mrb10">
+                  <span className="bold font-em1">고객질문</span>
+                </Col>
+                <Col span={24} className="mrb10">
                   <Input
                     placeholder="input search text"
                     allowClear
@@ -242,8 +243,10 @@ class TemplateFormPopup extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col span={24}>상담사 답변</Col>
-                <Col span={24}>
+                <Col span={24} className="mrb10">
+                  <span className="bold font-em1">상담사 답변</span>
+                </Col>
+                <Col span={24} className="mrb10">
                   <Input
                     placeholder="input search text"
                     allowClear
@@ -252,8 +255,10 @@ class TemplateFormPopup extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col span={24}>키워드</Col>
-                <Col span={24}>
+                <Col span={24} className="mrb10">
+                  <span className="bold font-em1">키워드</span>
+                </Col>
+                <Col span={24} className="mrb10">
                   <CreatableSelect
                     components={components}
                     inputValue={inputValue}
@@ -270,33 +275,20 @@ class TemplateFormPopup extends React.Component {
               </Row>
               <Row>
                 <Col span={24}>
-                  즐겨쓰는 템플릿 등록{'  '} <StarFilled />
+                  <span className="bold font-em1 inblock mrr5">
+                    즐겨쓰는 템플릿 등록
+                  </span>
+                  <StarOutlined className="color-basic font-em2" />
                 </Col>
               </Row>
             </Col>
           </Row>
         </div>
         <Row style={{ textAlign: 'center' }}>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#b5b1b1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
+          <Col span={12} className="pd10 bold cancelbtn">
             확인
           </Col>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#62aef1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
+          <Col span={12} className="pd10 bold okbtn">
             확인
           </Col>
         </Row>

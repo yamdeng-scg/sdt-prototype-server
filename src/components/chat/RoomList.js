@@ -27,14 +27,15 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const data = [
-  'Racing car sprays burning fuel into crowd.',
+  '222Racing car sprays burning fuel into crowd.',
   'Japanese princess to wed commoner.',
   'Australian walks 100km after outback crash.',
   'Man charged over missing wedding girl.',
   'Los Angeles battles huge wildfires.',
   'Los Angeles battles huge wildfires.',
   'Los Angeles battles huge wildfires.',
-  'Los Angeles battles huge wildfires.'
+  'Los Angeles battles huge wildfires.',
+  '111'
 ];
 
 @withRouter
@@ -83,7 +84,11 @@ class RoomList extends React.Component {
         className="bor-right"
       >
         <div className="pd10 bor-bottom">
-          <Title level={3} className="text mr0">
+          <Title
+            level={3}
+            className="text mr0"
+            onClick={this.openManualTagListPopup}
+          >
             상담대기 <span className="color-basic">1</span> 건
           </Title>
           <div>
@@ -100,7 +105,14 @@ class RoomList extends React.Component {
           size={'large'}
           centered
         >
-          <TabPane tab={<Badge color={'orange'}>대기</Badge>} key="1">
+          <TabPane
+            tab={
+              <Badge color={'orange'} className="bold font-em1">
+                대기
+              </Badge>
+            }
+            key="1"
+          >
             <Row className="right pd10 bor-bottom">
               <Col span={24}>
                 <span className="bold text-under mrr5 inblock">
@@ -113,17 +125,22 @@ class RoomList extends React.Component {
               상담내역이 없습니다
             </p>
             <List
+              className=""
               dataSource={data}
               style={{
                 overflowY: 'scroll',
                 height: clientHeight - 245
               }}
-              renderItem={item => (
+              renderItem={(item, index) => (
                 <List.Item
                   style={{
                     position: 'relative'
                   }}
-                  className="pd-left20 pd-right20 bor-bottom"
+                  className={
+                    index === 0
+                      ? 'pd-left20 pd-right20 bor-bottom bg-baisc-low'
+                      : 'pd-left20 pd-right20 bor-bottom'
+                  }
                 >
                   <p
                     className="dot-fill"
@@ -141,7 +158,7 @@ class RoomList extends React.Component {
                   </Button> */}
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      Ant Design, a design language for background applications
+                      {item}
                     </Paragraph>
                     <p style={{ position: 'absolute', top: 0, right: 0 }}>
                       <span className="red">01:25:20</span>
@@ -152,6 +169,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openHitoryPopup}
+                      className="bg-basic color-white bold"
                     >
                       챗봇대화
                     </Button>{' '}
@@ -159,6 +177,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openTalkMovePopup}
+                      className="bg-basic color-white bold"
                     >
                       상담하기
                     </Button>{' '}
@@ -166,6 +185,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openAlertPopup}
+                      className="bg-basic color-white bold"
                     >
                       이관
                     </Button>{' '}
@@ -173,6 +193,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openConfirmPopup}
+                      className="bg-basic color-white bold"
                     >
                       종료
                     </Button>
@@ -181,7 +202,7 @@ class RoomList extends React.Component {
               )}
             />
           </TabPane>
-          <TabPane tab="진행" key="2">
+          <TabPane tab={<span className="font-em1">진행</span>} key="2">
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -199,7 +220,9 @@ class RoomList extends React.Component {
               <Col span={16}>
                 <Search
                   placeholder="검색어를 입력하세요"
-                  onSearch={value => {}}
+                  onSearch={value => {
+                    // console.log('aaa');
+                  }}
                   style={{ width: '100%' }}
                   allowClear
                 />
@@ -282,7 +305,7 @@ class RoomList extends React.Component {
               )}
             />
           </TabPane>
-          <TabPane tab="종료" key="3">
+          <TabPane tab={<span className="font-em1">종료</span>} key="3">
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -311,7 +334,7 @@ class RoomList extends React.Component {
                 <RangePicker style={{ width: '90%' }} /> {'   '}
                 <ReloadOutlined
                   className="color-basic bold"
-                  style={{ fontSize: 20 }}
+                  style={{ fontSize: 16 }}
                 />
               </Col>
             </Row>

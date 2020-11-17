@@ -42,20 +42,32 @@ class MessageListTop extends React.Component {
           <Col span={12}>
             <span className="font-em2">01073384183</span>
           </Col>
-          <Col span={12} className="left" onClick={this.openMinwonAddPopup}>
+          <Col
+            span={12}
+            className="left pd-left10"
+            onClick={this.openMinwonAddPopup}
+          >
             <span className="font-em2">ID : </span>
-            <span className="font-em2 text-under">123</span>{' '}
-            <Button>민원등록</Button>
+            <span className="font-em2 text-under inblock mrr5">123</span>{' '}
+            <Button className="bg-basic color-white bold">민원등록</Button>
           </Col>
         </Row>
         <Row>
           <Col span={12} className="pd-left5 pd-right5">
-            <Button block onClick={this.openMinwonHistoryPopup}>
-              직전 챗봇대화
+            <Button
+              block
+              onClick={this.openMinwonHistoryPopup}
+              className="bg-basic color-white bold"
+            >
+              과거 채팅상담 기록
             </Button>
           </Col>
           <Col span={12} className="pd-left5 pd-right5">
-            <Button block onClick={this.openJoinHistoryPopup}>
+            <Button
+              block
+              onClick={this.openJoinHistoryPopup}
+              className="bg-basic color-white bold"
+            >
               과거 채팅상담 내역(5)
             </Button>
           </Col>

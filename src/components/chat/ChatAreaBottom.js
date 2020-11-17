@@ -28,13 +28,14 @@ class ChatAreaBottom extends React.Component {
       applyBottomTabComponent = <ChatAreaBottomWarning />;
     }
     return (
-      <div>
-        <Row style={{ borderTop: '1px solid #f0f0f0', textAlign: 'center' }}>
+      <div style={{ height: 500 }}>
+        <Row className="center bor-top bor-bottom center mrt5">
           <Col
             span={6}
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(0);
             }}
+            className="pd10 bold font-em2 text-under color-basic"
           >
             답변검색
           </Col>
@@ -43,6 +44,7 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(1);
             }}
+            className="pd10 font-em1"
           >
             즐겨찾기
           </Col>
@@ -51,6 +53,7 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(2);
             }}
+            className="pd10 font-em1"
           >
             화면링크
           </Col>
@@ -59,6 +62,7 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(3);
             }}
+            className="pd10 font-em1"
           >
             경고메시지
           </Col>

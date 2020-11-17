@@ -11,20 +11,13 @@ class BlackCustomerPopup extends React.Component {
 
   render() {
     return (
-      <div style={{ paddingTop: 30 }}>
-        <Row
-          style={{
-            textAlign: 'center',
-            paddingBottom: 10,
-            marginBottom: 10,
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
+      <div className="pd-top15">
+        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
           <Col span={24}>관심고객 설정</Col>
         </Row>
-        <div style={{ padding: 10 }}>
-          <Row style={{ marginBottom: 10 }}>
-            <Col span={4} style={{ textAlign: 'center' }}>
+        <div className="pd10">
+          <Row className="mrb10">
+            <Col span={4} className="center bold">
               지정사유
             </Col>
             <Col span={20}>
@@ -33,7 +26,7 @@ class BlackCustomerPopup extends React.Component {
             </Col>
           </Row>
           <Row>
-            <Col span={4} style={{ textAlign: 'center' }}>
+            <Col span={4} className="center bold">
               추가 메모
             </Col>
             <Col span={20}>
@@ -41,27 +34,11 @@ class BlackCustomerPopup extends React.Component {
             </Col>
           </Row>
         </div>
-        <Row style={{ textAlign: 'center' }}>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#b5b1b1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
+        <Row className="center">
+          <Col span={12} className="pd10 bold cancelbtn">
             취소
           </Col>
-          <Col
-            span={12}
-            style={{
-              backgroundColor: '#62aef1',
-              padding: 10,
-              color: '#fff',
-              fontWeight: 'bold'
-            }}
-          >
+          <Col span={12} className="pd10 bold okbtn">
             확인
           </Col>
         </Row>

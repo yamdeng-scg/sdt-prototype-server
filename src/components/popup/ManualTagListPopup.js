@@ -118,10 +118,10 @@ class ManualTagListPopup extends React.Component {
   render() {
     return (
       <div className="pd-top15">
-        <Row className="center pd-bottom15 bor-bottom">
+        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
           <Col span={24}>상담도우미 태그</Col>
         </Row>
-        <div className="pd10" style={{ maxHeight: 300, overflowY: 'scroll' }}>
+        <div className="pd10" style={{ maxHeight: 350, overflowY: 'scroll' }}>
           {data.map((info, index) => (
             <span className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}>
               #캐시

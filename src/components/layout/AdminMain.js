@@ -5,7 +5,6 @@ import NotFound from '../NotFound';
 import SideBar from '../layout/SideBar';
 import ChatContainer from '../chat/ChatContainer';
 import TemplateContainer from '../template/TemplateContainer';
-import ManualContainer from '../manual/ManualContainer';
 import ManagerSettingContainer from '../manager/ManagerSettingContainer';
 
 @withRouter
@@ -32,26 +31,21 @@ class AdminMain extends React.Component {
               <Route
                 exact
                 path="/"
-                render={(props) => <ChatContainer {...props} />}
+                render={props => <ChatContainer {...props} />}
               />
               <Route
                 exact
                 path="/chat"
-                render={(props) => <ChatContainer {...props} />}
+                render={props => <ChatContainer {...props} />}
               />
               <Route
                 exact
                 path="/template"
-                render={(props) => <TemplateContainer {...props} />}
-              />
-              <Route
-                exact
-                path="/manual"
-                render={(props) => <ManualContainer {...props} />}
+                render={props => <TemplateContainer {...props} />}
               />
               <Route
                 path="/manager"
-                render={(props) => <ManagerSettingContainer {...props} />}
+                render={props => <ManagerSettingContainer {...props} />}
               />
               <Route component={NotFound} />
             </Switch>

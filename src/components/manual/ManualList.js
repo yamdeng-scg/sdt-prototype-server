@@ -97,11 +97,17 @@ class ManualList extends React.Component {
   render() {
     let { clientHeight } = this.props.uiStore;
     return (
-      <div>
+      <div className="bor-right">
         <div style={{ padding: '10px 0px 0px 10px' }}>
-          <Title level={3}>상담 도우미</Title>
+          <Title
+            level={3}
+            className="text mr0"
+            onClick={this.openManualTagListPopup}
+          >
+            상담 도우미
+          </Title>
         </div>
-        <div style={{ padding: '0px 10px', marginBottom: 10 }}>
+        <div style={{ padding: '0px 10px' }}>
           <Input
             placeholder="input search text"
             enterButton={null}
@@ -116,7 +122,7 @@ class ManualList extends React.Component {
             }
           />
         </div>
-        <div style={{ padding: 10 }}>
+        <div className="pd10">
           <Row>
             <Col span={12}>
               <Button>태그보기</Button>
@@ -130,7 +136,8 @@ class ManualList extends React.Component {
           <Table
             columns={columns}
             dataSource={data}
-            scroll={{ y: clientHeight - 300 }}
+            scroll={{ y: clientHeight - 250 }}
+            size="small"
           />
         </div>
       </div>

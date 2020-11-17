@@ -41,8 +41,8 @@ code {
 }
 
 .dot-fill {
-  height: 10px;
-  width: 10px;
+  height: 8px;
+  width: 8px;
   background-color: #78bffd;
   border-radius: 50%;
   border: 0px solid #707070;
@@ -55,7 +55,7 @@ code {
 }
 
 .site-badge-count-room .ant-badge-count {
-  background-color: #78bffd;
+  background-color: #ff655a;
   color: #fff;
 }
 
@@ -74,12 +74,20 @@ code {
   width :100%;
 }
 
+.alert-popup {
+  width: 400px !important;
+}
+
+.confirm-popup {
+  width: 400px !important;
+}
+
 .talk-move-popup {
-  width : 350px !important;
+  width : 400px !important;
 }
 
 .member-state-change-popup {
-  width : 350px !important;
+  width : 400px !important;
 }
 
 .minwon-add-popup {
@@ -99,6 +107,10 @@ code {
 }
 
 .manual-taglist-popup {
+  max-width: 450px !important;
+}
+
+.black-customer-popup {
   max-width: 450px !important;
 }
 
@@ -141,12 +153,24 @@ option:first {
   color: red;
 }
 
+.font-em1 {
+  font-size: 1.1em
+}
+
 .font-em2 {
   font-size: 1.2em;
 }
 
+.font-em3 {
+  font-size: 1.3em;
+}
+
 .font-em4 {
   font-size: 1.4em;
+}
+
+.font-em5 {
+  font-size: 1.5em;
 }
 
 .font-em6 {
@@ -181,6 +205,22 @@ option:first {
   margin-right: 10px;
 }
 
+.mrl15 {
+  margin-left: 15px;
+}
+
+.mrr15 {
+  margin-right: 15px;
+}
+
+.mrl20 {
+  margin-left: 12px;
+}
+
+.mrr20 {
+  margin-right: 20px;
+}
+
 .mrt5 {
   margin-top: 5px;
 }
@@ -197,6 +237,14 @@ option:first {
   margin-bottom: 10px;
 }
 
+.mrt15 {
+  margin-top: 15px;
+}
+
+.mrb15 {
+  margin-bottom: 15px;
+}
+
 .inblock {
   display: inline-block;
 }
@@ -207,6 +255,22 @@ option:first {
 
 .color-basic {
   color: #35bffd
+}
+
+.bg-white {
+  background-color: #fff;
+}
+
+.color-white {
+  color: #fff;
+}
+
+.color-gray {
+  color: #e3e0e0;
+}
+
+.bor {
+  border: 1px solid #cdcdcd;
 }
 
 .bor-bottom {
@@ -235,6 +299,7 @@ option:first {
 
 .text-under {
   text-decoration: underline;
+  text-underline-position: under;
 }
 
 .right {
@@ -325,6 +390,11 @@ option:first {
   padding: 5px;
 }
 
+
+.pd7 {
+  padding: 7px;
+}
+
 .pd10 {
   padding: 10px;
 }
@@ -357,6 +427,10 @@ option:first {
   border-radius: 15px;
 }
 
+.manual-taglist-popup .ant-modal-content {
+  border-radius: 15px;
+}
+
 .okbtn {
   background-color: #62aef1;
   color: #fff
@@ -375,7 +449,7 @@ option:first {
   display: inline-block;
   margin-right: 5px;
   margin-bottom: 5px;
-  color: #fff
+  color: #fff;
 }
 
 .tag-disable {
@@ -386,5 +460,33 @@ option:first {
   display: inline-block;
   margin-right: 5px;
   margin-bottom: 5px;
-  color: #62aef1
+  color: #62aef1;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.h100 {
+  height: 100%;
+}
+
+.bg-gray {
+  background-color: #e3e0e0;
+}
+
+.bg-baisc-low {
+  background-color: #dcf4ff;
+}
+
+.join-history-popup .ant-collapse-content > .ant-collapse-content-box {
+  padding: 0
+}
+
+.ant-modal.join-history-popup {
+  top: 30px;
+}
+
+.ant-scroll-number-only-unit {
+  font-weight: bold;
 }

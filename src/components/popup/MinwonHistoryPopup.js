@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Input, Collapse } from 'antd';
-import { AudioOutlined, SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 
 class MinwonHistoryPopup extends React.Component {
@@ -11,25 +11,22 @@ class MinwonHistoryPopup extends React.Component {
 
   render() {
     return (
-      <div style={{ paddingTop: 30 }}>
-        <Row
-          style={{
-            borderBottom: '1px solid #f0f0f0',
-            textAlign: 'center',
-            paddingBottom: 10
-          }}
-        >
+      <div className="pd-top15">
+        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
           <Col span={24}>민원 등록 기록</Col>
         </Row>
-        <Row>
-          <Col span={12}>
-            고객정보: 홍길동 ID{' '}
-            <span style={{ fontWeight: 'bold' }}>chatID</span>
+        <Row className="mrt15 mrb10">
+          <Col span={12} className="pd-left10">
+            <span className="bold font-em2">고객정보 :</span>{' '}
+            <span className="font-em2">홍길동 ID</span>
+            <span className="bold text text-under font-em2 inblock mrl5">
+              chatID
+            </span>
             <br />
             {'    '}
             <span>최근 1년간 연동 내역을 확인하실수 있습니다</span>
           </Col>
-          <Col span={12} style={{ padding: 5 }}>
+          <Col span={12} className="pd5">
             <Input
               placeholder="input search text"
               enterButton={null}
@@ -37,57 +34,46 @@ class MinwonHistoryPopup extends React.Component {
               size="large"
               suffix={
                 <SearchOutlined
+                  className="color-basic"
                   style={{
-                    fontSize: 16,
-                    color: '#1890ff'
+                    fontSize: 16
                   }}
                 />
               }
             />
           </Col>
         </Row>
-        <div>
+        <div style={{ maxHeight: 500, overflowY: 'scroll' }}>
           <Collapse defaultActiveKey={['1']}>
             <Panel
               header={
                 <div>
-                  <span style={{ fontWeight: 'bold' }}>등록일</span> :
-                  YYYY-MM-DD 00:00:00
-                  <span
-                    style={{
-                      fontWeight: 'bold',
-                      display: 'inline-block',
-                      marginLeft: 20
-                    }}
-                  />
-                  |
-                  <span
-                    style={{
-                      fontWeight: 'bold',
-                      display: 'inline-block',
-                      marginLeft: 20
-                    }}
-                  >
-                    담당자
-                  </span>{' '}
-                  : 안용성
+                  <span className="bold">등록일</span> : YYYY-MM-DD 00:00:00
+                  <span className="bold inblock mrl20" />|
+                  <span className="bold inblock mrl20">담당자</span> : 안용성
                 </div>
               }
               key="1"
             >
               <div>
-                * 요금 &gt; 요금확인 &gt;{' '}
-                <span style={{ fontWeight: 'bold' }}>상세</span>
+                * 요금 &gt; 요금확인 &gt; <span className="bold">상세</span>
               </div>
-              <div>asdasdasd</div>
+              <div className="mrl5">asdasdasd</div>
             </Panel>
-            <Panel header="This is panel header 2" key="2">
-              <div>{'* 요금 > 요금확인 > 상세'}</div>
-              <div>asdasdasd</div>
-            </Panel>
-            <Panel header="This is panel header 3" key="3">
-              <div>{'* 요금 > 요금확인 > 상세'}</div>
-              <div>asdasdasd</div>
+            <Panel
+              header={
+                <div>
+                  <span className="bold">등록일</span> : YYYY-MM-DD 00:00:00
+                  <span className="bold inblock mrl20" />|
+                  <span className="bold inblock mrl20">담당자</span> : 안용성
+                </div>
+              }
+              key="2"
+            >
+              <div>
+                * 요금 &gt; 요금확인 &gt; <span className="bold">상세</span>
+              </div>
+              <div className="mrl5">asdasdasd</div>
             </Panel>
           </Collapse>
         </div>

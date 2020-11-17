@@ -10,7 +10,7 @@ class AlertPopup extends React.Component {
   render() {
     return (
       <div className="pd-top15">
-        <Row className="center pd-bottom15 bor-bottom">
+        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
           <Col span={24}>상담 이관</Col>
         </Row>
         <Row className="center pd-top10 mrb10">

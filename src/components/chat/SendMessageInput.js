@@ -10,21 +10,11 @@ class SendMessageInput extends React.Component {
 
   render() {
     return (
-      <div style={{ position: 'relative' }}>
-        <TextArea
-          autoSize={true}
-          style={{
-            backgroundColor: '#fff',
-            position: 'inline-block',
-            width: '100%',
-            paddingRight: 20
-          }}
-        />{' '}
+      <div style={{ position: 'relative', paddingRight: 60 }}>
+        <TextArea autoSize={true} className="bg-white inblock w100" />{' '}
         <Button
-          type="primary"
-          shape="round"
-          size="small"
-          style={{ position: 'absolute', bottom: 0, right: 10 }}
+          className="bg-basic color-white bold"
+          style={{ position: 'absolute', bottom: 0, right: 0 }}
         >
           전송
         </Button>

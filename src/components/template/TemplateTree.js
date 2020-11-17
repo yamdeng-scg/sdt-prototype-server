@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col, Typography, Tree, Input } from 'antd';
-import { AudioOutlined, SearchOutlined } from '@ant-design/icons';
+import { CaretDownOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
 class TemplateTree extends React.Component {
@@ -111,10 +111,10 @@ class TemplateTree extends React.Component {
 
   render() {
     return (
-      <div style={{ padding: '10px 5px 10px 5px' }}>
-        <Row>
+      <div className="bor-right">
+        <Row className="pd10 bor-bottom">
           <Col span={24}>
-            <Title level={4} style={{ textAlign: 'center' }}>
+            <Title level={4} className="cetner text">
               답변 템플릿 분류
             </Title>
           </Col>
@@ -122,7 +122,7 @@ class TemplateTree extends React.Component {
         <Row>
           <Col span={24}>
             <Tree
-              height={document.documentElement.clientHeight - 300}
+              height={document.documentElement.clientHeight - 108}
               className="draggable-tree"
               defaultExpandedKeys={this.state.expandedKeys}
               draggable
@@ -130,6 +130,11 @@ class TemplateTree extends React.Component {
               onDragEnter={this.onDragEnter}
               onDrop={this.onDrop}
               treeData={this.state.gData}
+              switcherIcon={
+                <CaretDownOutlined
+                  style={{ fontSize: '16px', color: 'gray' }}
+                />
+              }
             />
           </Col>
         </Row>

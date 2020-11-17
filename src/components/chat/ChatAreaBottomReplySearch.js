@@ -1,12 +1,6 @@
 import React from 'react';
-import { Menu, Row, Col, Tree, Input } from 'antd';
-import {
-  FolderAddOutlined,
-  FolderFilled,
-  FolderOpenOutlined,
-  StarFilled,
-  StarOutlined
-} from '@ant-design/icons';
+import { Row, Col, Tree, Input } from 'antd';
+import { StarFilled, StarOutlined, CaretDownOutlined } from '@ant-design/icons';
 
 const x = 10;
 const y = 2;
@@ -116,9 +110,9 @@ class ChatAreaBottomReplySearch extends React.Component {
   render() {
     return (
       <Row>
-        <Col span={10} style={{ borderRight: '1px solid black' }}>
+        <Col span={10} className="bor-right">
           <Tree
-            style={{ overflowY: 'auto', height: 500 }}
+            style={{ overflowY: 'auto', height: 450 }}
             className="draggable-tree"
             defaultExpandedKeys={this.state.expandedKeys}
             draggable
@@ -127,42 +121,39 @@ class ChatAreaBottomReplySearch extends React.Component {
             onDrop={this.onDrop}
             treeData={this.state.gData}
             switcherIcon={
-              <FolderFilled style={{ fontSize: '14px', color: '#d6d604' }} />
+              <CaretDownOutlined style={{ fontSize: '16px', color: 'gray' }} />
             }
           />
         </Col>
         <Col span={14}>
-          <div style={{ padding: '10px 10px 0px 10px' }}>
+          <div style2={{ padding: '10px 10px 0px 10px' }} className="pd10">
             <Input allowClear placeholder="검색어를 입력해주세요" />
           </div>
           <div
             style={{
-              padding: 10,
+              padding: 5,
               textAlign: 'right',
               overflowY: 'auto',
-              height: 500
+              height: 400
             }}
           >
-            {[1, 1, 1, 1, 1, 2, 3, 5, 6].map((info, index) => {
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((info, index) => {
               return (
                 <div>
                   <div
+                    className="inblock pd-right5"
                     style={{
-                      display: 'inline-block',
-                      width: '10%',
-                      paddingRight: 5
+                      width: '10%'
                     }}
                   >
-                    <StarFilled />
+                    {/* <StarFilled className="color-basic" /> */}
+                    <StarOutlined className="color-basic font-em2" />
                   </div>
                   <div
+                    className="bg-gray pd10 mrb10 inblock color-basic bold"
                     style={{
-                      backgroundColor: '#d5d0d0',
                       borderRadius: 10,
-                      padding: 10,
-                      marginBottom: 10,
-                      width: '90%',
-                      display: 'inline-block'
+                      width: '90%'
                     }}
                   >
                     <p>답변입니당{index}</p>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
+const Title = Typography.Title;
 
 class ChatAreaBottomWarning extends React.Component {
   constructor(props) {
@@ -12,74 +13,70 @@ class ChatAreaBottomWarning extends React.Component {
       <div
         style={{
           position: 'relative',
-          padding: 15,
-          height: 500,
+          height: 400,
           overflowY: 'scroll'
         }}
+        className="pd15"
       >
-        <div style={{ marginBottom: 10 }}>
-          <Button type="primary">욕설 및 비속어 사용 경고</Button>
+        <div className="mrb10">
+          <Title
+            level={4}
+            className="text mr0"
+            onClick={this.openManualTagListPopup}
+          >
+            욕설 및 비속어 사용 경고
+          </Title>
         </div>
-        <div
-          style={{
-            marginBottom: 10
-          }}
-        >
+        <div className="mrb10">
           <div
             style={{
               width: '80%',
-              display: 'inline-block',
-              textAlign: 'left',
               padding: '11px 15px 9px',
-              color: 'red',
-              marginBottom: 10,
               position: 'relative'
             }}
+            className="inblock left red mrb10"
           >
             asdasdasa asdasdasdaasda asdas dasad sa dasd asd asds sd
             1123123123123
           </div>
           <div
             style={{
-              width: '20%',
-              display: 'inline-block',
-              textAlign: 'right'
+              width: '20%'
             }}
+            className="inblock right"
           >
-            <Button>전송</Button>
+            <Button className="bg-basic color-white bold">전송</Button>
           </div>
         </div>
-        <div
-          style={{
-            marginBottom: 10
-          }}
-        >
+        <div className="mrb10">
           <div
             style={{
               width: '80%',
-              display: 'inline-block',
-              textAlign: 'left',
               padding: '11px 15px 9px',
-              color: 'red',
-              marginBottom: 10,
               position: 'relative'
             }}
+            className="inblock left red mrb10"
           >
             asdasdasa asdasdasdaasda asdas dasad sa dasd asd asds sd
             1123123123123
           </div>
           <div
             style={{
-              width: '20%',
-              display: 'inline-block',
-              textAlign: 'right'
+              width: '20%'
             }}
+            className="inblock right"
           >
-            <Button>전송</Button>
+            <Button className="bg-basic color-white bold">전송</Button>
           </div>
         </div>
         <div>
-          <Button type="primary">욕설 및 비속어 사용 경고</Button>
+          <Title
+            level={4}
+            className="text mr0"
+            onClick={this.openManualTagListPopup}
+          >
+            욕설 및 비속어 사용 경고
+          </Title>
         </div>
         <div
           style={{
@@ -107,94 +104,7 @@ class ChatAreaBottomWarning extends React.Component {
               textAlign: 'right'
             }}
           >
-            <Button>전송</Button>
-          </div>
-        </div>
-        <div
-          style={{
-            marginBottom: 10
-          }}
-        >
-          <div
-            style={{
-              width: '80%',
-              display: 'inline-block',
-              textAlign: 'left',
-              padding: '11px 15px 9px',
-              color: 'red',
-              marginBottom: 10,
-              position: 'relative'
-            }}
-          >
-            asdasdasa asdasdasdaasda asdas dasad sa dasd asd asds sd
-            1123123123123
-          </div>
-          <div
-            style={{
-              width: '20%',
-              display: 'inline-block',
-              textAlign: 'right'
-            }}
-          >
-            <Button>전송</Button>
-          </div>
-        </div>
-        <div
-          style={{
-            marginBottom: 10
-          }}
-        >
-          <div
-            style={{
-              width: '80%',
-              display: 'inline-block',
-              textAlign: 'left',
-              padding: '11px 15px 9px',
-              color: 'red',
-              marginBottom: 10,
-              position: 'relative'
-            }}
-          >
-            asdasdasa asdasdasdaasda asdas dasad sa dasd asd asds sd
-            1123123123123
-          </div>
-          <div
-            style={{
-              width: '20%',
-              display: 'inline-block',
-              textAlign: 'right'
-            }}
-          >
-            <Button>전송</Button>
-          </div>
-        </div>
-        <div
-          style={{
-            marginBottom: 10
-          }}
-        >
-          <div
-            style={{
-              width: '80%',
-              display: 'inline-block',
-              textAlign: 'left',
-              padding: '11px 15px 9px',
-              color: 'red',
-              marginBottom: 10,
-              position: 'relative'
-            }}
-          >
-            asdasdasa asdasdasdaasda asdas dasad sa dasd asd asds sd
-            1123123123123
-          </div>
-          <div
-            style={{
-              width: '20%',
-              display: 'inline-block',
-              textAlign: 'right'
-            }}
-          >
-            <Button>전송</Button>
+            <Button className="bg-basic color-white bold">전송</Button>
           </div>
         </div>
       </div>

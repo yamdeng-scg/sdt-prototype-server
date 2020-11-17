@@ -4,8 +4,8 @@ import { withRouter } from 'react-router-dom';
 import { Row, Col, Button, Input } from 'antd';
 import {
   CloseOutlined,
-  UpCircleTwoTone,
-  DownCircleTwoTone
+  UpCircleOutlined,
+  DownCircleOutlined
 } from '@ant-design/icons';
 import MessageList from './MessageList';
 import SendMessageInput from './SendMessageInput';
@@ -25,14 +25,17 @@ class MessageContainer extends React.Component {
     let uiStore = this.props.uiStore;
     let { clientHeight } = uiStore;
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative' }} className="bor-right">
         <MessageListTop />
         <Row>
-          <Col span={24} style={{ position: 'relative', padding: '0px 5px' }}>
+          <Col span={24} style={{ position: 'relative' }}>
             <React.Fragment>
-              <MessageList clientHeight={clientHeight - 740} />
+              <MessageList clientHeight={clientHeight - 715} />
               {/* 버튼 3개 */}
-              <div style={{ position: 'absolute', bottom: 10, right: 10 }}>
+              <div
+                style={{ position: 'absolute', bottom: 10, right: 10 }}
+                className=""
+              >
                 <Button type="danger" shape="circle" size="large">
                   검색
                 </Button>{' '}
@@ -52,31 +55,36 @@ class MessageContainer extends React.Component {
                   width: '100%',
                   padding: '0px 10px',
                   marginBottom: 5,
-                  zIndex: 10,
-                  display: 'none'
+                  zIndex: 10
                 }}
+                className="none"
               >
                 <div
+                  className="bg-white bor pd5"
                   style={{
-                    backgroundColor: '#fff',
-                    borderRadius: '13px 13px 13px 13px',
-                    border: '1px solid #cac8c8',
-                    padding: 5
+                    borderRadius: '13px 13px 13px 13px'
                   }}
                 >
-                  <Row style={{ marginBottom: 5 }}>
-                    <Col span={8} offset={8} style={{ textAlign: 'center' }}>
+                  <Row className="mrb5">
+                    <Col span={8} offset={8} className="center pd5 bold">
                       대화내용 검색
                     </Col>
-                    <Col span={8} style={{ textAlign: 'right' }}>
+                    <Col span={8} className="right">
                       <CloseOutlined />
                     </Col>
                   </Row>
                   <Row>
                     <Col span={24}>
-                      <Input style={{ width: '85%' }} allowClear />{' '}
-                      <UpCircleTwoTone style={{ fontSize: 20 }} /> {'  '}
-                      <DownCircleTwoTone style={{ fontSize: 20 }} />
+                      <Input style={{ width: '90%' }} allowClear />{' '}
+                      <UpCircleOutlined
+                        className="color-basic"
+                        style={{ fontSize: 18 }}
+                      />{' '}
+                      {'  '}
+                      <DownCircleOutlined
+                        className="color-basic"
+                        style={{ fontSize: 18 }}
+                      />
                     </Col>
                   </Row>
                 </div>
