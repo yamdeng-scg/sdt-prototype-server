@@ -138,24 +138,18 @@ class RoomList extends React.Component {
                   }}
                   className={
                     index === 0
-                      ? 'pd-left20 pd-right20 bor-bottom bg-baisc-low'
-                      : 'pd-left20 pd-right20 bor-bottom'
+                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                      : 'pd-left20 pd-right5 bor-bottom'
                   }
                 >
                   <p
                     className="dot-fill"
                     style={{ position: 'absolute', top: 15, left: 10 }}
                   />{' '}
-                  오국환님{' '}
-                  <Badge count={25} className="site-badge-count-room" />
-                  {/* <Button
-                    type="primary"
-                    shape="round"
-                    size="small"
-                    style={{ position: 'absolute', top: 15, right: 15 }}
-                  >
-                    서울도시가스
-                  </Button> */}
+                  <span className="bold text">오국환님</span>
+                  <Badge count={25} className="site-badge-count-room">
+                    <span className="inblock mrl15" />
+                  </Badge>
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       {item}
@@ -247,22 +241,16 @@ class RoomList extends React.Component {
                   style={{
                     position: 'relative'
                   }}
-                  className="pd-left20 pd-right20 bor-bottom"
+                  className="pd-left20 pd-right5 bor-bottom"
                 >
                   <p
                     className="dot-fill"
                     style={{ position: 'absolute', top: 15, left: 10 }}
                   />{' '}
-                  오국환님{' '}
-                  <Badge count={25} className="site-badge-count-room" />
-                  {/* <Button
-                    type="primary"
-                    shape="round"
-                    size="small"
-                    style={{ position: 'absolute', top: 15, right: 15 }}
-                  >
-                    서울도시가스
-                  </Button> */}
+                  <span className="bold text">오국환님</span>
+                  <Badge count={25} className="site-badge-count-room">
+                    <span className="inblock mrl15" />
+                  </Badge>
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       Ant Design, a design language for background applications
@@ -357,22 +345,16 @@ class RoomList extends React.Component {
                   style={{
                     position: 'relative'
                   }}
-                  className="pd-left20 pd-right20 bor-bottom"
+                  className="pd-left20 pd-right5 bor-bottom"
                 >
                   <p
                     className="dot-fill"
                     style={{ position: 'absolute', top: 15, left: 10 }}
                   />{' '}
-                  오국환님{' '}
-                  <Badge count={25} className="site-badge-count-room" />
-                  {/* <Button
-                    type="primary"
-                    shape="round"
-                    size="small"
-                    style={{ position: 'absolute', top: 15, right: 15 }}
-                  >
-                    서울도시가스
-                  </Button> */}
+                  <span className="bold text">오국환님</span>
+                  <Badge count={25} className="site-badge-count-room">
+                    <span className="inblock mrl15" />
+                  </Badge>
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
                       Ant Design, a design language for background applications

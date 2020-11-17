@@ -56,7 +56,8 @@ class MinwonHistoryPopup extends React.Component {
               key="1"
             >
               <div>
-                * 요금 &gt; 요금확인 &gt; <span className="bold">상세</span>
+                <span className="bold">* 요금 &gt; 요금확인 &gt; </span>
+                <span className="bold color-basic font-em1">상세</span>
               </div>
               <div className="mrl5">asdasdasd</div>
             </Panel>
@@ -71,7 +72,8 @@ class MinwonHistoryPopup extends React.Component {
               key="2"
             >
               <div>
-                * 요금 &gt; 요금확인 &gt; <span className="bold">상세</span>
+                <span className="bold">* 요금 &gt; 요금확인 &gt; </span>
+                <span className="bold color-basic font-em1">상세</span>
               </div>
               <div className="mrl5">asdasdasd</div>
             </Panel>

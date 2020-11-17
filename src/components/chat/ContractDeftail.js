@@ -24,7 +24,7 @@ class ContractDeftail extends React.Component {
             </Title>
           </Col>
         </Row>
-        <Row className="pd10">
+        <Row className="pd10" align="middle">
           <Col span={24} className="mrb10">
             <Select
               defaultValue="lucy"
@@ -188,7 +188,9 @@ class ContractDeftail extends React.Component {
                 </Option>
                 <Option value="Yiminghe">yiminghe</Option>
               </Select>{' '}
-              <span className="left bold color-basic text-under">500 캐시</span>
+              <span className="left bold text-under font-em1 inblock mrl5">
+                500 캐시
+              </span>
             </Col>
             <Col span={12} className="left bold color-basic">
               납기일
@@ -208,9 +210,9 @@ class ContractDeftail extends React.Component {
             </Col>
           </Row>
           <Row style={{ padding: 10, borderBottom: '1px solid #f0f0f0' }}>
-            <Col span={12} className="left bold color-basic">
-              당월 소계{' '}
-              <span className="left bold color-basic text-under font-em1">
+            <Col span={12} className="left bold">
+              <span className="color-basic">당월 소계</span>{' '}
+              <span className="left bold text-under font-em1 inblock mrl5">
                 요약
               </span>
             </Col>
@@ -277,9 +279,9 @@ class ContractDeftail extends React.Component {
             </Col>
           </Row>
           <Row style={{ padding: 10, borderBottom: '1px solid #f0f0f0' }}>
-            <Col span={12} className="left bold color-basic">
-              미납 소계{' '}
-              <span className="left bold color-basic text-under font-em1">
+            <Col span={12} className="left bold">
+              <span className="color-basic">미납 소계</span>{' '}
+              <span className="left bold text-under font-em1 inblock mrl5">
                 요약
               </span>
             </Col>

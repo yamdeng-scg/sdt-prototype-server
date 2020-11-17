@@ -10,7 +10,7 @@ class ManualDetail extends React.Component {
   render() {
     return (
       <div style={{ position: 'relative' }} className="none2">
-        <Row style={{ padding: 20, borderBottom: '1px solid #e0dcdc' }}>
+        <Row style={{ padding: 15, borderBottom: '1px solid #e0dcdc' }}>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button shape="round" size="small" onClick={this.openHitoryPopup}>
               챗봇대화

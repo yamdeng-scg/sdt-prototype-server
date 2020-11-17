@@ -150,7 +150,7 @@ class ChatAreaBottomReplySearch extends React.Component {
                     <StarOutlined className="color-basic font-em2" />
                   </div>
                   <div
-                    className="bg-gray pd10 mrb10 inblock color-basic bold"
+                    className="bg-gray pd10 mrb10 inblock text"
                     style={{
                       borderRadius: 10,
                       width: '90%'

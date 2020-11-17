@@ -57,6 +57,7 @@ code {
 .site-badge-count-room .ant-badge-count {
   background-color: #ff655a;
   color: #fff;
+  padding: 0px !important;
 }
 
 .ant-modal-body {
