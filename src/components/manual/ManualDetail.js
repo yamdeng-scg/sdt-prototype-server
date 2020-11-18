@@ -10,19 +10,35 @@ class ManualDetail extends React.Component {
   render() {
     return (
       <div style={{ position: 'relative' }} className="none2">
-        <Row style={{ padding: 15, borderBottom: '1px solid #e0dcdc' }}>
-          <Col span={24} style={{ textAlign: 'right' }}>
-            <Button shape="round" size="small" onClick={this.openHitoryPopup}>
-              챗봇대화
+        <Row className="pd15 bor-bottom">
+          <Col span={24} className="left">
+            <Button
+              shape="round"
+              className="bold bg-basic color-white font-em1"
+              onClick={this.openHitoryPopup}
+            >
+              등록
             </Button>{' '}
-            <Button shape="round" size="small" onClick={this.openTalkMovePopup}>
-              상담하기
+            <Button
+              shape="round"
+              className="bold bg-basic color-white font-em1"
+              onClick={this.openTalkMovePopup}
+            >
+              수정
             </Button>{' '}
-            <Button shape="round" size="small" onClick={this.openAlertPopup}>
-              이관
+            <Button
+              shape="round"
+              className="bold bg-basic color-white font-em1"
+              onClick={this.openAlertPopup}
+            >
+              삭제
             </Button>{' '}
-            <Button shape="round" size="small" onClick={this.openConfirmPopup}>
-              종료
+            <Button
+              shape="round"
+              className="bold bg-basic color-white font-em1"
+              onClick={this.openConfirmPopup}
+            >
+              확대보기
             </Button>
           </Col>
         </Row>

@@ -246,6 +246,19 @@ option:first {
   margin-bottom: 15px;
 }
 
+.mrt20 {
+  margin-top: 20px;
+}
+
+.mrb20 {
+  margin-bottom: 20px;
+}
+
+
+.mrt30 {
+  margin-top: 30px;
+}
+
 .inblock {
   display: inline-block;
 }
@@ -490,4 +503,22 @@ option:first {
 
 .ant-scroll-number-only-unit {
   font-weight: bold;
+}
+
+.stats-box-shadow { 
+  box-shadow: 3px 3px 7px #aaaaaa;
+}
+
+.grid5 {
+  width: 20%;
+  text-align: 'center';
+  border: 0px;
+  padding: 30
+}
+
+.grid4 {
+  width: 25%;
+  text-align: 'center';
+  border: 0px;
+  padding: 30
 }

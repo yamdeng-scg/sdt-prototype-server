@@ -6,6 +6,7 @@ import NotFound from '../NotFound';
 import ManualDetail from '../manual/ManualDetail';
 import ManualForm from '../manual/ManualForm';
 import ManualList from '../manual/ManualList';
+import ManualEmpty from '../manual/ManualEmpty';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -28,7 +29,7 @@ class ManualMain extends React.Component {
               <Route
                 exact
                 path="/manual"
-                render={props => <ManualDetail {...props} />}
+                render={props => <ManualEmpty {...props} />}
               />
               <Route
                 exact

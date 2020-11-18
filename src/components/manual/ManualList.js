@@ -20,6 +20,7 @@ const columns = [
     dataIndex: 'age',
     key: 'age',
     width: 65,
+    align: 'center',
     render: text => <a>{text}</a>
   },
   {
@@ -30,14 +31,14 @@ const columns = [
     ellipsis: true
   },
   {
-    title: 'Tags',
+    title: '태그',
     key: 'tags',
     dataIndex: 'tags',
     render: tags => (
       <>
         {tags.map(tag => {
           return (
-            <Tag color={'green'} key={tag}>
+            <Tag className="color-basic inblock mrb5" key={tag}>
               {tag.toUpperCase()}
             </Tag>
           );
@@ -50,7 +51,7 @@ const columns = [
     key: 'action',
     width: 50,
     render: (text, record) => (
-      <StarFilled style={{ fontSize: 17, color: '#2196f3' }} />
+      <StarFilled className="color-basic" style={{ fontSize: 17 }} />
     )
   }
 ];
@@ -98,7 +99,7 @@ class ManualList extends React.Component {
     let { clientHeight } = this.props.uiStore;
     return (
       <div className="bor-right">
-        <div style={{ padding: '10px 0px 0px 10px' }}>
+        <div style={{ padding: '10px 0px 7px 10px' }}>
           <Title
             level={3}
             className="text mr0"
@@ -125,7 +126,9 @@ class ManualList extends React.Component {
         <div className="pd10">
           <Row>
             <Col span={12}>
-              <Button>태그보기</Button>
+              <Button className="bg-basic color-white bold font-em1">
+                태그보기
+              </Button>
             </Col>
             <Col span={12} style={{ textAlign: 'right', marginTop: 5 }}>
               <Checkbox>즐겨찾기만 보기</Checkbox>

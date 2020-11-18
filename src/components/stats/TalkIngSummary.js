@@ -9,64 +9,29 @@ class TalkIngSummary extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>나의 상담 시간 분석</div>
-        <div className="none-border">
+      <div className="mrb20">
+        <div className="text font-em6 bold mrb5 mrl5">나의 상담 요약</div>
+        <div className="none-border stats-box-shadow">
           <Card title={null} bordered={false}>
-            <Card.Grid
-              style={{
-                width: '20%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>대기</div>
-              <div style={{ textAlign: 'center' }}>0</div>
+            <Card.Grid className="grid5">
+              <div className="center font-em4 text bold mrb5">대기</div>
+              <div className="center font-em4 color-basic bold">0건</div>
             </Card.Grid>
-            <Card.Grid
-              style={{
-                width: '20%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>대기</div>
-              <div style={{ textAlign: 'center' }}>0</div>
+            <Card.Grid className="grid5">
+              <div className="center font-em4 text bold mrb5">대기</div>
+              <div className="center font-em4 color-basic bold">0건</div>
             </Card.Grid>
-            <Card.Grid
-              style={{
-                width: '20%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>대기</div>
-              <div style={{ textAlign: 'center' }}>0</div>
+            <Card.Grid className="grid5">
+              <div className="center font-em4 text bold mrb5">대기</div>
+              <div className="center font-em4 color-basic bold">0건</div>
             </Card.Grid>
-            <Card.Grid
-              style={{
-                width: '20%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>대기</div>
-              <div style={{ textAlign: 'center' }}>0</div>
+            <Card.Grid className="grid5">
+              <div className="center font-em4 text bold mrb5">대기</div>
+              <div className="center font-em4 color-basic bold">0건</div>
             </Card.Grid>
-            <Card.Grid
-              style={{
-                width: '20%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>대기</div>
-              <div style={{ textAlign: 'center' }}>0</div>
+            <Card.Grid className="grid5">
+              <div className="center font-em4 text bold mrb5">대기</div>
+              <div className="center font-em4 color-basic bold">0건</div>
             </Card.Grid>
           </Card>
         </div>
