@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Row, Col, Typography, Checkbox, Input, Button, Select } from 'antd';
+import { Row, Col, Checkbox, Input, Button, Select } from 'antd';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { Pagination } from 'antd';
 const { Option } = Select;

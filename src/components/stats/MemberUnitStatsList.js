@@ -1,15 +1,6 @@
 import React from 'react';
 
-import {
-  Table,
-  Tag,
-  Checkbox,
-  Typography,
-  Input,
-  Row,
-  Col,
-  Button
-} from 'antd';
+import { Table, Row, Col } from 'antd';
 
 const columns = [
   {
