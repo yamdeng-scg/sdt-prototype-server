@@ -11,6 +11,7 @@ import EmpStore from './manager/EmpStore';
 import StatsStore from './manager/StatsStore';
 import AlertModalStore from './AlertModalStore';
 import ModalStore from './ModalStore';
+import SocketStore from './SocketStore';
 
 class RootStore {
   constructor() {
@@ -27,6 +28,7 @@ class RootStore {
     this.statsStore = new StatsStore(this);
     this.alertModalStore = new AlertModalStore(this);
     this.modalStore = new ModalStore(this);
+    this.socketStore = new SocketStore(this);
   }
 }
 

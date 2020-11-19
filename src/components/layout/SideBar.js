@@ -38,7 +38,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="1"
             className="center mrb20"
-            style={{ paddingTop: 10 }}
+            style={{ paddingTop: 10, marginTop: 0 }}
             onClick={() => uiStore.goPage('/chat')}
           >
             <HomeFilled
