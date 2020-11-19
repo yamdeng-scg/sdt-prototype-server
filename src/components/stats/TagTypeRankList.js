@@ -64,104 +64,106 @@ class TagTypeRankList extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>
-          <Row>
-            <Col span={18}>문의 유형별 통계</Col>
-            <Col span={6}>2020.11.12</Col>
-          </Row>
-          <Row>
-            <Col span={16}>
-              <Table
-                columns={columns}
-                dataSource={data}
-                pagination={false}
-                showHeader={false}
-                size="small"
-              />
-            </Col>
-            <Col span={5} style={{ marginLeft: 10 }}>
-              <Timeline>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-                <Timeline.Item
-                  dot={
-                    <CheckCircleFilled
-                      style={{ fontSize: '14px', color: '#1890ff' }}
-                    />
-                  }
+      <div className="mrt10">
+        <Row>
+          <Col span={16} className="text font-em4 bold mrb10 mrl5">
+            문의 유형별 통계
+          </Col>
+          <Col span={5} className="inblock mrl15 color-basic bold font-em1">
+            2020.11.12
+          </Col>
+        </Row>
+        <Row>
+          <Col span={16}>
+            <Table
+              columns={columns}
+              dataSource={data}
+              pagination={false}
+              showHeader={false}
+              size="small"
+            />
+          </Col>
+          <Col span={5} style={{ marginLeft: 10 }}>
+            <Timeline>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
                 >
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      paddingBottom: 10
-                    }}
-                  >
-                    2015-09-01
-                  </span>
-                </Timeline.Item>
-              </Timeline>
-            </Col>
-          </Row>
-        </div>
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+              <Timeline.Item
+                dot={
+                  <CheckCircleFilled
+                    style={{ fontSize: '14px', color: '#1890ff' }}
+                  />
+                }
+              >
+                <span
+                  style={{
+                    display: 'inline-block',
+                    paddingBottom: 10
+                  }}
+                >
+                  2015-09-01
+                </span>
+              </Timeline.Item>
+            </Timeline>
+          </Col>
+        </Row>
       </div>
     );
   }

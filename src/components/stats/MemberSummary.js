@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from 'antd';
 
-class TalkCloseummary extends React.Component {
+class MemberSummary extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -10,29 +10,26 @@ class TalkCloseummary extends React.Component {
   render() {
     return (
       <div className="mrb20">
-        <div className="text font-em4 bold mrb10 mrl5">상담처리 분석</div>
         <div className="none-border stats-box-shadow">
           <Card title={null} bordered={false}>
             <Card.Grid className="grid4">
-              <div className="center font-em2 text bold mrb5">총 상담수</div>
+              <div className="center font-em2 text bold mrb5">총 생성 계정</div>
               <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid4">
               <div className="center font-em2 text bold mrb5">
-                종료상담 건수
+                상담권한부여 계정
               </div>
               <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid4">
               <div className="center font-em2 text bold mrb5">
-                상담원 평균 응대 건수
+                상담상태 계정
               </div>
               <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid4">
-              <div className="center font-em2 text bold mrb5">
-                전일 대비 상담 증감
-              </div>
+              <div className="center font-em2 text bold mrb5">관리자 계정</div>
               <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
           </Card>
@@ -42,4 +39,4 @@ class TalkCloseummary extends React.Component {
   }
 }
 
-export default TalkCloseummary;
+export default MemberSummary;

@@ -95,7 +95,19 @@ class MemberUnitStatsList extends React.Component {
   render() {
     return (
       <div>
-        <div>상담사별 분석</div>
+        <Row>
+          <Col span={12}>
+            <div className="text font-em4 bold mrb0 mrl5">상담사별 분석</div>
+          </Col>
+          <Col span={24} className="right mrb5">
+            <span className="bold text-under mrr5 inblock">
+              당일 종료 최다순▼
+            </span>{' '}
+            <span className="bold text-under inblock">
+              최근 7일 종료 최다순▼
+            </span>
+          </Col>
+        </Row>
         <div>
           <Table
             columns={columns}

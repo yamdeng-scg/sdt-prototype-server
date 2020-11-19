@@ -1,6 +1,5 @@
 import React from 'react';
-import { Row, Col, Select, Input } from 'antd';
-const Option = Select.Option;
+import { Row, Col, Input } from 'antd';
 const { TextArea } = Input;
 
 class BlackCustomerPopup extends React.Component {

@@ -1,8 +1,10 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Row, Col, Button, Select } from 'antd';
+import { Table, Row, Col, Button, Select, Input } from 'antd';
+import Code from '../../config/Code';
 const { Option } = Select;
+const { Search } = Input;
 
 /*
 
@@ -127,11 +129,41 @@ class BlackCustomerList extends React.Component {
 
   render() {
     let { clientHeight } = this.props.uiStore;
+    let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     return (
       <div>
-        <div>계정관리</div>
-        <div>검색 input</div>
-        <div>count 정보 : bottom border 넣음</div>
+        <div className="text font-em4 bold mrb10 mrl5">관심고객 관리</div>
+        <div className="bor-bottom">
+          <Row className="mrb10">
+            <Col span={8} className="left pd-left10">
+              <span className="font-em1 bold">총</span>{' '}
+              <span className="font-em2 bold color-basic">3건</span>
+            </Col>
+            <Col span={6}>
+              <Select
+                defaultValue="customerName"
+                style={{ width: '100%' }}
+                onChange={() => {}}
+              >
+                {roomListSearcTypeCodeList.map(codeInfo => {
+                  return (
+                    <Option value={codeInfo.value}>{codeInfo.name}</Option>
+                  );
+                })}
+              </Select>
+            </Col>
+            <Col span={10}>
+              <Search
+                placeholder="검색어를 입력하세요"
+                onSearch={value => {
+                  // console.log('aaa');
+                }}
+                style={{ width: '100%' }}
+                allowClear
+              />
+            </Col>
+          </Row>
+        </div>
         <div>
           <Table
             columns={columns}

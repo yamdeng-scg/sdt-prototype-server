@@ -522,3 +522,10 @@ option:first {
   border: 0px;
   padding: 30
 }
+
+.grid2 {
+  width: 50%;
+  text-align: 'center';
+  border: 0px;
+  padding: 30
+}

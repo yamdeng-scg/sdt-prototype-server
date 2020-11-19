@@ -10,32 +10,27 @@ class UseHistorySummary extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>나의 상담 시간 분석</div>
+      <div className="mrb20">
+        <div className="text font-em4 bold mrb10 mrl5">나의 상담 시간 분석</div>
         <div className="none-border">
           <Card title={null} bordered={false}>
-            <Card.Grid
-              style={{
-                width: '50%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>챗봇 이용 고객</div>
-              <div style={{ textAlign: 'center' }}>
+            <Card.Grid className="grid2">
+              <div className="center font-em2 text bold mrb5">
+                챗봇 이용 고객
+              </div>
+              <div className="center">
                 <UsergroupAddOutlined
                   style={{
-                    color: '#35bffd',
-                    fontSize: 50,
+                    fontSize: 40,
                     zIndex: 11,
                     margin: 0
                   }}
+                  className="color-basic"
                 />
                 <span
+                  className="color-basic"
                   style={{
-                    color: '#35bffd',
-                    fontSize: 50,
+                    fontSize: 40,
                     zIndex: 11,
                     margin: 0
                   }}
@@ -44,30 +39,23 @@ class UseHistorySummary extends React.Component {
                 </span>
               </div>
             </Card.Grid>
-            <Card.Grid
-              style={{
-                width: '50%',
-                textAlign: 'center',
-                border: '0px',
-                padding: 30
-              }}
-            >
-              <div style={{ textAlign: 'center' }}>
+            <Card.Grid className="grid2">
+              <div className="center font-em2 text bold mrb5">
                 채팅상담시스템 인입 고객
               </div>
-              <div style={{ textAlign: 'center' }}>
+              <div className="center">
                 <RobotOutlined
                   style={{
-                    color: '#35bffd',
-                    fontSize: 50,
+                    fontSize: 40,
                     zIndex: 11,
                     margin: 0
                   }}
+                  className="color-basic"
                 />
                 <span
+                  className="color-basic"
                   style={{
-                    color: '#35bffd',
-                    fontSize: 50,
+                    fontSize: 40,
                     zIndex: 11,
                     margin: 0
                   }}

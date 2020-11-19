@@ -1,11 +1,13 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Row, Col, Button, Select } from 'antd';
+import { Row, Col, Select } from 'antd';
+import Code from '../../config/Code';
+const { Option } = Select;
 
 const data = [];
 
-for (let index = 0; index < 300; index++) {
+for (let index = 0; index < 20; index++) {
   data.push(index + '');
 }
 
@@ -20,58 +22,113 @@ class LinkMenuList extends React.Component {
 
   render() {
     let { clientHeight } = this.props.uiStore;
+    let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     return (
       <div>
-        <div>
-          <Row>
-            <Col span={12}>aasdasd</Col>
-            <Col span={12}>aasdasd</Col>
+        <div className="bor-bottom">
+          <Row className="pd25">
+            <Col span={8} className="left pd-left10">
+              <span className="font-em3 bold text">링크관리</span>{' '}
+            </Col>
+            <Col span={16} className="right">
+              <Select
+                defaultValue="customerName"
+                style={{ width: 200 }}
+                onChange={() => {}}
+              >
+                {roomListSearcTypeCodeList.map(codeInfo => {
+                  return (
+                    <Option value={codeInfo.value}>{codeInfo.name}</Option>
+                  );
+                })}
+              </Select>
+            </Col>
           </Row>
         </div>
         <div
           style={{
-            height: document.documentElement.clientHeight - 104,
+            height: clientHeight - 150,
             overflowY: 'scroll'
           }}
         >
-          <Row align="middle">
-            <Col span={4} style={{ textAlign: 'center' }}>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
               요금
             </Col>
-            <Col span={20}>
+            <Col span={20} className="pd10 bor-left bold">
               {data.map((info, index) => (
                 <span
-                  style={{
-                    backgroundColor: index % 2 === 0 ? '#d5d0d0' : '#fff',
-                    borderRadius: 10,
-                    border: '1px solid black',
-                    padding: 5,
-                    display: 'inline-block',
-                    marginRight: 5,
-                    marginBottom: 5
-                  }}
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
                 >
                   #캐시
                 </span>
               ))}
             </Col>
           </Row>
-          <Row align="middle">
-            <Col span={4} style={{ textAlign: 'center' }}>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
               요금
             </Col>
-            <Col span={20}>
+            <Col span={20} className="pd10 bor-left bold">
               {data.map((info, index) => (
                 <span
-                  style={{
-                    backgroundColor: index % 2 === 0 ? '#d5d0d0' : '#fff',
-                    borderRadius: 10,
-                    border: '1px solid black',
-                    padding: 5,
-                    display: 'inline-block',
-                    marginRight: 5,
-                    marginBottom: 5
-                  }}
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
+                >
+                  #캐시
+                </span>
+              ))}
+            </Col>
+          </Row>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
+              요금
+            </Col>
+            <Col span={20} className="pd10 bor-left bold">
+              {data.map((info, index) => (
+                <span
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
+                >
+                  #캐시
+                </span>
+              ))}
+            </Col>
+          </Row>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
+              요금
+            </Col>
+            <Col span={20} className="pd10 bor-left bold">
+              {data.map((info, index) => (
+                <span
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
+                >
+                  #캐시
+                </span>
+              ))}
+            </Col>
+          </Row>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
+              요금
+            </Col>
+            <Col span={20} className="pd10 bor-left bold">
+              {data.map((info, index) => (
+                <span
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
+                >
+                  #캐시
+                </span>
+              ))}
+            </Col>
+          </Row>
+          <Row align="middle bor-bottom">
+            <Col span={4} className="center font-em1 bold">
+              요금
+            </Col>
+            <Col span={20} className="pd10 bor-left bold">
+              {data.map((info, index) => (
+                <span
+                  className={index % 2 === 0 ? 'tag-enable' : 'tag-disable'}
                 >
                   #캐시
                 </span>

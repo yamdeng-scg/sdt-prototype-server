@@ -15,7 +15,7 @@ class LinkManageContainer extends React.Component {
     return (
       <div style={{ height: '100%' }}>
         <Row style={{ height: '100%' }}>
-          <Col span={6} style={{ borderRight: '1px solid #f0f0f0' }}>
+          <Col span={6} className="bor-right">
             <LinkManageLeftMenu />
           </Col>
           <Col span={18}>

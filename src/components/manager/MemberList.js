@@ -1,9 +1,11 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import { Table, Row, Col, Button, Select } from 'antd';
+import { Table, Row, Col, Button, Select, Input } from 'antd';
+import MemberSummary from '../stats/MemberSummary';
+import Code from '../../config/Code';
 const { Option } = Select;
-
+const { Search } = Input;
 /*
 
   index
@@ -127,17 +129,46 @@ class MemberList extends React.Component {
 
   render() {
     let { clientHeight } = this.props.uiStore;
+    let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     return (
       <div>
-        <div>계정관리</div>
-        <div>검색 input</div>
-        <div>count 정보 : bottom border 넣음</div>
+        <div className="text font-em4 bold mrb10 mrl5">계정관리</div>
+        <div>
+          <Row className="mrb10">
+            <Col span={6} offset={8}>
+              <Select
+                defaultValue="customerName"
+                style={{ width: '100%' }}
+                onChange={() => {}}
+              >
+                {roomListSearcTypeCodeList.map(codeInfo => {
+                  return (
+                    <Option value={codeInfo.value}>{codeInfo.name}</Option>
+                  );
+                })}
+              </Select>
+            </Col>
+            <Col span={10}>
+              <Search
+                placeholder="검색어를 입력하세요"
+                onSearch={value => {
+                  // console.log('aaa');
+                }}
+                style={{ width: '100%' }}
+                allowClear
+              />
+            </Col>
+          </Row>
+        </div>
+        <div>
+          <MemberSummary />
+        </div>
         <div>
           <Table
             columns={columns}
             dataSource={data}
             size="small"
-            scroll={{ y: clientHeight - 250 }}
+            scroll={{ y: clientHeight - 370 }}
           />
         </div>
       </div>

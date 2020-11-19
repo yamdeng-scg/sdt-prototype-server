@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Pie, Sector, Cell, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Legend } from 'recharts';
 
 const data = [
   { name: 'Group A', value: 100 },
@@ -45,10 +45,10 @@ class MemberReviewChart extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>asdasdsas</div>
+      <div className="mrt10">
+        <div className="text font-em4 bold mrb10 mrl5">고객 만족도</div>
         <div>
-          <PieChart width={500} height={500}>
+          <PieChart width={500} height={400}>
             <Pie
               data={data}
               cx={200}

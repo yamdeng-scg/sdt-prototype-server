@@ -1,13 +1,12 @@
 import React from 'react';
-import { Tree } from 'antd';
-import {
-  FolderAddOutlined,
-  FolderFilled,
-  FolderOpenOutlined,
-  StarFilled,
-  StarOutlined
-} from '@ant-design/icons';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+import { Tree, Button } from 'antd';
+import { CaretDownOutlined } from '@ant-design/icons';
 
+@withRouter
+@inject('appStore', 'uiStore')
+@observer
 class CategoryTree extends React.Component {
   constructor(props) {
     super(props);
@@ -116,13 +115,17 @@ class CategoryTree extends React.Component {
   };
 
   render() {
+    let { clientHeight } = this.props.uiStore;
     return (
       <div>
-        <div>카테고리 목록</div>
-        <div>전체열기, 전체닫기</div>
+        <div className="text font-em2 bold mrb10 mrl5">카테고리 목록</div>
+        <div className="mrb5 right bor-bottom pd-bottom5">
+          <Button className="bg-basic color-white bold">전체열기</Button>{' '}
+          <Button className="bg-basic color-white bold">전체닫기</Button>
+        </div>
         <div>
           <Tree
-            style={{ overflowY: 'auto', height: 500 }}
+            style={{ overflowY: 'auto', height: clientHeight - 260 }}
             className="draggable-tree"
             defaultExpandedKeys={this.state.expandedKeys}
             draggable
@@ -131,7 +134,7 @@ class CategoryTree extends React.Component {
             onDrop={this.onDrop}
             treeData={this.state.gData}
             switcherIcon={
-              <FolderFilled style={{ fontSize: '14px', color: '#d6d604' }} />
+              <CaretDownOutlined style={{ fontSize: '16px', color: 'gray' }} />
             }
           />
         </div>

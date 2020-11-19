@@ -8,30 +8,32 @@ class TalkIngSummary extends React.Component {
   }
 
   render() {
+    // title oputerClassName
+    // ing
     return (
       <div className="mrb20">
-        <div className="text font-em6 bold mrb5 mrl5">나의 상담 요약</div>
+        <div className="text font-em4 bold mrb10 mrl5">나의 상담 요약</div>
         <div className="none-border stats-box-shadow">
           <Card title={null} bordered={false}>
             <Card.Grid className="grid5">
-              <div className="center font-em4 text bold mrb5">대기</div>
-              <div className="center font-em4 color-basic bold">0건</div>
+              <div className="center font-em2 text bold mrb5">신규 접수</div>
+              <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid5">
-              <div className="center font-em4 text bold mrb5">대기</div>
-              <div className="center font-em4 color-basic bold">0건</div>
+              <div className="center font-em2 text bold mrb5">대기중</div>
+              <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid5">
-              <div className="center font-em4 text bold mrb5">대기</div>
-              <div className="center font-em4 color-basic bold">0건</div>
+              <div className="center font-em2 text bold mrb5">진행중</div>
+              <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid5">
-              <div className="center font-em4 text bold mrb5">대기</div>
-              <div className="center font-em4 color-basic bold">0건</div>
+              <div className="center font-em2 text bold mrb5">종료</div>
+              <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
             <Card.Grid className="grid5">
-              <div className="center font-em4 text bold mrb5">대기</div>
-              <div className="center font-em4 color-basic bold">0건</div>
+              <div className="center font-em2 text bold mrb5">이탈</div>
+              <div className="center font-em3 color-basic bold">0건</div>
             </Card.Grid>
           </Card>
         </div>
