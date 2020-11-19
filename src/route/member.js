@@ -5,6 +5,7 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'member.';
+const _ = require('lodash');
 
 // 회원 수정 : 상태
 router.put('/:id/state', function (req, res, next) {
@@ -13,8 +14,28 @@ router.put('/:id/state', function (req, res, next) {
   paramObject.id = id;
   dbService
     .executeQueryById(queryIdPrefix + 'updateState', paramObject)
-    .then((result) => {
-      res.send(result);
+    .then(() => {
+      return dbService
+        .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
+        .then((result) => {
+          let profile = result[0];
+          let filterProfile = _.pick(
+            profile,
+            'id',
+            'companyId',
+            'companyUseConfigJson',
+            'companyName',
+            'isAdmin',
+            'authLevel',
+            'loginName',
+            'state',
+            'profileImageId',
+            'speakerId',
+            'name'
+          );
+          res.send(filterProfile);
+        })
+        .catch(errorRouteHandler(next));
     })
     .catch(errorRouteHandler(next));
 });
