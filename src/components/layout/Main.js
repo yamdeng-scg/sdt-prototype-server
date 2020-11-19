@@ -67,6 +67,10 @@ class Main extends React.Component {
                 path="/manager"
                 render={props => <ManagerSettingContainer {...props} />}
               />
+              <Route
+                path="/link"
+                render={props => <LinkManageContainer {...props} />}
+              />
               <Route component={NotFound} />
             </Switch>
           </div>
