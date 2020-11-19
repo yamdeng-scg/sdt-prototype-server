@@ -152,7 +152,7 @@ class BlackCustomerList extends React.Component {
                 })}
               </Select>
             </Col>
-            <Col span={10}>
+            <Col span={10} className="pd-left10">
               <Search
                 placeholder="검색어를 입력하세요"
                 onSearch={value => {
