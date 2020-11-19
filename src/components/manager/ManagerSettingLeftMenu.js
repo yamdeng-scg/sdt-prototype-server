@@ -17,7 +17,7 @@ class ManagerSettingLeftMenu extends React.Component {
       <div>
         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
           <li
-            className="bor-bottom pd10"
+            className="bor-bottom pd10 bg-baisc-low"
             onClick={() => uiStore.goPage('/manager/members')}
           >
             <div className="font-em3 bold">계정관리</div>

@@ -26,7 +26,7 @@ class SideBar extends React.Component {
         style={{
           width: 100,
           height: '100%',
-          padding: '20px 0px 10px 0px',
+          padding: '0px 0px 10px 0px',
           position: 'fixed',
           top: 50,
           left: 0,
@@ -38,6 +38,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="1"
             className="center mrb20"
+            style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/chat')}
           >
             <HomeFilled
@@ -49,6 +50,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="2"
             className="center mrb20"
+            style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/template')}
           >
             <StarFilled
@@ -60,6 +62,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="3"
             className="center mrb20"
+            style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/manual')}
           >
             <SoundFilled
@@ -71,6 +74,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="4"
             className="center mrb20"
+            style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/stats')}
           >
             <BarChartOutlined
@@ -82,6 +86,7 @@ class SideBar extends React.Component {
           <Menu.Item
             key="5"
             className="center mrb20"
+            style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/manager')}
           >
             <SettingFilled
