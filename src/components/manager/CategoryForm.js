@@ -17,7 +17,7 @@ class CategoryForm extends React.Component {
         <div className="bor">
           <Row align="middle" className="bor-bottom">
             <Col span={6} className="center">
-              <span className="inblock pd30 font-em1 bold">카테고리 추가</span>
+              <span className="inblock pd30 bold">카테고리 추가</span>
             </Col>
             <Col span={18} className="bor-left">
               <Row className="pd20 bor-bottom">
@@ -39,16 +39,12 @@ class CategoryForm extends React.Component {
           </Row>
           <Row align="middle">
             <Col span={6} className="center">
-              <span className="inblock pd30 font-em1 bold">
-                카테고리 수정 / 삭제
-              </span>
+              <span className="inblock pd30 bold">카테고리 수정 / 삭제</span>
             </Col>
             <Col span={18} className="bor-left">
               <Row className="bor-bottom">
                 <Col span={24} className="center pd10">
-                  <span className="inblokc bold font-em1">
-                    카테고리 수정 / 삭제
-                  </span>
+                  <span className="inblokc bold">카테고리 수정 / 삭제</span>
                 </Col>
               </Row>
               <Row>

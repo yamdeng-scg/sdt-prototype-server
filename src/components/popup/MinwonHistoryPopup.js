@@ -1,8 +1,11 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import { Row, Col, Input, Collapse } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 
+@inject('alertModalStore')
+@observer
 class MinwonHistoryPopup extends React.Component {
   constructor(props) {
     super(props);

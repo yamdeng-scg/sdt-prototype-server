@@ -1,7 +1,10 @@
 import React from 'react';
-import { Row, Col, Input } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { Row, Col, Input, Button } from 'antd';
 const { TextArea } = Input;
 
+@inject('alertModalStore')
+@observer
 class BlackCustomerPopup extends React.Component {
   constructor(props) {
     super(props);
@@ -34,11 +37,15 @@ class BlackCustomerPopup extends React.Component {
           </Row>
         </div>
         <Row className="center">
-          <Col span={12} className="pd10 bold cancelbtn">
-            취소
+          <Col span={12}>
+            <Button block className="pd10 bold cancelbtn">
+              취소
+            </Button>
           </Col>
-          <Col span={12} className="pd10 bold okbtn">
-            확인
+          <Col span={12}>
+            <Button block className="pd10 bold okbtn">
+              확인
+            </Button>
           </Col>
         </Row>
       </div>

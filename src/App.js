@@ -11,7 +11,7 @@ import AppHistory from './utils/AppHistory';
 import ErrorService from './services/ErrorService';
 import Login from './components/Login';
 import ModalContainer from './components/layout/ModalContainer';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Spin } from 'antd';
 // import moment from 'moment';
 // import 'moment/locale/zh-cn';
 import locale from 'antd/lib/locale/ko_KR';
@@ -64,7 +64,9 @@ class App extends Component {
   }
 
   init() {
-    const { uiStore } = this.props;
+    const { uiStore, appStore } = this.props;
+
+    appStore.loadCompanyList();
 
     Logger.info('App init call');
     Logger.info('process.env : ' + JSON.stringify(process.env));
@@ -95,8 +97,9 @@ class App extends Component {
   }
 
   render() {
-    let { appStore } = this.props;
+    let { appStore, uiStore } = this.props;
     let { token } = appStore;
+    let { displayLoadingBar } = uiStore;
     let DEV_TOOL_COMPONENT = null;
     if (process.env.APP_ENV === Constant.APP_ENV_DEVELOPMENT) {
       DEV_TOOL_COMPONENT = <DevTools />;
@@ -109,11 +112,13 @@ class App extends Component {
     }
     return (
       <ErrorBoundary>
-        <ConfigProvider locale={locale}>
-          {token ? MainComponent : <Login />}
-          {DEV_TOOL_COMPONENT}
-          <ModalContainer />
-        </ConfigProvider>
+        <Spin spinning={displayLoadingBar}>
+          <ConfigProvider locale={locale}>
+            {token ? MainComponent : <Login />}
+            {DEV_TOOL_COMPONENT}
+            <ModalContainer />
+          </ConfigProvider>
+        </Spin>
       </ErrorBoundary>
     );
   }

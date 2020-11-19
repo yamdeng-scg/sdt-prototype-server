@@ -18,7 +18,7 @@ class TemplateSearch extends React.Component {
   }
 
   render() {
-    let uiStore = this.props.uiStore;
+    let { uiStore } = this.props;
     let { clientHeight } = uiStore;
     return (
       <div>

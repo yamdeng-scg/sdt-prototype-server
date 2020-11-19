@@ -1,4 +1,6 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
+import Helper from '../utils/Helper';
+import ApiService from '../services/ApiService';
 
 // {
 //   "loginName": "yamdeng1",
@@ -8,21 +10,24 @@ import { observable, action } from 'mobx';
 // }
 
 class LoginStore {
-  @observable loginName = null;
+  @observable loginName = Helper.getInfoByLocalStorage('loginName') || null;
 
   @observable password = null;
 
-  @observable name = null;
+  @observable name = Helper.getInfoByLocalStorage('name') || null;
 
-  @observable companyId = null;
+  @observable companyId = Helper.getInfoByLocalStorage('companyId') || '1';
+
+  @observable saveLoginChecked =
+    Helper.getInfoByLocalStorage('saveLoginChecked') || false;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
   @action
-  changeLoginId(loginId) {
-    this.loginId = loginId;
+  changeLoginName(loginName) {
+    this.loginName = loginName;
   }
 
   @action
@@ -31,7 +36,72 @@ class LoginStore {
   }
 
   @action
-  login() {}
+  changeName(name) {
+    this.name = name;
+  }
+
+  @action
+  changeCompany(companyId) {
+    this.companyId = companyId;
+  }
+
+  @action
+  changeSaveLoginChecked(saveLoginChecked) {
+    this.saveLoginChecked = saveLoginChecked;
+  }
+
+  @action
+  login() {
+    let saveLoginChecked = this.saveLoginChecked;
+    let apiParam = {};
+    apiParam.loginName = this.loginName;
+    apiParam.name = this.name;
+    apiParam.password = this.password;
+    apiParam.companyId = this.companyId;
+    if (this.validForm()) {
+      ApiService.post('auth/login', apiParam).then(response => {
+        let data = response.data;
+        let appStore = this.rootStore.appStore;
+        appStore.setLoginInfo(data);
+        if (saveLoginChecked) {
+          Helper.saveInfoToLocalStorage('companyId', this.companyId);
+          Helper.saveInfoToLocalStorage('loginName', this.loginName);
+          Helper.saveInfoToLocalStorage('name', this.name);
+          Helper.saveInfoToLocalStorage(
+            'saveLoginChecked',
+            this.saveLoginChecked
+          );
+        } else {
+          Helper.removeInfoByLocalStorage('companyId');
+          Helper.removeInfoByLocalStorage('loginName');
+          Helper.removeInfoByLocalStorage('name');
+          Helper.removeInfoByLocalStorage('saveLoginChecked');
+        }
+      });
+    }
+  }
+
+  validForm() {
+    let success = true;
+    if (!this.loginName || !this.name || !this.password || !this.companyId) {
+      success = false;
+    }
+    return success;
+  }
+
+  // [확인] 버튼 활성화 여부
+  @computed get enabledButton() {
+    let success = true;
+    if (!this.loginName || !this.name || !this.password || !this.companyId) {
+      success = false;
+    }
+    return success;
+  }
+
+  @action
+  clear() {
+    this.password = null;
+  }
 }
 
 export default LoginStore;

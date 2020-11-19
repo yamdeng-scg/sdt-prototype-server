@@ -19,6 +19,11 @@ class Main extends React.Component {
     this.state = {};
   }
 
+  componentDidMount() {
+    let { appStore } = this.props;
+    appStore.loadProfile();
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -61,10 +66,6 @@ class Main extends React.Component {
               <Route
                 path="/manager"
                 render={props => <ManagerSettingContainer {...props} />}
-              />
-              <Route
-                path="/link"
-                render={props => <LinkManageContainer {...props} />}
               />
               <Route component={NotFound} />
             </Switch>

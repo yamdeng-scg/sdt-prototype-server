@@ -125,7 +125,7 @@ class CategoryTree extends React.Component {
         </div>
         <div>
           <Tree
-            style={{ overflowY: 'auto', height: clientHeight - 260 }}
+            style={{ overflowY: 'auto', height: clientHeight - 280 }}
             className="draggable-tree"
             defaultExpandedKeys={this.state.expandedKeys}
             draggable

@@ -163,6 +163,13 @@ const checkImageFileUploadExtension = function(fileObject) {
   return false;
 };
 
+// 오늘 날짜 정보
+const getTodayString = function() {
+  let todayString = '';
+  todayString = moment().format('YYYY-MM-DD');
+  return todayString;
+};
+
 const Helper = {
   convertEmptyValue: convertEmptyValue,
   copyToClipboard: copyToClipboard,
@@ -178,7 +185,8 @@ const Helper = {
   isNumber: isNumber,
   getBillSendMethodTitle: getBillSendMethodTitle,
   checkIsToady: checkIsToady,
-  checkImageFileUploadExtension: checkImageFileUploadExtension
+  checkImageFileUploadExtension: checkImageFileUploadExtension,
+  getTodayString: getTodayString
 };
 
 export default Helper;

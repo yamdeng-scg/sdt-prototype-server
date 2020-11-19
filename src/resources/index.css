@@ -447,12 +447,16 @@ option:first {
 
 .okbtn {
   background-color: #62aef1;
-  color: #fff
+  color: #fff;
+  height: 43px;
+  border: 0px;
 }
 
 .cancelbtn {
   background-color: #b5b1b1;
-  color: #fff
+  color: #fff;
+  height: 43px;
+  border: 0px;
 }
 
 .tag-enable {

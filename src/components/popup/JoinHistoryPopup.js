@@ -1,9 +1,12 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import { Row, Col, Collapse, Input } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import MessageList from '../chat/MessageList';
 const { Panel } = Collapse;
 
+@inject('alertModalStore')
+@observer
 class JoinHistoryPopup extends React.Component {
   constructor(props) {
     super(props);

@@ -12,7 +12,7 @@ class UseHistorySummary extends React.Component {
     return (
       <div className="mrb20">
         <div className="text font-em4 bold mrb10 mrl5">나의 상담 시간 분석</div>
-        <div className="none-border">
+        <div className="none-border stats-box-shadow">
           <Card title={null} bordered={false}>
             <Card.Grid className="grid2">
               <div className="center font-em2 text bold mrb5">

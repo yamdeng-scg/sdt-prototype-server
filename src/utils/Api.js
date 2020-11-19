@@ -1,11 +1,10 @@
 import axios from 'axios';
 import Config from '../config/Config';
-import Constant from '../config/Constant';
 import Logger from './Logger';
 import LoadingBar from '../utils/LoadingBar';
 import rootStore from '../stores/RootStore';
 
-let API_URL = process.env.API_URL + 'api/';
+let API_URL = '/api/';
 
 const Api = axios.create({
   baseURL: API_URL,
@@ -17,7 +16,7 @@ Api.defaults.headers.post['Content-Type'] = 'application/json';
 
 // 요청 인터셉터
 Api.interceptors.request.use(
-  function (config) {
+  function(config) {
     config.headers['Authorization'] =
       config.headers['Authorization'] || rootStore.appStore.token || '';
     config.headers['Company'] =
@@ -27,7 +26,7 @@ Api.interceptors.request.use(
     }
     return config;
   },
-  function (error) {
+  function(error) {
     Logger.error('api before client errors : ' + JSON.stringify(error));
     return Promise.reject(error);
   }
@@ -35,13 +34,13 @@ Api.interceptors.request.use(
 
 // 응답 인터셉터
 Api.interceptors.response.use(
-  function (response) {
+  function(response) {
     LoadingBar.hide();
     return response;
   },
-  function (error) {
+  function(error) {
     let requestConfig = error.config;
-    let headers = requestConfig.headers;
+    // let headers = requestConfig.headers;
     if (error && error.response) {
       if (!requestConfig.disableServerErrorHandle) {
         // 항상 체크하는 서버 에러

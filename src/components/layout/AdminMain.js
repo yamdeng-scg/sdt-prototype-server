@@ -6,6 +6,7 @@ import SideBar from '../layout/SideBar';
 import ChatContainer from '../chat/ChatContainer';
 import TemplateContainer from '../template/TemplateContainer';
 import ManagerSettingContainer from '../manager/ManagerSettingContainer';
+import LinkManageContainer from '../link/LinkManageContainer';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -46,6 +47,10 @@ class AdminMain extends React.Component {
               <Route
                 path="/manager"
                 render={props => <ManagerSettingContainer {...props} />}
+              />
+              <Route
+                path="/link"
+                render={props => <LinkManageContainer {...props} />}
               />
               <Route component={NotFound} />
             </Switch>

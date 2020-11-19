@@ -1,7 +1,10 @@
 import React from 'react';
-import { Row, Col, Select } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { Row, Col, Select, Button } from 'antd';
 const { Option } = Select;
 
+@inject('alertModalStore')
+@observer
 class TalkMovePopup extends React.Component {
   constructor(props) {
     super(props);
@@ -34,11 +37,15 @@ class TalkMovePopup extends React.Component {
           </Col>
         </Row>
         <Row className="center">
-          <Col span={12} className="pd10 bold cancelbtn">
-            취소
+          <Col span={12}>
+            <Button block className="pd10 bold cancelbtn">
+              취소
+            </Button>
           </Col>
-          <Col span={12} className="pd10 bold okbtn">
-            확인
+          <Col span={12}>
+            <Button block className="pd10 bold okbtn">
+              확인
+            </Button>
           </Col>
         </Row>
       </div>

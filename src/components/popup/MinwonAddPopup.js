@@ -1,8 +1,11 @@
 import React from 'react';
-import { Row, Col, Input, Tree } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { Row, Col, Input, Tree, Button } from 'antd';
 import { CaretDownOutlined, SearchOutlined } from '@ant-design/icons';
 const TextArea = Input.TextArea;
 
+@inject('alertModalStore')
+@observer
 class MinwonAddPopup extends React.Component {
   constructor(props) {
     super(props);
@@ -188,11 +191,15 @@ class MinwonAddPopup extends React.Component {
           </Row>
         </div>
         <Row style={{ textAlign: 'center' }}>
-          <Col span={12} className="pd10 bold cancelbtn">
-            취소
+          <Col span={12}>
+            <Button block className="pd10 bold cancelbtn">
+              취소
+            </Button>
           </Col>
-          <Col span={12} className="pd10 bold okbtn">
-            확인
+          <Col span={12}>
+            <Button block className="pd10 bold okbtn">
+              확인
+            </Button>
           </Col>
         </Row>
       </div>

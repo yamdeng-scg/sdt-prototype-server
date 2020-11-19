@@ -32,7 +32,7 @@ class AutoMessage extends React.Component {
               <Button className="bg-basic color-white bold">추가</Button>
             </div>
             <div className="red bold">
-              고객이 신규 상담 채팅 진입 시, 등록한 메시지 중 랜덤으로 자동
+              * 고객이 신규 상담 채팅 진입 시, 등록한 메시지 중 랜덤으로 자동
               전송됩니다.
             </div>
             <Row>

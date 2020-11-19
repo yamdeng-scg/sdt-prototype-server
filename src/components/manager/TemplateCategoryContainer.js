@@ -13,7 +13,7 @@ class TemplateCategoryContainer extends React.Component {
   render() {
     return (
       <div className="pd10">
-        <div className="text font-em4 bold mrb10 mrl5">
+        <div className="text font-em4 bold mrb10 bor-bottom pd-bottom10">
           템플릿 카테고리 관리
         </div>
         <div className="mrb10">
@@ -37,10 +37,10 @@ class TemplateCategoryContainer extends React.Component {
         </div>
         <div>
           <Row>
-            <Col span={8}>
+            <Col span={6}>
               <CategoryTree />
             </Col>
-            <Col span={16}>
+            <Col span={18}>
               <CategoryForm />
             </Col>
           </Row>

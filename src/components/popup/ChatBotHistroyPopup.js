@@ -1,6 +1,9 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import { Row, Col } from 'antd';
 
+@inject('alertModalStore')
+@observer
 class ChatBotHistroyPopup extends React.Component {
   constructor(props) {
     super(props);

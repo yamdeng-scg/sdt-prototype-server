@@ -1,14 +1,23 @@
 import { observable, action } from 'mobx';
+import Helper from '../utils/Helper';
+import ApiService from '../services/ApiService';
+import ModalService from '../services/ModalService';
 
 class AppStore {
   // company
   @observable company = 0;
 
   // 로그인 token
-  @observable token = 'asdsasd';
+  @observable token = Helper.getInfoByLocalStorage('token') || null;
 
   // 로그인한 사용자 정보
-  @observable userInfo = {};
+  @observable profile = {};
+
+  // 회사 목록
+  @observable companyList = [];
+
+  // 현재 시간 통계 정보
+  @observable currentStatsInfo = {};
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -16,14 +25,46 @@ class AppStore {
 
   @action
   logout() {
-    this.token = '';
-    this.userInfo = null;
+    ModalService.confirm({
+      title: '로그아웃',
+      body: '로그아웃하시겠습니까?',
+      ok: () => {
+        this.token = '';
+        this.profile = null;
+        Helper.removeInfoByLocalStorage('token');
+      }
+    });
   }
 
   @action
   setLoginInfo(loginInfo) {
     this.token = loginInfo.token;
-    this.userInfo = loginInfo.user;
+    this.profile = loginInfo.profile;
+    Helper.saveInfoToLocalStorage('token', loginInfo.token);
+  }
+
+  @action
+  changeProfile(profile) {
+    this.profile = profile;
+  }
+
+  @action
+  changeToken(token) {
+    this.token = token;
+  }
+
+  @action
+  loadProfile() {
+    ApiService.get('auth/profile').then(response => {
+      let data = response.data;
+      this.setLoginInfo(data);
+    });
+    ApiService.get('room', { params: { queryId: 'getCurrentTimeStats' } }).then(
+      respone => {
+        let data = respone.data;
+        this.currentStatsInfo = data;
+      }
+    );
   }
 
   // 400 status code 에러 처리
@@ -59,6 +100,14 @@ class AppStore {
   // 웹뷰 reload
   reloadApp() {
     document.location.href = '/' + process.env.PUBLIC_URL;
+  }
+
+  @action
+  loadCompanyList() {
+    ApiService.get('company').then(respone => {
+      let data = respone.data;
+      this.companyList = data;
+    });
   }
 }
 
