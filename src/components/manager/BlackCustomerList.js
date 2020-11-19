@@ -119,12 +119,16 @@ for (let index = 0; index < 4; index++) {
 }
 
 @withRouter
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'managerStore')
 @observer
 class BlackCustomerList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.managerStore.changeMenuIndex(4);
   }
 
   render() {

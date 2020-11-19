@@ -56,8 +56,9 @@ class Login extends React.Component {
   }
 
   render() {
-    let { appStore, loginStore } = this.props;
+    let { appStore, loginStore, uiStore } = this.props;
     let { companyList } = appStore;
+    let { clientHeight } = uiStore;
     let {
       companyId,
       loginName,
@@ -71,7 +72,7 @@ class Login extends React.Component {
         justify="center"
         align="bottom"
         style={{
-          height: '100%',
+          height: clientHeight,
           textAlign: 'center',
           backgroundImage: `url(${BackGroundImage})`,
           backgroundRepeat: 'repeat-x'

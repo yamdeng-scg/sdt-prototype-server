@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 
 @withRouter
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'managerStore')
 @observer
 class ManagerSettingLeftMenu extends React.Component {
   constructor(props) {
@@ -12,12 +12,17 @@ class ManagerSettingLeftMenu extends React.Component {
   }
 
   render() {
-    let { uiStore } = this.props;
+    let { uiStore, managerStore } = this.props;
+    let { currentMenuIndex } = managerStore;
     return (
       <div>
         <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
           <li
-            className="bor-bottom pd10 bg-baisc-low"
+            className={
+              currentMenuIndex === 1
+                ? 'bor-bottom pd10 bg-baisc-low'
+                : 'bor-bottom pd10'
+            }
             onClick={() => uiStore.goPage('/manager/members')}
           >
             <div className="font-em3 bold">계정관리</div>
@@ -26,7 +31,11 @@ class ManagerSettingLeftMenu extends React.Component {
             </div>
           </li>
           <li
-            className="bor-bottom pd10"
+            className={
+              currentMenuIndex === 2
+                ? 'bor-bottom pd10 bg-baisc-low'
+                : 'bor-bottom pd10'
+            }
             onClick={() => uiStore.goPage('/manager/category')}
           >
             <div className="font-em3 bold">템플릿 카테고리 관리</div>
@@ -35,7 +44,11 @@ class ManagerSettingLeftMenu extends React.Component {
             </div>
           </li>
           <li
-            className="bor-bottom pd10"
+            className={
+              currentMenuIndex === 3
+                ? 'bor-bottom pd10 bg-baisc-low'
+                : 'bor-bottom pd10'
+            }
             onClick={() => uiStore.goPage('/manager/autoMessage')}
           >
             <div className="font-em3 bold">자동 메시지 관리</div>
@@ -44,7 +57,11 @@ class ManagerSettingLeftMenu extends React.Component {
             </div>
           </li>
           <li
-            className="bor-bottom pd10"
+            className={
+              currentMenuIndex === 4
+                ? 'bor-bottom pd10 bg-baisc-low'
+                : 'bor-bottom pd10'
+            }
             onClick={() => uiStore.goPage('/manager/blackCustomer')}
           >
             <div className="font-em3 bold">관심고객 관리</div>

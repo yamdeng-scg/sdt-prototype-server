@@ -3,6 +3,8 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Row, Col, Checkbox, Input, Button, Select } from 'antd';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
+import ModalService from '../../services/ModalService';
+import ModalType from '../../config/ModalType';
 import { Pagination } from 'antd';
 const { Option } = Select;
 
@@ -16,6 +18,10 @@ class TemplateSearch extends React.Component {
     super(props);
     this.state = {};
   }
+
+  openTemplateFormPopup = () => {
+    ModalService.openMiddlePopup(ModalType.TEMPLATE_FORM_POPUP, {});
+  };
 
   render() {
     let { uiStore } = this.props;
@@ -41,7 +47,12 @@ class TemplateSearch extends React.Component {
               <Input style={{ width: '100%' }} />
             </Col>
             <Col span={3}>
-              <Button className="bg-basic color-white bold">템플릿 추가</Button>
+              <Button
+                className="bg-basic color-white bold"
+                onClick={this.openTemplateFormPopup}
+              >
+                템플릿 추가
+              </Button>
             </Col>
           </Row>
           <Row className="center mrt10 mrb10">
@@ -79,7 +90,12 @@ class TemplateSearch extends React.Component {
                   YY.MM.DD / 홍길동{' '}
                   {/* <StarFilled className="color-basic" /> */}
                   <StarOutlined className="color-basic font-em4" />{' '}
-                  <Button className="bg-basic color-white bold">편집</Button>{' '}
+                  <Button
+                    className="bg-basic color-white bold"
+                    onClick={this.openTemplateFormPopup}
+                  >
+                    편집
+                  </Button>{' '}
                   <Button className="bg-basic color-white bold">삭제</Button>
                 </Col>
               </Row>

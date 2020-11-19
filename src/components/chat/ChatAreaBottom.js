@@ -6,6 +6,7 @@ import ChatAreaBottomWarning from './ChatAreaBottomWarning';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Row, Col } from 'antd';
+import classNames from 'classnames';
 
 @withRouter
 @inject('chatStore')
@@ -18,7 +19,7 @@ class ChatAreaBottom extends React.Component {
 
   render() {
     let { chatStore } = this.props;
-    let { bottmActiveTabIndex } = chatStore;
+    let { bottmActiveTabIndex, displayBottomContent } = chatStore;
     let applyBottomTabComponent = <ChatAreaBottomReplySearch />;
     if (bottmActiveTabIndex === 1) {
       applyBottomTabComponent = <ChatAreaBottomFav />;
@@ -27,15 +28,22 @@ class ChatAreaBottom extends React.Component {
     } else if (bottmActiveTabIndex === 3) {
       applyBottomTabComponent = <ChatAreaBottomWarning />;
     }
+    if (!displayBottomContent) {
+      applyBottomTabComponent = null;
+    }
     return (
-      <div style={{ height: 500 }}>
+      <div style2={{ height: 500 }}>
         <Row className="center bor-top bor-bottom center mrt5">
           <Col
             span={6}
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(0);
             }}
-            className="pd10 bold font-em2 text-under color-basic"
+            className={classNames('pd10', 'font-em2', {
+              'text-under': bottmActiveTabIndex === 0,
+              'color-basic': bottmActiveTabIndex === 0,
+              bold: bottmActiveTabIndex === 0
+            })}
           >
             답변검색
           </Col>
@@ -44,7 +52,11 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(1);
             }}
-            className="pd10 font-em1"
+            className={classNames('pd10', 'font-em2', {
+              'text-under': bottmActiveTabIndex === 1,
+              'color-basic': bottmActiveTabIndex === 1,
+              bold: bottmActiveTabIndex === 1
+            })}
           >
             즐겨찾기
           </Col>
@@ -53,7 +65,11 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(2);
             }}
-            className="pd10 font-em1"
+            className={classNames('pd10', 'font-em2', {
+              'text-under': bottmActiveTabIndex === 2,
+              'color-basic': bottmActiveTabIndex === 2,
+              bold: bottmActiveTabIndex === 2
+            })}
           >
             화면링크
           </Col>
@@ -62,7 +78,11 @@ class ChatAreaBottom extends React.Component {
             onClick={() => {
               chatStore.changeBottomActiveTabIndex(3);
             }}
-            className="pd10 font-em1"
+            className={classNames('pd10', 'font-em2', {
+              'text-under': bottmActiveTabIndex === 3,
+              'color-basic': bottmActiveTabIndex === 3,
+              bold: bottmActiveTabIndex === 3
+            })}
           >
             경고메시지
           </Col>

@@ -10,7 +10,7 @@ class CategoryForm extends React.Component {
 
   render() {
     return (
-      <div className="pd5">
+      <div className="pd-left15">
         <div className="text font-em2 bold mrb10 mrl5">
           카테고리 추가 / 수정 /삭제
         </div>

@@ -13,7 +13,7 @@ import ChatAreaBottom from './ChatAreaBottom';
 import MessageListTop from './MessageListTop';
 
 @withRouter
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'chatStore')
 @observer
 class MessageContainer extends React.Component {
   constructor(props) {
@@ -22,21 +22,34 @@ class MessageContainer extends React.Component {
   }
 
   render() {
-    let { uiStore } = this.props;
+    let { uiStore, chatStore } = this.props;
     let { clientHeight } = uiStore;
+    let { displayBottomContent, displaySearchMessgeComponent } = chatStore;
+    let listClientHeight = clientHeight - 270;
+    if (displayBottomContent) {
+      listClientHeight = clientHeight - 715;
+    }
     return (
       <div style={{ position: 'relative' }} className="bor-right">
         <MessageListTop />
         <Row>
           <Col span={24} style={{ position: 'relative' }}>
             <React.Fragment>
-              <MessageList clientHeight={clientHeight - 715} />
+              {/* 715, 270 */}
+              <MessageList clientHeight={listClientHeight} />
               {/* 버튼 3개 */}
               <div
                 style={{ position: 'absolute', bottom: 10, right: 10 }}
-                className=""
+                className={displaySearchMessgeComponent ? 'none' : ''}
               >
-                <Button type="danger" shape="circle" size="large">
+                <Button
+                  type="danger"
+                  shape="circle"
+                  size="large"
+                  onClick={() =>
+                    chatStore.changeDisplaySearchMessgeComponent(true)
+                  }
+                >
                   검색
                 </Button>{' '}
                 <Button type="danger" shape="circle" size="large">
@@ -57,7 +70,7 @@ class MessageContainer extends React.Component {
                   marginBottom: 5,
                   zIndex: 10
                 }}
-                className="none"
+                className={displaySearchMessgeComponent ? '' : 'none'}
               >
                 <div
                   className="bg-white bor pd5"
@@ -69,7 +82,13 @@ class MessageContainer extends React.Component {
                     <Col span={8} offset={8} className="center pd5 bold">
                       대화내용 검색
                     </Col>
-                    <Col span={8} className="right">
+                    <Col
+                      span={8}
+                      className="right"
+                      onClick={() =>
+                        chatStore.changeDisplaySearchMessgeComponent(false)
+                      }
+                    >
                       <CloseOutlined />
                     </Col>
                   </Row>

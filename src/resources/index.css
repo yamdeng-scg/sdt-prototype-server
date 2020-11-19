@@ -450,6 +450,7 @@ option:first {
   color: #fff;
   height: 43px;
   border: 0px;
+  border-radius: 0px !important;
 }
 
 .cancelbtn {
@@ -457,6 +458,7 @@ option:first {
   color: #fff;
   height: 43px;
   border: 0px;
+  border-radius: 0px !important;
 }
 
 .tag-enable {

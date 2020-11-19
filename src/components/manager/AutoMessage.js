@@ -5,12 +5,16 @@ import { Button, Row, Col, Input } from 'antd';
 const { TextArea } = Input;
 
 @withRouter
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'managerStore')
 @observer
 class AutoMessage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.managerStore.changeMenuIndex(3);
   }
 
   render() {

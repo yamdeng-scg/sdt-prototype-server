@@ -12,6 +12,7 @@ import {
   Typography,
   DatePicker
 } from 'antd';
+import classNames from 'classnames';
 import Code from '../../config/Code';
 import { ReloadOutlined } from '@ant-design/icons';
 import ModalService from '../../services/ModalService';
@@ -39,7 +40,7 @@ const data = [
 ];
 
 @withRouter
-@inject('appStore', 'uiStore')
+@inject('appStore', 'uiStore', 'chatStore')
 @observer
 class RoomList extends React.Component {
   constructor(props) {
@@ -61,7 +62,7 @@ class RoomList extends React.Component {
   }
 
   openAlertPopup() {
-    ModalService.openMiddlePopup(ModalType.ALERT_POPUP, {});
+    ModalService.openMiddlePopup(ModalType.ALERT_POPUP, { title: '방 이관' });
   }
 
   openConfirmPopup() {
@@ -73,6 +74,8 @@ class RoomList extends React.Component {
   }
 
   render() {
+    let { chatStore } = this.props;
+    let { tabName, readyRoomSort } = chatStore;
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     let uiStore = this.props.uiStore;
     let clientHeight = uiStore.clientHeight;
@@ -96,7 +99,7 @@ class RoomList extends React.Component {
           </div>
         </div>
         <Tabs
-          defaultActiveKey="1"
+          defaultActiveKey="wait"
           tabBarStyle={{
             padding: '0px 5px 0px 5px',
             marginBottom: 0,
@@ -104,21 +107,35 @@ class RoomList extends React.Component {
           }}
           size={'large'}
           centered
+          onChange={tabName => chatStore.changeRoomTab(tabName)}
         >
           <TabPane
             tab={
-              <Badge color={'orange'} className="bold font-em1">
+              <Badge color={'orange'} className="font-em1">
                 대기
               </Badge>
             }
-            key="1"
+            tab2={<span className="font-em1">대기</span>}
+            key="wait"
           >
             <Row className="right pd10 bor-bottom">
               <Col span={24}>
-                <span className="bold text-under mrr5 inblock">
+                <span
+                  className={classNames('inblock', 'mrr5', 'bold', {
+                    'text-under': readyRoomSort === 'waitTime'
+                  })}
+                  onClick={() => chatStore.changeReadyRoomSort('waitTime')}
+                >
                   최장대기순▼
                 </span>{' '}
-                <span className="bold text-under inblock">최근접수순▼</span>
+                <span
+                  className={classNames('inblock', 'bold', {
+                    'text-under': readyRoomSort === 'joinDate'
+                  })}
+                  onClick={() => chatStore.changeReadyRoomSort('joinDate')}
+                >
+                  최근접수순▼
+                </span>
               </Col>
             </Row>
             <p className="pd-top30 center bold font-em2 none">
@@ -141,6 +158,7 @@ class RoomList extends React.Component {
                       ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
                       : 'pd-left20 pd-right5 bor-bottom'
                   }
+                  onClick={() => chatStore.selectRoom(item)}
                 >
                   <p
                     className="dot-fill"
@@ -196,7 +214,7 @@ class RoomList extends React.Component {
               )}
             />
           </TabPane>
-          <TabPane tab={<span className="font-em1">진행</span>} key="2">
+          <TabPane tab={<span className="font-em1">진행</span>} key="ing">
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -231,17 +249,23 @@ class RoomList extends React.Component {
               상담내역이 없습니다
             </p>
             <List
+              className=""
               dataSource={data}
               style={{
                 overflowY: 'scroll',
-                height: clientHeight - 285
+                height: clientHeight - 245
               }}
-              renderItem={item => (
+              renderItem={(item, index) => (
                 <List.Item
                   style={{
                     position: 'relative'
                   }}
-                  className="pd-left20 pd-right5 bor-bottom"
+                  className={
+                    index === 0
+                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                      : 'pd-left20 pd-right5 bor-bottom'
+                  }
+                  onClick={() => chatStore.selectRoom(item)}
                 >
                   <p
                     className="dot-fill"
@@ -253,7 +277,7 @@ class RoomList extends React.Component {
                   </Badge>
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      Ant Design, a design language for background applications
+                      {item}
                     </Paragraph>
                     <p style={{ position: 'absolute', top: 0, right: 0 }}>
                       <span className="red">01:25:20</span>
@@ -264,6 +288,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openHitoryPopup}
+                      className="bg-basic color-white bold"
                     >
                       챗봇대화
                     </Button>{' '}
@@ -271,6 +296,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openTalkMovePopup}
+                      className="bg-basic color-white bold"
                     >
                       상담하기
                     </Button>{' '}
@@ -278,6 +304,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openAlertPopup}
+                      className="bg-basic color-white bold"
                     >
                       이관
                     </Button>{' '}
@@ -285,6 +312,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openConfirmPopup}
+                      className="bg-basic color-white bold"
                     >
                       종료
                     </Button>
@@ -293,7 +321,7 @@ class RoomList extends React.Component {
               )}
             />
           </TabPane>
-          <TabPane tab={<span className="font-em1">종료</span>} key="3">
+          <TabPane tab={<span className="font-em1">종료</span>} key="close">
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -335,17 +363,23 @@ class RoomList extends React.Component {
               상담내역이 없습니다
             </p>
             <List
+              className=""
               dataSource={data}
               style={{
                 overflowY: 'scroll',
-                height: clientHeight - 330
+                height: clientHeight - 245
               }}
-              renderItem={item => (
+              renderItem={(item, index) => (
                 <List.Item
                   style={{
                     position: 'relative'
                   }}
-                  className="pd-left20 pd-right5 bor-bottom"
+                  className={
+                    index === 0
+                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                      : 'pd-left20 pd-right5 bor-bottom'
+                  }
+                  onClick={() => chatStore.selectRoom(item)}
                 >
                   <p
                     className="dot-fill"
@@ -357,7 +391,7 @@ class RoomList extends React.Component {
                   </Badge>
                   <div style={{ position: 'relative' }}>
                     <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      Ant Design, a design language for background applications
+                      {item}
                     </Paragraph>
                     <p style={{ position: 'absolute', top: 0, right: 0 }}>
                       <span className="red">01:25:20</span>
@@ -368,20 +402,22 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openHitoryPopup}
+                      className="bg-basic color-white bold"
                     >
                       챗봇대화
                     </Button>{' '}
                     <Button
                       shape="round"
                       size="small"
-                      onClick={this.openTalkMovePopup}
+                      className="bg-basic color-white bold"
                     >
                       상담하기
                     </Button>{' '}
                     <Button
                       shape="round"
                       size="small"
-                      onClick={this.openAlertPopup}
+                      onClick={this.openTalkMovePopup}
+                      className="bg-basic color-white bold"
                     >
                       이관
                     </Button>{' '}
@@ -389,6 +425,7 @@ class RoomList extends React.Component {
                       shape="round"
                       size="small"
                       onClick={this.openConfirmPopup}
+                      className="bg-basic color-white bold"
                     >
                       종료
                     </Button>

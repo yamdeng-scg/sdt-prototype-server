@@ -1,6 +1,11 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import { Row, Col, Button, Image } from 'antd';
 
+@withRouter
+@inject('appStore', 'uiStore')
+@observer
 class ManualDetail extends React.Component {
   constructor(props) {
     super(props);
@@ -8,6 +13,7 @@ class ManualDetail extends React.Component {
   }
 
   render() {
+    let { uiStore } = this.props;
     return (
       <div style={{ position: 'relative' }} className="none2">
         <Row className="pd15 bor-bottom">
@@ -15,7 +21,7 @@ class ManualDetail extends React.Component {
             <Button
               shape="round"
               className="bold bg-basic color-white font-em1"
-              onClick={this.openHitoryPopup}
+              onClick={() => uiStore.goPage('/manual/create')}
             >
               등록
             </Button>{' '}

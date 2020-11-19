@@ -10,12 +10,11 @@ class MessageList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.openTemplateFormPopup = this.openTemplateFormPopup.bind(this);
   }
 
-  openTemplateFormPopup() {
+  openTemplateFormPopup = () => {
     ModalService.openMiddlePopup(ModalType.TEMPLATE_FORM_POPUP, {});
-  }
+  };
 
   render() {
     let clientHeight = this.props.clientHeight;

@@ -1,13 +1,22 @@
 import React from 'react';
 import { Row, Col, Input } from 'antd';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import CategoryTree from './CategoryTree';
 import CategoryForm from './CategoryForm';
 const { Search } = Input;
 
+@withRouter
+@inject('appStore', 'uiStore', 'managerStore')
+@observer
 class TemplateCategoryContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.managerStore.changeMenuIndex(2);
   }
 
   render() {

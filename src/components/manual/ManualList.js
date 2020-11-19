@@ -12,6 +12,8 @@ import {
 import { SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import ModalService from '../../services/ModalService';
+import ModalType from '../../config/ModalType';
 const { Title } = Typography;
 
 const columns = [
@@ -95,8 +97,13 @@ class ManualList extends React.Component {
     this.state = {};
   }
 
+  openManualTagListPopup = () => {
+    ModalService.openMiddlePopup(ModalType.MANUAL_TAGLIST_POPUP, {});
+  };
+
   render() {
-    let { clientHeight } = this.props.uiStore;
+    let { uiStore } = this.props;
+    let { clientHeight } = uiStore;
     return (
       <div className="bor-right">
         <div style={{ padding: '10px 0px 7px 10px' }}>
@@ -126,7 +133,10 @@ class ManualList extends React.Component {
         <div className="pd10">
           <Row>
             <Col span={12}>
-              <Button className="bg-basic color-white bold font-em1">
+              <Button
+                className="bg-basic color-white bold font-em1"
+                onClick={this.openManualTagListPopup}
+              >
                 태그보기
               </Button>
             </Col>
@@ -141,6 +151,17 @@ class ManualList extends React.Component {
             dataSource={data}
             scroll={{ y: clientHeight - 250 }}
             size="small"
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: event => {
+                  uiStore.goPage('/manual/1/detail');
+                }, // click row
+                onDoubleClick: event => {}, // double click row
+                onContextMenu: event => {}, // right button click row
+                onMouseEnter: event => {}, // mouse enter row
+                onMouseLeave: event => {} // mouse leave row
+              };
+            }}
           />
         </div>
       </div>
