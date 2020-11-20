@@ -14,7 +14,8 @@ import {
 } from 'antd';
 import classNames from 'classnames';
 import Code from '../../config/Code';
-import { ReloadOutlined } from '@ant-design/icons';
+import Constant from '../../config/Constant';
+import { ReloadOutlined, SmileOutlined } from '@ant-design/icons';
 import ModalService from '../../services/ModalService';
 import ModalType from '../../config/ModalType';
 
@@ -38,6 +39,31 @@ const data = [
   'Los Angeles battles huge wildfires.',
   '111'
 ];
+
+const getCountLabelName = function(tabName) {
+  let labelName = '상담대기';
+  // wait, ing, close
+  if (tabName === Constant.ROOM_TYPE_WAIT) {
+    labelName = '상담대기';
+  } else if (tabName === Constant.ROOM_TYPE_ING) {
+    labelName = '상담진행';
+  } else if (tabName === Constant.ROOM_TYPE_CLOSE) {
+    labelName = '상담종료';
+  }
+  return labelName;
+};
+
+const getTimeLabelName = function(tabName) {
+  let labelName = '최장대기 고객 시간';
+  if (tabName === Constant.ROOM_TYPE_WAIT) {
+    labelName = '최장대기 고객 시간';
+  } else if (tabName === Constant.ROOM_TYPE_ING) {
+    labelName = '평균 상담 시간';
+  } else if (tabName === Constant.ROOM_TYPE_CLOSE) {
+    labelName = '평균 상담 시간';
+  }
+  return labelName;
+};
 
 @withRouter
 @inject('appStore', 'uiStore', 'chatStore')
@@ -73,12 +99,31 @@ class RoomList extends React.Component {
     ModalService.openMiddlePopup(ModalType.MANUAL_TAGLIST_POPUP, {});
   }
 
+  componentDidMount() {
+    this.props.chatStore.listenWaitTimeRefreshEvent();
+    this.props.chatStore.search();
+  }
+
+  componentWillUnmount() {
+    this.props.chatStore.removeReadyTimeRefreshEvent();
+  }
+
   render() {
     let { chatStore } = this.props;
-    let { tabName, readyRoomSort } = chatStore;
+    let {
+      currentRoomTabName,
+      readyRoomSort,
+      roomList,
+      maxDateConvertString,
+      averageSpeakTimeString,
+      startDate,
+      endDate
+    } = chatStore;
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     let uiStore = this.props.uiStore;
     let clientHeight = uiStore.clientHeight;
+    let roomListCount = roomList.length;
+    let pojoRoomList = roomList.toJS();
     return (
       <div
         style={{
@@ -92,10 +137,19 @@ class RoomList extends React.Component {
             className="text mr0"
             onClick={this.openManualTagListPopup}
           >
-            상담대기 <span className="color-basic">1</span> 건
+            {getCountLabelName(currentRoomTabName)}{' '}
+            <span className="color-basic">{roomListCount}</span> 건
           </Title>
           <div>
-            최장 대기시간{'  '} <span className="red">00:00:25</span>
+            <span className="bold font-em1">
+              {getTimeLabelName(currentRoomTabName)}
+              {' : '}
+            </span>
+            <span className="red bold font-em1">
+              {currentRoomTabName === Constant.ROOM_TYPE_WAIT
+                ? maxDateConvertString
+                : averageSpeakTimeString}
+            </span>
           </div>
         </div>
         <Tabs
@@ -111,108 +165,168 @@ class RoomList extends React.Component {
         >
           <TabPane
             tab={
-              <Badge color={'orange'} className="font-em1">
-                대기
-              </Badge>
+              currentRoomTabName === Constant.ROOM_TYPE_WAIT &&
+              roomListCount ? (
+                <Badge color={'orange'} className="font-em1">
+                  대기
+                </Badge>
+              ) : (
+                <span className="font-em1">대기</span>
+              )
             }
-            tab2={<span className="font-em1">대기</span>}
             key="wait"
           >
             <Row className="right pd10 bor-bottom">
               <Col span={24}>
                 <span
-                  className={classNames('inblock', 'mrr5', 'bold', {
-                    'text-under': readyRoomSort === 'waitTime'
+                  className={classNames('inblock', 'mrr5', {
+                    bold: readyRoomSort === Constant.READY_ROOM_SORT_WAIT_TIME,
+                    'text-under':
+                      readyRoomSort === Constant.READY_ROOM_SORT_WAIT_TIME
                   })}
-                  onClick={() => chatStore.changeReadyRoomSort('waitTime')}
+                  onClick={() =>
+                    chatStore.changeReadyRoomSort(
+                      Constant.READY_ROOM_SORT_WAIT_TIME
+                    )
+                  }
                 >
-                  최장대기순▼
+                  최장대기순 ▼
                 </span>{' '}
                 <span
-                  className={classNames('inblock', 'bold', {
-                    'text-under': readyRoomSort === 'joinDate'
+                  className={classNames('inblock', {
+                    bold: readyRoomSort === Constant.READY_ROOM_SORT_JOIN_DATE,
+                    'text-under':
+                      readyRoomSort === Constant.READY_ROOM_SORT_JOIN_DATE
                   })}
-                  onClick={() => chatStore.changeReadyRoomSort('joinDate')}
+                  onClick={() =>
+                    chatStore.changeReadyRoomSort(
+                      Constant.READY_ROOM_SORT_JOIN_DATE
+                    )
+                  }
                 >
-                  최근접수순▼
+                  최근접수순 ▼
                 </span>
               </Col>
             </Row>
-            <p className="pd-top30 center bold font-em2 none">
-              상담내역이 없습니다
-            </p>
-            <List
-              className=""
-              dataSource={data}
-              style={{
-                overflowY: 'scroll',
-                height: clientHeight - 245
-              }}
-              renderItem={(item, index) => (
-                <List.Item
-                  style={{
-                    position: 'relative'
-                  }}
-                  className={
-                    index === 0
-                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
-                      : 'pd-left20 pd-right5 bor-bottom'
-                  }
-                  onClick={() => chatStore.selectRoom(item)}
-                >
-                  <p
-                    className="dot-fill"
-                    style={{ position: 'absolute', top: 15, left: 10 }}
-                  />{' '}
-                  <span className="bold text">오국환님</span>
-                  <Badge count={25} className="site-badge-count-room">
-                    <span className="inblock mrl15" />
-                  </Badge>
-                  <div style={{ position: 'relative' }}>
-                    <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      {item}
-                    </Paragraph>
-                    <p style={{ position: 'absolute', top: 0, right: 0 }}>
-                      <span className="red">01:25:20</span>
-                    </p>
-                  </div>
-                  <div className="center">
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openHitoryPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      챗봇대화
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openTalkMovePopup}
-                      className="bg-basic color-white bold"
-                    >
-                      상담하기
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openAlertPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      이관
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openConfirmPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      종료
-                    </Button>
-                  </div>
-                </List.Item>
-              )}
-            />
+            {pojoRoomList.length ? (
+              <List
+                className=""
+                dataSource={pojoRoomList}
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+                rowKey="id"
+                renderItem={(item, index) => (
+                  <List.Item
+                    style={{
+                      position: 'relative'
+                    }}
+                    className={
+                      index === 0
+                        ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                        : 'pd-left20 pd-right5 bor-bottom'
+                    }
+                    onClick={() => chatStore.selectRoom(item)}
+                  >
+                    <p
+                      className={item.isOnline ? 'dot-fill' : 'dot'}
+                      style={{ position: 'absolute', top: 15, left: 6 }}
+                    />{' '}
+                    <span className="bold text">{item.customerName}님</span>
+                    {item.isBlockCustomer ? (
+                      <SmileOutlined className="font-em1 inblock mrl5 bold" />
+                    ) : (
+                      <SmileOutlined className="color-basic font-em1 inblock mrl5 bold" />
+                    )}
+                    {item.noReadCount ? (
+                      <Badge count={25} className="site-badge-count-room">
+                        <span className="inblock mrl15" />
+                      </Badge>
+                    ) : null}
+                    {item.memberName ? (
+                      <span
+                        className="bold color-basic inblock bg-gray"
+                        style={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          borderRadius: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                      >
+                        {item.memberName}
+                      </span>
+                    ) : null}
+                    <div style={{ position: 'relative' }}>
+                      {item.lastMessageDetail ? (
+                        <span
+                          className="inblock"
+                          style={{ backgroundColor: 'orange' }}
+                        >
+                          {item.lastMessageDetail}
+                        </span>
+                      ) : (
+                        <Paragraph
+                          style={{ marginTop: 10, width: '75%' }}
+                          ellipsis
+                        >
+                          {item.lastMessage}
+                        </Paragraph>
+                      )}
+                      <p style={{ position: 'absolute', top: 0, right: 0 }}>
+                        <span className="red">{item.waitTime}</span>
+                      </p>
+                    </div>
+                    <div className="center">
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={() => chatStore.openChatbotHistoryPopup(item)}
+                        className="bg-basic color-white bold"
+                      >
+                        챗봇대화
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openTalkMovePopup}
+                        className="bg-basic color-white bold"
+                      >
+                        상담하기
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openAlertPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        이관
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openConfirmPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        종료
+                      </Button>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p
+                className="pd-top30 center bold font-em2"
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+              >
+                대기중인 상담이 없습니다
+              </p>
+            )}
           </TabPane>
           <TabPane tab={<span className="font-em1">진행</span>} key="ing">
             <Row className="pd5">
@@ -245,81 +359,130 @@ class RoomList extends React.Component {
                 <Checkbox onChange={() => {}}>내상담만 보기</Checkbox>
               </Col>
             </Row>
-            <p className="pd-top30 center bold font-em2 none">
-              상담내역이 없습니다
-            </p>
-            <List
-              className=""
-              dataSource={data}
-              style={{
-                overflowY: 'scroll',
-                height: clientHeight - 245
-              }}
-              renderItem={(item, index) => (
-                <List.Item
-                  style={{
-                    position: 'relative'
-                  }}
-                  className={
-                    index === 0
-                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
-                      : 'pd-left20 pd-right5 bor-bottom'
-                  }
-                  onClick={() => chatStore.selectRoom(item)}
-                >
-                  <p
-                    className="dot-fill"
-                    style={{ position: 'absolute', top: 15, left: 10 }}
-                  />{' '}
-                  <span className="bold text">오국환님</span>
-                  <Badge count={25} className="site-badge-count-room">
-                    <span className="inblock mrl15" />
-                  </Badge>
-                  <div style={{ position: 'relative' }}>
-                    <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      {item}
-                    </Paragraph>
-                    <p style={{ position: 'absolute', top: 0, right: 0 }}>
-                      <span className="red">01:25:20</span>
-                    </p>
-                  </div>
-                  <div className="center">
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openHitoryPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      챗봇대화
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openTalkMovePopup}
-                      className="bg-basic color-white bold"
-                    >
-                      상담하기
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openAlertPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      이관
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openConfirmPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      종료
-                    </Button>
-                  </div>
-                </List.Item>
-              )}
-            />
+            {pojoRoomList.length ? (
+              <List
+                className=""
+                dataSource={pojoRoomList}
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+                rowKey="id"
+                renderItem={(item, index) => (
+                  <List.Item
+                    style={{
+                      position: 'relative'
+                    }}
+                    className={
+                      index === 0
+                        ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                        : 'pd-left20 pd-right5 bor-bottom'
+                    }
+                    onClick={() => chatStore.selectRoom(item)}
+                  >
+                    <p
+                      className={item.isOnline ? 'dot-fill' : 'dot'}
+                      style={{ position: 'absolute', top: 15, left: 6 }}
+                    />{' '}
+                    <span className="bold text">{item.customerName}님</span>
+                    {item.isBlockCustomer ? (
+                      <SmileOutlined className="font-em1 inblock mrl5 bold" />
+                    ) : (
+                      <SmileOutlined className="color-basic font-em1 inblock mrl5 bold" />
+                    )}
+                    {item.noReadCount ? (
+                      <Badge count={25} className="site-badge-count-room">
+                        <span className="inblock mrl15" />
+                      </Badge>
+                    ) : null}
+                    {item.memberName ? (
+                      <span
+                        className="bold color-basic inblock bg-gray"
+                        style={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          borderRadius: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                      >
+                        {item.memberName}
+                      </span>
+                    ) : null}
+                    <div style={{ position: 'relative' }}>
+                      {item.lastMessageDetail ? (
+                        <span
+                          className2="mrt10 mrb10 inblock bold pd-left5 pd-right5"
+                          className="roomlist-inner-link"
+                          style2={{
+                            backgroundColor: 'orange',
+                            color: '#fff',
+                            borderRadius: 10
+                          }}
+                        >
+                          {item.lastMessageDetail}
+                        </span>
+                      ) : (
+                        <Paragraph
+                          style={{ marginTop: 10, width: '75%' }}
+                          ellipsis
+                        >
+                          {item.lastMessage}
+                        </Paragraph>
+                      )}
+                      <p style={{ position: 'absolute', top: 0, right: 0 }}>
+                        <span className="red">{item.waitTime}</span>
+                      </p>
+                    </div>
+                    <div className="center">
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={() => chatStore.openChatbotHistoryPopup(item)}
+                        className="bg-basic color-white bold"
+                      >
+                        챗봇대화
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openTalkMovePopup}
+                        className="bg-basic color-white bold"
+                      >
+                        상담하기
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openAlertPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        이관
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openConfirmPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        종료
+                      </Button>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p
+                className="pd-top30 center bold font-em2"
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+              >
+                진행중인 상담이 없습니다
+              </p>
+            )}
           </TabPane>
           <TabPane tab={<span className="font-em1">종료</span>} key="close">
             <Row className="pd5">
@@ -347,10 +510,16 @@ class RoomList extends React.Component {
             </Row>
             <Row className="pd5">
               <Col span={24}>
-                <RangePicker style={{ width: '90%' }} /> {'   '}
+                <RangePicker
+                  style={{ width: '90%' }}
+                  onChange={dates => chatStore.changeDates(dates[0], dates[1])}
+                  value={[startDate, endDate]}
+                />{' '}
+                {'   '}
                 <ReloadOutlined
                   className="color-basic bold"
                   style={{ fontSize: 16 }}
+                  onClick={() => chatStore.initDate()}
                 />
               </Col>
             </Row>
@@ -359,80 +528,116 @@ class RoomList extends React.Component {
                 <Checkbox onChange={() => {}}>내상담만 보기</Checkbox>
               </Col>
             </Row>
-            <p className="pd-top30 center bold font-em2 none">
-              상담내역이 없습니다
-            </p>
-            <List
-              className=""
-              dataSource={data}
-              style={{
-                overflowY: 'scroll',
-                height: clientHeight - 245
-              }}
-              renderItem={(item, index) => (
-                <List.Item
-                  style={{
-                    position: 'relative'
-                  }}
-                  className={
-                    index === 0
-                      ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
-                      : 'pd-left20 pd-right5 bor-bottom'
-                  }
-                  onClick={() => chatStore.selectRoom(item)}
-                >
-                  <p
-                    className="dot-fill"
-                    style={{ position: 'absolute', top: 15, left: 10 }}
-                  />{' '}
-                  <span className="bold text">오국환님</span>
-                  <Badge count={25} className="site-badge-count-room">
-                    <span className="inblock mrl15" />
-                  </Badge>
-                  <div style={{ position: 'relative' }}>
-                    <Paragraph style={{ marginTop: 10, width: '75%' }} ellipsis>
-                      {item}
-                    </Paragraph>
-                    <p style={{ position: 'absolute', top: 0, right: 0 }}>
-                      <span className="red">01:25:20</span>
-                    </p>
-                  </div>
-                  <div className="center">
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openHitoryPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      챗봇대화
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      className="bg-basic color-white bold"
-                    >
-                      상담하기
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openTalkMovePopup}
-                      className="bg-basic color-white bold"
-                    >
-                      이관
-                    </Button>{' '}
-                    <Button
-                      shape="round"
-                      size="small"
-                      onClick={this.openConfirmPopup}
-                      className="bg-basic color-white bold"
-                    >
-                      종료
-                    </Button>
-                  </div>
-                </List.Item>
-              )}
-            />
+            {pojoRoomList.length ? (
+              <List
+                className=""
+                dataSource={pojoRoomList}
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+                rowKey="id"
+                renderItem={(item, index) => (
+                  <List.Item
+                    style={{
+                      position: 'relative'
+                    }}
+                    className={
+                      index === 0
+                        ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
+                        : 'pd-left20 pd-right5 bor-bottom'
+                    }
+                    onClick={() => chatStore.selectRoom(item)}
+                  >
+                    <p
+                      className={item.isOnline ? 'dot-fill' : 'dot'}
+                      style={{ position: 'absolute', top: 15, left: 6 }}
+                    />{' '}
+                    <span className="bold text">{item.customerName}님</span>
+                    {item.isBlockCustomer ? (
+                      <SmileOutlined className="font-em1 inblock mrl5 bold" />
+                    ) : (
+                      <SmileOutlined className="color-basic font-em1 inblock mrl5 bold" />
+                    )}
+                    {item.noReadCount ? (
+                      <Badge count={25} className="site-badge-count-room">
+                        <span className="inblock mrl15" />
+                      </Badge>
+                    ) : null}
+                    {item.memberName ? (
+                      <span
+                        className="bold color-basic inblock bg-gray"
+                        style={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          borderRadius: 10,
+                          paddingLeft: 10,
+                          paddingRight: 10
+                        }}
+                      >
+                        {item.memberName}
+                      </span>
+                    ) : null}
+                    <div style={{ position: 'relative' }}>
+                      <Paragraph
+                        style={{ marginTop: 10, width: '75%' }}
+                        ellipsis
+                      >
+                        {item.lastMessage}
+                      </Paragraph>
+                      <p style={{ position: 'absolute', top: 0, right: 0 }}>
+                        <span className="red">{item.waitTime}</span>
+                      </p>
+                    </div>
+                    <div className="center">
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={() => chatStore.openChatbotHistoryPopup(item)}
+                        className="bg-basic color-white bold"
+                      >
+                        챗봇대화
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openTalkMovePopup}
+                        className="bg-basic color-white bold"
+                      >
+                        상담하기
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openAlertPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        이관
+                      </Button>{' '}
+                      <Button
+                        shape="round"
+                        size="small"
+                        onClick={this.openConfirmPopup}
+                        className="bg-basic color-white bold"
+                      >
+                        종료
+                      </Button>
+                    </div>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <p
+                className="pd-top30 center bold font-em2"
+                style={{
+                  overflowY: 'scroll',
+                  height: clientHeight - 245
+                }}
+              >
+                검색결과가 존재하지 않습니다
+              </p>
+            )}
           </TabPane>
         </Tabs>
       </div>

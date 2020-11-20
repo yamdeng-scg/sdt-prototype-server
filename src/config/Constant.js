@@ -32,4 +32,13 @@ Constant.FILE_UPLOAD_STATUS_ORI = 'ori';
 Constant.FILE_UPLOAD_TYPE_IMAGE = 'image';
 Constant.FILE_UPLOAD_TYPE_ATTACH = 'attachments';
 
+// 방 유형
+Constant.ROOM_TYPE_WAIT = 'wait';
+Constant.ROOM_TYPE_ING = 'ing';
+Constant.ROOM_TYPE_CLOSE = 'close';
+
+// 대기 방 정렬 정뵤
+Constant.READY_ROOM_SORT_JOIN_DATE = 'joinDate';
+Constant.READY_ROOM_SORT_WAIT_TIME = 'waitTime';
+
 export default Constant;

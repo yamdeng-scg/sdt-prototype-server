@@ -1,17 +1,21 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Row, Col, Input, Button } from 'antd';
+import { Row, Col, Input, Button, Select } from 'antd';
+import Code from '../../config/Code';
 const { TextArea } = Input;
+const { Option } = Select;
 
 @inject('alertModalStore')
 @observer
 class BlackCustomerPopup extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { blockType: '' };
   }
 
   render() {
+    let { blockType } = this.state;
+    let blockTypeCodeList = Code.blockTypeCodeList;
     return (
       <div className="pd-top15">
         <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
@@ -23,8 +27,18 @@ class BlackCustomerPopup extends React.Component {
               지정사유
             </Col>
             <Col span={20}>
-              {' '}
-              <Input style={{ width: '100%' }} />
+              <Select
+                defaultValue="lucy"
+                style={{ width: '100%' }}
+                className="left"
+                placeholder="상태를 선택해주세요"
+                onChange={this.changeState}
+                value={blockType}
+              >
+                {blockTypeCodeList.map(code => {
+                  return <Option value={code.value}>{code.name}</Option>;
+                })}
+              </Select>
             </Col>
           </Row>
           <Row>

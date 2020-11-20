@@ -170,6 +170,44 @@ const getTodayString = function() {
   return todayString;
 };
 
+// 초를 문자열로 변환
+const convertStringBySecond = function(diffSecond) {
+  let timeString = '00';
+  let minuteString = '00';
+  let secondString = '00';
+  let time = Math.floor(diffSecond / 3600);
+  let minute = 0;
+  let second = 0;
+  if (time !== 0) {
+    minute = Math.floor((diffSecond % 3600) / 60);
+  } else {
+    minute = Math.floor(diffSecond / 60);
+  }
+  second = Math.floor(diffSecond % 60);
+  if (time !== 0) {
+    if (time < 10) {
+      timeString = '0' + time;
+    } else {
+      timeString = time;
+    }
+  }
+  if (minute !== 0) {
+    if (minute < 10) {
+      minuteString = '0' + minute;
+    } else {
+      minuteString = minute;
+    }
+  }
+  if (second !== 0) {
+    if (second < 10) {
+      secondString = '0' + second;
+    } else {
+      secondString = second;
+    }
+  }
+  return timeString + ':' + minuteString + ':' + secondString;
+};
+
 const Helper = {
   convertEmptyValue: convertEmptyValue,
   copyToClipboard: copyToClipboard,
@@ -186,7 +224,8 @@ const Helper = {
   getBillSendMethodTitle: getBillSendMethodTitle,
   checkIsToady: checkIsToady,
   checkImageFileUploadExtension: checkImageFileUploadExtension,
-  getTodayString: getTodayString
+  getTodayString: getTodayString,
+  convertStringBySecond: convertStringBySecond
 };
 
 export default Helper;

@@ -34,9 +34,8 @@ code {
 .dot {
   height: 10px;
   width: 10px;
-  background-color: #fff;
+  background-color: #b7b4b4;
   border-radius: 50%;
-  border: 1px solid #707070;
   display: inline-block;
 }
 
@@ -534,4 +533,16 @@ option:first {
   text-align: 'center';
   border: 0px;
   padding: 30
+}
+
+.roomlist-inner-link {
+  display: inline-block;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-weight: bold;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: orange;
+  color: #fff;
+  border-radius: 10px;
 }
