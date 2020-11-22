@@ -442,6 +442,7 @@ class RoomList extends React.Component {
                             marginBottom: 14,
                             width: '75%'
                           }}
+                          className="text-overflow"
                           ellipsis
                           dangerouslySetInnerHTML={{
                             __html: replaceHighLighText(
@@ -598,7 +599,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight - 310
+                  height: roomListDivHeight - 315
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -657,7 +658,7 @@ class RoomList extends React.Component {
                             marginBottom: 14,
                             width: '75%'
                           }}
-                          ellipsis
+                          className="text-overflow"
                           dangerouslySetInnerHTML={{
                             __html: replaceHighLighText(
                               item.lastMessage,
@@ -703,7 +704,7 @@ class RoomList extends React.Component {
                 }
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight - 310
+                  height: roomListDivHeight - 315
                 }}
               >
                 검색결과가 존재하지 않습니다
