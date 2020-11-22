@@ -2,9 +2,9 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Table, Row, Col, Button, Select, Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import Code from '../../config/Code';
 const { Option } = Select;
-const { Search } = Input;
 
 /*
 
@@ -157,13 +157,29 @@ class BlackCustomerList extends React.Component {
               </Select>
             </Col>
             <Col span={10} className="pd-left10">
-              <Search
+              <Input
                 placeholder="검색어를 입력하세요"
-                onSearch={value => {
-                  // console.log('aaa');
-                }}
-                style={{ width: '100%' }}
+                enterButton={null}
                 allowClear
+                value={''}
+                style={{ width: '100%' }}
+                suffix={
+                  <SearchOutlined
+                    className="color-basic bold"
+                    style={{
+                      fontSize: 16
+                    }}
+                    onClick={() => {
+                      // chatStore.search();
+                    }}
+                  />
+                }
+                onChange={event => {
+                  // chatStore.changeIngSearchValue(event.target.value);
+                }}
+                onPressEnter={() => {
+                  // chatStore.search();
+                }}
               />
             </Col>
           </Row>

@@ -437,7 +437,11 @@ class RoomList extends React.Component {
                         </span>
                       ) : (
                         <div
-                          style={{ marginTop: 10, width: '75%' }}
+                          style={{
+                            marginTop: 10,
+                            marginBottom: 14,
+                            width: '75%'
+                          }}
                           ellipsis
                           dangerouslySetInnerHTML={{
                             __html: replaceHighLighText(
@@ -648,7 +652,11 @@ class RoomList extends React.Component {
                         </span>
                       ) : (
                         <div
-                          style={{ marginTop: 10, width: '75%' }}
+                          style={{
+                            marginTop: 10,
+                            marginBottom: 14,
+                            width: '75%'
+                          }}
                           ellipsis
                           dangerouslySetInnerHTML={{
                             __html: replaceHighLighText(
@@ -671,17 +679,6 @@ class RoomList extends React.Component {
                       </p>
                     </div>
                     <div className="center">
-                      <Button
-                        shape="round"
-                        size="small"
-                        onClick={event => {
-                          event.stopPropagation();
-                          chatStore.openChatbotHistoryPopup(item);
-                        }}
-                        className="bg-basic color-white bold"
-                      >
-                        챗봇대화
-                      </Button>{' '}
                       <Button
                         shape="round"
                         size="small"

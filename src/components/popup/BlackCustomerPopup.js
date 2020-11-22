@@ -10,11 +10,38 @@ const { Option } = Select;
 class BlackCustomerPopup extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { blockType: '' };
+    this.state = { blockType: '', remark: '' };
+    this.changeBlockType = this.changeBlockType.bind(this);
+    this.changeRemark = this.changeRemark.bind(this);
+    this.ok = this.ok.bind(this);
+    this.cancel = this.cancel.bind(this);
+  }
+
+  changeBlockType(blockType) {
+    this.setState({ blockType: blockType });
+  }
+
+  changeRemark(event) {
+    this.setState({ remark: event.target.value });
+  }
+
+  ok() {
+    let { alertModalStore, modalData } = this.props;
+    let { blockType, remark } = this.state;
+    if (modalData.ok) {
+      alertModalStore.hideModal();
+      modalData.ok(blockType, remark);
+    } else {
+      alertModalStore.hideModal();
+    }
+  }
+
+  cancel() {
+    this.props.alertModalStore.hideModal();
   }
 
   render() {
-    let { blockType } = this.state;
+    let { blockType, remark } = this.state;
     let blockTypeCodeList = Code.blockTypeCodeList;
     return (
       <div className="pd-top15">
@@ -32,7 +59,7 @@ class BlackCustomerPopup extends React.Component {
                 style={{ width: '100%' }}
                 className="left"
                 placeholder="상태를 선택해주세요"
-                onChange={this.changeState}
+                onChange={this.changeBlockType}
                 value={blockType}
               >
                 {blockTypeCodeList.map(code => {
@@ -46,18 +73,22 @@ class BlackCustomerPopup extends React.Component {
               추가 메모
             </Col>
             <Col span={20}>
-              <TextArea autoSize={false} />
+              <TextArea
+                autoSize={false}
+                onChange={this.changeRemark}
+                value={remark}
+              />
             </Col>
           </Row>
         </div>
         <Row className="center">
           <Col span={12}>
-            <Button block className="pd10 bold cancelbtn">
+            <Button block className="pd10 bold cancelbtn" onClick={this.cancel}>
               취소
             </Button>
           </Col>
           <Col span={12}>
-            <Button block className="pd10 bold okbtn">
+            <Button block className="pd10 bold okbtn" onClick={this.ok}>
               확인
             </Button>
           </Col>

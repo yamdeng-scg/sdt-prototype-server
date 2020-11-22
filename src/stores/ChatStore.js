@@ -6,6 +6,7 @@ import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
 import ModalService from '../services/ModalService';
 import LoadingBar from '../utils/LoadingBar';
+import update from 'immutability-helper';
 
 class ChatStore {
   // 대기방 time 실시간으로 보여주는 용도
@@ -13,6 +14,9 @@ class ChatStore {
 
   // 현재 선택한 방 정보
   @observable currentRoomInfo = null;
+
+  // 현재 선택한 계약정보
+  @observable currentContractInfo = null;
 
   // 하단 탭 active index
   @observable bottmActiveTabIndex = -1;
@@ -66,6 +70,32 @@ class ChatStore {
   @observable closeSearchType = 'customerName';
 
   @observable closeSearchValue = '';
+
+  @action
+  openBlackCustomerPopup(roomInfo) {
+    ModalService.openMiddlePopup(ModalType.BLACK_CUSTOMER_POPUP, {
+      ok: (blockType, remark) => {
+        let apiParam = { blockType: blockType, remark: remark };
+        ApiService.put(
+          'customer/' + roomInfo.customerId + '/block',
+          apiParam
+        ).then(response => {
+          runInAction(() => {
+            let data = response.data;
+            let updateCurrentRoomInfo = update(this.currentRoomInfo, {
+              $merge: { isBlockCustomer: data.isBlock }
+            });
+            this.currentRoomInfo = updateCurrentRoomInfo;
+            let bodyText = '관심고객이 해제되었습니다';
+            if (blockType) {
+              bodyText = '관심고객으로 지정되었습니다';
+            }
+            ModalService.alert({ title: '관심고객 설정', body: bodyText });
+          });
+        });
+      }
+    });
+  }
 
   @action
   initDate() {
@@ -139,7 +169,7 @@ class ChatStore {
     this.waitTimeRefreshIntervalHandler = setInterval(() => {
       runInAction(() => {
         let waitStartDates = this.roomList.map(room =>
-          moment(room.waitStartDate)
+          room.waitStartDate ? moment(room.waitStartDate) : moment()
         );
         this.roomList.forEach(room => {
           room.waitTime = Helper.convertStringBySecond(
@@ -234,7 +264,6 @@ class ChatStore {
     ModalService.openMiddlePopup(ModalType.TALK_MOVE_POPUP, {
       customerName: roomInfo.customerName,
       ok: (transferValue, selectInfo) => {
-        debugger;
         let apiParam = { transferType: 'ready' };
         if (transferValue) {
           apiParam = { transferType: 'toMember', memberId: transferValue };
@@ -244,13 +273,18 @@ class ChatStore {
             let transferName = selectInfo.id ? selectInfo.name : '상담 대기건';
             ModalService.alert({
               title: '상담이관 완료',
-              body: "'" + transferName + "'으로 이관 하였습니다",
+              body:
+                '<span class="bold">' +
+                "'" +
+                transferName +
+                "'</span>으로 이관 하였습니다",
               ok: () => {
                 runInAction(() => {
                   if (selectInfo.id) {
                     this.currentRoomTabName = Constant.ROOM_TYPE_ING;
                   } else {
                     this.currentRoomTabName = Constant.ROOM_TYPE_WAIT;
+                    this.listenWaitTimeRefreshEvent();
                   }
                   this.search();
                 });
@@ -300,6 +334,29 @@ class ChatStore {
   }
 
   @action
+  openMinwonAddPopup() {
+    // roomInfo.gasappMemberNumber
+    // roomInfo.useContractNum
+    // roomInfo.telNumber
+    // roomInfo.chatid
+    // roomInfo.roomId
+    // categorySmallId, minwonCode, memo
+    //   {
+    //     "gasappMemberNumber":"3716",
+    //     "useContractNum":"6004910783",
+    //     "categorySmallId": 20,
+    //     "minwonCode":"010202",
+    //     "telNumber":"01073384183",
+    //     "memo" : "메모모모",
+    //     "chatid":"116",
+    //     "roomId": 150
+    //  }
+    let currentRoomInfo = this.currentRoomInfo;
+    ModalService.openMiddlePopup(ModalType.MINWON_ADD_POPUP, {
+      ok: () => {}
+    });
+  }
+  @action
   search() {
     this.processingRoomListApiCall = true;
     let apiParam = {};
@@ -328,7 +385,7 @@ class ChatStore {
           let totalSpeakMinute = 0;
           data.forEach(info => {
             if (info.speakMinute) {
-              totalSpeakMinute = info.speakMinute;
+              totalSpeakMinute = totalSpeakMinute + info.speakMinute;
             }
           });
           let averageSpeakMinute = 0;

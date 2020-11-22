@@ -2,6 +2,7 @@ import React from 'react';
 import { Row, Col, Input } from 'antd';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { SearchOutlined } from '@ant-design/icons';
 import CategoryTree from './CategoryTree';
 import CategoryForm from './CategoryForm';
 const { Search } = Input;
@@ -29,13 +30,29 @@ class TemplateCategoryContainer extends React.Component {
           <Row>
             <Col span={24}>
               <span className="bold font-em1">카테고리 검색 : </span>
-              <Search
-                placeholder="검색어를 입력하세요"
-                onSearch={value => {
-                  // console.log('aaa');
-                }}
-                style={{ width: 300 }}
+              <Input
+                placeholder="카테고리 이름을 입력해주세요"
+                enterButton={null}
                 allowClear
+                value={''}
+                style={{ width: 300 }}
+                suffix={
+                  <SearchOutlined
+                    className="color-basic bold"
+                    style={{
+                      fontSize: 16
+                    }}
+                    onClick={() => {
+                      // chatStore.search();
+                    }}
+                  />
+                }
+                onChange={event => {
+                  // chatStore.changeIngSearchValue(event.target.value);
+                }}
+                onPressEnter={() => {
+                  // chatStore.search();
+                }}
               />
             </Col>
           </Row>

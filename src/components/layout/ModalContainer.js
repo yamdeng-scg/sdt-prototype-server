@@ -60,7 +60,7 @@ class ModalContainer extends React.Component {
     }
     return (
       <Modal
-        shouldCloseOnOverlayClick={false}
+        maskClosable={false}
         visible={displayModal}
         footer={null}
         onCancel={() => alertModalStore.hideModal()}

@@ -30,10 +30,20 @@ class AlertPopup extends React.Component {
     return (
       <div className="pd-top15">
         <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
-          <Col span={24}>{title}</Col>
+          <Col
+            span={24}
+            dangerouslySetInnerHTML={{
+              __html: title
+            }}
+          />
         </Row>
         <Row className="center pd-top10 mrb10">
-          <Col span={24}>{body}</Col>
+          <Col
+            span={24}
+            dangerouslySetInnerHTML={{
+              __html: body
+            }}
+          />
         </Row>
         <Row className="center">
           <Col span={24}>

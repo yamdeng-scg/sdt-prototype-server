@@ -4,8 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { Table, Row, Col, Button, Select, Input } from 'antd';
 import MemberSummary from '../stats/MemberSummary';
 import Code from '../../config/Code';
+import { SearchOutlined } from '@ant-design/icons';
 const { Option } = Select;
-const { Search } = Input;
+
 /*
 
   index
@@ -153,13 +154,29 @@ class MemberList extends React.Component {
               </Select>{' '}
             </Col>
             <Col span={10} className="pd-left10">
-              <Search
+              <Input
                 placeholder="검색어를 입력하세요"
-                onSearch={value => {
-                  // console.log('aaa');
-                }}
-                style={{ width: '100%' }}
+                enterButton={null}
                 allowClear
+                value={''}
+                style={{ width: '100%' }}
+                suffix={
+                  <SearchOutlined
+                    className="color-basic bold"
+                    style={{
+                      fontSize: 16
+                    }}
+                    onClick={() => {
+                      // chatStore.search();
+                    }}
+                  />
+                }
+                onChange={event => {
+                  // chatStore.changeIngSearchValue(event.target.value);
+                }}
+                onPressEnter={() => {
+                  // chatStore.search();
+                }}
               />
             </Col>
           </Row>

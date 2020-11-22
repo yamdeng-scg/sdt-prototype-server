@@ -2,117 +2,174 @@ import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { Row, Col, Input, Tree, Button } from 'antd';
 import { CaretDownOutlined, SearchOutlined } from '@ant-design/icons';
+import ApiService from '../../services/ApiService';
+import _ from 'lodash';
 const TextArea = Input.TextArea;
+const addCategoryList = function(list, info, parent) {
+  if (info.children) {
+    addCategoryListArray(list, info.children, info);
+    list.push({
+      key: info.key,
+      title: info.title,
+      level: info.level,
+      parentKey: parent ? parent.key : null
+    });
+  } else {
+    list.push({
+      key: info.key,
+      title: info.title,
+      level: info.level,
+      parentKey: parent ? parent.key : null
+    });
+  }
+};
+
+const addCategoryListArray = function(list, children, parent) {
+  children.forEach(treeInfo => {
+    addCategoryList(list, treeInfo, parent);
+  });
+};
+
+const addExpandedKeys = function(allList, resultKeys, info) {
+  resultKeys.push(info.key);
+  if (info.level !== 1) {
+    let searchIndex = _.findIndex(allList, tree => {
+      return tree.key === info.parentKey;
+    });
+    addExpandedKeys(allList, resultKeys, allList[searchIndex]);
+  }
+};
 
 @inject('alertModalStore')
 @observer
 class MinwonAddPopup extends React.Component {
+  categoryAllList = [];
   constructor(props) {
     super(props);
-
-    const x = 10;
-    const y = 2;
-    const z = 1;
-    const gData = [];
-
-    const generateData = (_level, _preKey, _tns) => {
-      const preKey = _preKey || '0';
-      const tns = _tns || gData;
-
-      const children = [];
-      for (let i = 0; i < x; i++) {
-        const key = `${preKey}-${i}`;
-        tns.push({ title: key, key });
-        if (i < y) {
-          children.push(key);
-        }
-      }
-      if (_level < 0) {
-        return tns;
-      }
-      const level = _level - 1;
-      children.forEach((key, index) => {
-        tns[index].children = [];
-        return generateData(level, key, tns[index].children);
-      });
+    this.state = {
+      expandedKeys: [],
+      treeData: [],
+      searchValue: '',
+      smallCategoryInfo: null
     };
-    generateData(z);
-
-    this.state = { gData: gData, expandedKeys: ['0-0', '0-0-0', '0-0-0-0'] };
+    this.treeRef = React.createRef();
   }
 
-  onDragEnter = info => {
-    console.log(info);
-    // expandedKeys 需要受控时设置
-    // this.setState({
-    //   expandedKeys: info.expandedKeys,
-    // });
+  onDrop = tree => {
+    let sourceInfo = tree.dragNode.info;
+    let targetInfo = tree.node.info;
+    // debugger;
+    ApiService.get('category/tree').then(response => {
+      let data = response.data;
+      this.categoryAllList = [];
+      data.forEach(treeInfo => {
+        addCategoryList(this.categoryAllList, treeInfo);
+      });
+      let treeData = [
+        {
+          title: '전체',
+          key: '0',
+          children: data
+        }
+      ];
+      let expandedKeys = ['0'];
+      this.setState({ treeData: treeData, expandedKeys: expandedKeys });
+    });
   };
 
-  onDrop = info => {
-    console.log(info);
-    const dropKey = info.node.props.eventKey;
-    const dragKey = info.dragNode.props.eventKey;
-    const dropPos = info.node.props.pos.split('-');
-    const dropPosition =
-      info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
-    const loop = (data, key, callback) => {
-      for (let i = 0; i < data.length; i++) {
-        if (data[i].key === key) {
-          return callback(data[i], i, data);
-        }
-        if (data[i].children) {
-          loop(data[i].children, key, callback);
-        }
-      }
-    };
-    const data = [...this.state.gData];
-
-    // Find dragObject
-    let dragObj;
-    loop(data, dragKey, (item, index, arr) => {
-      arr.splice(index, 1);
-      dragObj = item;
-    });
-
-    if (!info.dropToGap) {
-      // Drop on the content
-      loop(data, dropKey, item => {
-        item.children = item.children || [];
-        // where to insert 示例添加到尾部，可以是随意位置
-        item.children.push(dragObj);
+  onChange = e => {
+    const { value } = e.target;
+    let expandedKeys = [];
+    if (value) {
+      let findList = _.filter(this.categoryAllList, info => {
+        return info.title.indexOf(value) !== -1;
       });
-    } else if (
-      (info.node.props.children || []).length > 0 && // Has children
-      info.node.props.expanded && // Is expanded
-      dropPosition === 1 // On the bottom gap
-    ) {
-      loop(data, dropKey, item => {
-        item.children = item.children || [];
-        // where to insert 示例添加到头部，可以是随意位置
-        item.children.unshift(dragObj);
+      findList.forEach(info => {
+        addExpandedKeys(this.categoryAllList, expandedKeys, info);
       });
-    } else {
-      let ar;
-      let i;
-      loop(data, dropKey, (item, index, arr) => {
-        ar = arr;
-        i = index;
-      });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj);
-      } else {
-        ar.splice(i + 1, 0, dragObj);
+      if (findList.length) {
+        let findKeys = findList.map(info => info.key);
+        setTimeout(() => {
+          this.treeRef.current.scrollTo({
+            key: _.sortedUniq(findKeys)[0]
+          });
+        }, 500);
       }
     }
-
     this.setState({
-      gData: data
+      expandedKeys: ['0'].concat(_.uniq(expandedKeys)),
+      searchValue: value,
+      autoExpandParent: true
     });
   };
 
+  onExpand = expandedKeys => {
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false
+    });
+  };
+
+  onSelect = (selectedKeys, tree) => {
+    let info = tree.node.info;
+    if (info.level === 3) {
+      this.setState({ smallCategoryInfo: info });
+    }
+  };
+
+  componentDidMount() {
+    ApiService.get('category/tree').then(response => {
+      let data = response.data;
+      this.categoryAllList = [];
+      data.forEach(treeInfo => {
+        addCategoryList(this.categoryAllList, treeInfo);
+      });
+      let treeData = [
+        {
+          title: '전체',
+          key: '0',
+          children: data
+        }
+      ];
+      let expandedKeys = ['0'];
+      this.setState({ treeData: treeData, expandedKeys: expandedKeys });
+    });
+  }
+
   render() {
+    let { treeData, searchValue, expandedKeys, smallCategoryInfo } = this.state;
+    const loop = data =>
+      data.map(item => {
+        const index = item.title.indexOf(searchValue);
+        const beforeStr = item.title.substr(0, index);
+        const afterStr = item.title.substr(index + searchValue.length);
+        const title =
+          index > -1 ? (
+            <span>
+              {beforeStr}
+              <span className="bold bg-yellow">{searchValue}</span>
+              {afterStr}
+            </span>
+          ) : (
+            <span>{item.title}</span>
+          );
+        if (item.children) {
+          return {
+            title,
+            key: item.key,
+            level: item.level,
+            info: item,
+            children: loop(item.children)
+          };
+        }
+
+        return {
+          title,
+          key: item.key,
+          level: item.level,
+          info: item
+        };
+      });
     return (
       <div className="pd-top15">
         <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
@@ -121,22 +178,22 @@ class MinwonAddPopup extends React.Component {
         <div className="pd15">
           <Row className="mrb10">
             <Col span={24}>
-              <span className="bold font-em2">민원등록 고객 : </span>
-              <span className="">홍길동님(ID XXX)</span>
+              <span className="bold font-em1">민원등록 고객 : </span>
+              <span className="color-basic bold">홍길동님(ID XXX)</span>
             </Col>
           </Row>
           <Row className="mrb5">
             <Col span={8}>
-              <span className="font-em2">민원 검색</span>
+              <span className="font-em1 bold">민원 검색</span>
             </Col>
             <Col span={16} className="pd-left10">
-              <span className="font-em2">민원등록 고객</span>
+              <span className="font-em1 bold">선택한 민원 분류</span>
             </Col>
           </Row>
           <Row className="mrb10">
             <Col span={8}>
               <Input
-                placeholder="input search text"
+                placeholder=""
                 enterButton={null}
                 allowClear
                 size="large"
@@ -148,36 +205,47 @@ class MinwonAddPopup extends React.Component {
                     }}
                   />
                 }
+                onChange={this.onChange}
               />
             </Col>
             <Col span={16} style={{ paddingLeft: 10 }}>
               <Input
-                placeholder="input search text"
+                placeholder="카테고리를 선택해주세요"
                 allowClear
                 size="large"
                 disabled
+                value={
+                  smallCategoryInfo
+                    ? smallCategoryInfo.categoryLargeName +
+                      ' > ' +
+                      smallCategoryInfo.categoryMiddleName +
+                      ' > ' +
+                      smallCategoryInfo.name
+                    : ''
+                }
               />
             </Col>
           </Row>
           <Row className="mrb5">
             <Col span={8}>
-              <span className="font-em2">민원 분류</span>
+              <span className="font-em1 bold">민원 분류</span>
             </Col>
             <Col span={16} className="pd-left10">
-              <span className="font-em2">민원 내용 </span>
+              <span className="font-em1 bold">민원 내용 </span>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <Tree
-                style={{ overflowY: 'auto', height: 350 }}
-                className="draggable-tree"
-                defaultExpandedKeys={this.state.expandedKeys}
+                ref={this.treeRef}
                 draggable
-                blockNode
-                onDragEnter={this.onDragEnter}
                 onDrop={this.onDrop}
-                treeData={this.state.gData}
+                onExpand={this.onExpand}
+                height={350}
+                className="draggable-tree"
+                treeData={loop(treeData)}
+                expandedKeys={expandedKeys}
+                onSelect={this.onSelect}
                 switcherIcon={
                   <CaretDownOutlined
                     style={{ fontSize: '16px', color: 'gray' }}
