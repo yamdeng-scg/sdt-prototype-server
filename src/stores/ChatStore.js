@@ -52,6 +52,8 @@ class ChatStore {
   // 종료 방 검색 종료일
   @observable endDate = moment().subtract(1, 'months');
 
+  @observable ingRoomListApiCall = false;
+
   @action
   initDate() {
     this.startDate = moment();
@@ -178,6 +180,7 @@ class ChatStore {
     // room?queryId=findReadyState&sort=joinDate
     // room?queryId=findIngState&checkSelf=Y&searchType=message&searchValue=aaaaasdasdasdasdassdas
     // room?queryId=findSearchCloseState&checkSelf=Y&startDate=2018-01-01&endDate=2021-01-01&searchType=customerName&searchValue=이유
+    this.ingRoomListApiCall = true;
     let apiParam = {};
     let currentRoomTabName = this.currentRoomTabName;
     if (currentRoomTabName === Constant.ROOM_TYPE_WAIT) {
@@ -190,25 +193,32 @@ class ChatStore {
       apiParam.startDate = moment(this.startDate).format('YYYY-MM-DD');
       apiParam.endDate = moment(this.endDate).format('YYYY-MM-DD');
     }
-    ApiService.get('room', { params: apiParam }).then(response => {
-      runInAction(() => {
-        let data = response.data;
-        let totalSpeakMinute = 0;
-        data.forEach(info => {
-          if (info.speakMinute) {
-            totalSpeakMinute = info.speakMinute;
+    ApiService.get('room', { params: apiParam })
+      .then(response => {
+        runInAction(() => {
+          this.ingRoomListApiCall = false;
+          let data = response.data;
+          let totalSpeakMinute = 0;
+          data.forEach(info => {
+            if (info.speakMinute) {
+              totalSpeakMinute = info.speakMinute;
+            }
+          });
+          let averageSpeakMinute = 0;
+          if (totalSpeakMinute) {
+            averageSpeakMinute = Math.floor(totalSpeakMinute / data.length);
           }
+          this.averageSpeakTimeString = Helper.convertStringBySecond(
+            averageSpeakMinute * 60
+          );
+          this.roomList = data;
         });
-        let averageSpeakMinute = 0;
-        if (totalSpeakMinute) {
-          averageSpeakMinute = Math.floor(totalSpeakMinute / data.length);
-        }
-        this.averageSpeakTimeString = Helper.convertStringBySecond(
-          averageSpeakMinute * 60
-        );
-        this.roomList = data;
+      })
+      .catch(() => {
+        runInAction(() => {
+          this.ingRoomListApiCall = false;
+        });
       });
-    });
   }
 
   @action

@@ -282,6 +282,14 @@ option:first {
   color: #e3e0e0;
 }
 
+.bg-orange {
+  background-color: orange;
+}
+
+.color-orange {
+  color: orange;
+}
+
 .bor {
   border: 1px solid #cdcdcd;
 }

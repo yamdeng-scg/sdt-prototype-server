@@ -117,14 +117,15 @@ class RoomList extends React.Component {
       maxDateConvertString,
       averageSpeakTimeString,
       startDate,
-      endDate
+      endDate,
+      ingRoomListApiCall
     } = chatStore;
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     let uiStore = this.props.uiStore;
     let clientHeight = uiStore.clientHeight;
     let roomListCount = roomList.length;
     let pojoRoomList = roomList.toJS();
-    console.log('readyRoomSort : ' + readyRoomSort);
+    let roomListDivHeight = clientHeight - 245;
     return (
       <div
         style={{
@@ -223,7 +224,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -326,15 +327,17 @@ class RoomList extends React.Component {
                 )}
               />
             ) : (
-              <p
-                className="pd-top30 center bold font-em2"
+              <div
+                className={
+                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                }
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
               >
                 대기중인 상담이 없습니다
-              </p>
+              </div>
             )}
           </TabPane>
           <TabPane
@@ -387,7 +390,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -495,15 +498,17 @@ class RoomList extends React.Component {
                 )}
               />
             ) : (
-              <p
-                className="pd-top30 center bold font-em2"
+              <div
+                className={
+                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                }
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
               >
                 진행중인 상담이 없습니다
-              </p>
+              </div>
             )}
           </TabPane>
           <TabPane
@@ -570,7 +575,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -664,15 +669,17 @@ class RoomList extends React.Component {
                 )}
               />
             ) : (
-              <p
-                className="pd-top30 center bold font-em2"
+              <div
+                className={
+                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                }
                 style={{
                   overflowY: 'scroll',
-                  height: clientHeight - 245
+                  height: roomListDivHeight
                 }}
               >
                 검색결과가 존재하지 않습니다
-              </p>
+              </div>
             )}
           </TabPane>
         </Tabs>
