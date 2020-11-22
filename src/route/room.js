@@ -28,9 +28,9 @@ router.get('/', function (req, res, next) {
   let loginProfile = req.loginProfile;
   if (queryId.indexOf('findReadyState') != -1) {
     if (paramObject.sort && paramObject.sort === 'joinDate') {
-      paramObject.sort = 'last_message_create_date asc';
+      paramObject.sort = 'last_message_create_date desc';
     } else {
-      paramObject.sort = 'end_date desc';
+      paramObject.sort = 'wait_start_date asc';
     }
   }
   if (queryId.indexOf('State') != -1) {
@@ -46,11 +46,11 @@ router.get('/', function (req, res, next) {
       paramObject.memberName = '';
       paramObject.customerName = '';
       paramObject.message = paramObject.searchValue || '';
-    } else if (paramObject.searchType === 'customer') {
+    } else if (paramObject.searchType === 'customerName') {
       paramObject.message = '';
       paramObject.memberName = '';
       paramObject.customerName = paramObject.searchValue || '';
-    } else if (paramObject.searchType === 'member') {
+    } else if (paramObject.searchType === 'memberName') {
       paramObject.message = '';
       paramObject.customerName = '';
       paramObject.memberName = paramObject.searchValue || '';

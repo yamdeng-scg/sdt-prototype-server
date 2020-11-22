@@ -70,6 +70,8 @@ router.get('/tree', function (req, res, next) {
       .then((result) => {
         categoryLargeList = result;
         categoryLargeList.forEach((info) => {
+          info.key = 'a' + info.id;
+          info.title = info.name;
           info.level = 1;
         });
         return true;
@@ -83,6 +85,8 @@ router.get('/tree', function (req, res, next) {
       .then((result) => {
         categoryMiddleList = result;
         categoryMiddleList.forEach((info) => {
+          info.key = 'b' + info.id;
+          info.title = info.name;
           info.level = 2;
         });
         return true;
@@ -96,6 +100,8 @@ router.get('/tree', function (req, res, next) {
       .then((result) => {
         categorySmallList = result;
         categorySmallList.forEach((info) => {
+          info.key = 'c' + info.id;
+          info.title = info.name;
           info.level = 3;
         });
         return true;
@@ -104,12 +110,12 @@ router.get('/tree', function (req, res, next) {
   Promise.all(promiseList)
     .then(() => {
       categoryMiddleList.forEach((middleInfo) => {
-        middleInfo.childs = _.filter(categorySmallList, (smallInfo) => {
+        middleInfo.children = _.filter(categorySmallList, (smallInfo) => {
           return middleInfo.id === smallInfo.categoryMiddleId;
         });
       });
       categoryLargeList.forEach((largeInfo) => {
-        largeInfo.childs = _.filter(categoryMiddleList, (middleInfo) => {
+        largeInfo.children = _.filter(categoryMiddleList, (middleInfo) => {
           return largeInfo.id === middleInfo.categoryLargeId;
         });
       });

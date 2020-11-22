@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `member` (
   `is_admin` tinyint(1) NOT NULL DEFAULT 0 COMMENT '시스템관리자 여부',
   `auth_level` tinyint(1) unsigned NOT NULL DEFAULT 7 COMMENT '0:sys, 1:super, 2:admin, 3:mgr, 4:emp, 7:reader,9:guest',
   `login_name` varchar(255) NOT NULL COMMENT '로그인 name(직원번호)',
-  `state` tinyint(1) unsigned NOT NULL DEFAULT 9 COMMENT '0:정상,1:휴식,2:회의,3:콜집중,5:퇴근,9:기타',
+  `state` tinyint(1) unsigned NOT NULL DEFAULT 9 COMMENT '0:정상,1:휴식,2:회의,3:콜중,5:퇴근,9:기타',
   `profile_image_id` bigint(5) unsigned DEFAULT NULL COMMENT '파일첨부 id(file_attach table)',
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
   `name` varchar(255) DEFAULT NULL COMMENT '직원 이름',
@@ -587,11 +587,11 @@ SELECT id, createdate, workdate, emp, CONCAT(cid, ''), state, startid, chatid, p
 FROM Space;
 
 UPDATE room
-set state = 8
+set state = 8, member_id = null, last_member_id = member_id
 where state = 2;
 
 UPDATE room
-set state = 8, end_date = now()
+set state = 8, end_date = now(), member_id = null, last_member_id = member_id
 where state = 1;
 
 update room

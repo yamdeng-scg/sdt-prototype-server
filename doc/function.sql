@@ -311,6 +311,11 @@ CREATE OR REPLACE PROCEDURE transfer_room(
     -- 이관 유형에 따라 분기(ready:접수대기로 이관, toMember:지정한 상담사에게 이관)
     IF _transfertype = 'ready' THEN
         -- 접수대기로 이관인 경우
+        -- 방의 담당자 정보 변경
+        UPDATE room
+          SET state = 0, last_member_id = member_id, member_id = null
+        WHERE id = _room_id;
+
         -- 방의 이전 사용자 정보 삭제
         DELETE 
           FROM room_speaker
@@ -327,6 +332,11 @@ CREATE OR REPLACE PROCEDURE transfer_room(
         WHERE room_id = _room_id AND END_DATE IS NULL;
     ELSE
         -- 지정한 상담사에게 이관인 경우
+        -- 방의 담당자 정보 변경
+        UPDATE room
+          SET state = 1, last_member_id = member_id, member_id = _member_id
+        WHERE id = _room_id;
+
         -- 이관할 상담사의 speaker_id 가져오기 
         SELECT speaker_id INTO v_update_speaker_id
           FROM member
@@ -377,6 +387,7 @@ CREATE OR REPLACE PROCEDURE match_room(
     DECLARE v_speaker_id INT;
     DECLARE v_chatid INT;
     DECLARE v_max_message_id INT;
+    DECLARE v_room_speaker_id INT;
 
     -- 상담사가 존재하는지 체크하기 위한
     SELECT member_id INTO v_member_id
@@ -390,6 +401,11 @@ CREATE OR REPLACE PROCEDURE match_room(
     SELECT MAX(id) INTO v_max_message_id
       FROM chat_message
       WHERE room_id = _room_id;
+
+  -- 상담사의 speaker id
+    SELECT id INTO v_room_speaker_id
+      FROM room_speaker
+     WHERE room_id = _room_id AND speaker_id = v_speaker_id;
 
     -- 상담사가 셋팅이 않된 방만 처리
     IF v_member_id IS NULL THEN
@@ -405,8 +421,10 @@ CREATE OR REPLACE PROCEDURE match_room(
           WHERE id = _room_id;
 
         -- room_speaker 테이블 insert
-        INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_customer)
-            VALUES(_room_id, v_speaker_id, v_max_message_id, 0);
+        IF v_room_speaker_id IS NULL THEN
+            INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_customer)
+                VALUES(_room_id, v_speaker_id, v_max_message_id, 0);
+        END IF;
         
         -- 방의 사용자 정보 삭제시키기(사용자 유형이 상담사인 경우만 삭제하고 상담할 상담사는 제외) : 정상적인 경우에는 필요없음 2차 검증
         DELETE 

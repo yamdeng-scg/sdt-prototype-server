@@ -68,6 +68,7 @@
 				chat_message.message_detail AS last_message_detail, 
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
+				v_customer.customer_id AS customer_id,
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
@@ -178,7 +179,6 @@
 				INNER JOIN company c ON sub_room.company_id = c.id
 			WHERE 
 				v_customer.company_id = :companyId
-				AND v_customer.name LIKE concat('%', :customerName, '%')
 			ORDER BY :sort
 		]]>
 	</query>
@@ -191,6 +191,7 @@
 				chat_message.message_detail AS last_message_detail, 
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
+				v_customer.customer_id AS customer_id,
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
@@ -317,6 +318,7 @@
 				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
+				v_customer.customer_id AS customer_id,
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
@@ -363,7 +365,6 @@
 						mb.name as member_name
 					FROM 
 						room r
-						INNER JOIN room_join_history rjh ON r.chatid = rjh.id
 						INNER JOIN (
 							SELECT 
 								DISTINCT(room_id), 
@@ -375,13 +376,13 @@
 								AND message_admin_type = 0 
 								AND message LIKE concat('%', :message, '%')
 						) messasge_search ON r.id = messasge_search.message_search_room_id
-						LEFT OUTER JOIN member mb ON rjh.member_id = mb.id
+						LEFT OUTER JOIN member mb ON r.last_member_id = mb.id
 														AND mb.name LIKE concat('%', :memberName, '%')
 					WHERE 
 						r.company_id = :companyId 
 						AND r.state = 8
 						AND (
-							CASE WHEN :memberId IS NULL THEN 1 = 1 ELSE rjh.member_id = :memberId END
+							CASE WHEN :memberId IS NULL THEN 1 = 1 ELSE r.last_member_id = :memberId END
 						) 
 						AND date_format(r.end_date, '%Y-%m-%d') BETWEEN :startDate 
 						AND :endDate
@@ -392,7 +393,7 @@
 				v_customer.company_id = :companyId
 				AND v_customer.name LIKE concat('%', :customerName, '%')
 			ORDER BY 
-				last_message_create_date DESC
+				end_date DESC
 		]]>
 	</query>
 	<query id="findSearchJoinHistory">
@@ -443,6 +444,7 @@
 				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
+				v_customer.customer_id AS customer_id,
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
@@ -563,6 +565,7 @@
 				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
+				v_customer.customer_id AS customer_id,
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,

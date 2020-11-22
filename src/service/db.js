@@ -28,7 +28,11 @@ connection.config.queryFormat = function (query, paramObject) {
     /\:(\w+)/g,
     function (txt, key) {
       if (_.has(paramObject, key)) {
-        return this.escape(paramObject[key]);
+        if (key !== 'sort') {
+          return this.escape(paramObject[key]);
+        } else {
+          return paramObject[key];
+        }
       }
       return txt;
     }.bind(this)
