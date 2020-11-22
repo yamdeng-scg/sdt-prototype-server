@@ -178,6 +178,9 @@ const convertStringBySecond = function(diffSecond) {
   let time = Math.floor(diffSecond / 3600);
   let minute = 0;
   let second = 0;
+  if (!diffSecond) {
+    return '';
+  }
   if (time !== 0) {
     minute = Math.floor((diffSecond % 3600) / 60);
   } else {

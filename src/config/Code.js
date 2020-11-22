@@ -23,7 +23,7 @@ Code.memberStateCodeList = [
   { name: '상담중', value: 0 },
   { name: '휴식중', value: 1 },
   { name: '회의중', value: 2 },
-  { name: '콜집중', value: 3 },
+  { name: '콜중', value: 3 },
   { name: '퇴근', value: 5 },
   { name: '기타', value: 9 }
 ];

@@ -18,6 +18,7 @@ import Constant from '../../config/Constant';
 import { ReloadOutlined, SmileOutlined } from '@ant-design/icons';
 import ModalService from '../../services/ModalService';
 import ModalType from '../../config/ModalType';
+import Helper from '../../utils/Helper';
 
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -271,10 +272,7 @@ class RoomList extends React.Component {
                     ) : null}
                     <div style={{ position: 'relative' }}>
                       {item.lastMessageDetail ? (
-                        <span
-                          className="inblock"
-                          style={{ backgroundColor: 'orange' }}
-                        >
+                        <span className="roomlist-inner-link">
                           {item.lastMessageDetail}
                         </span>
                       ) : (
@@ -313,14 +311,6 @@ class RoomList extends React.Component {
                         className="bg-basic color-white bold"
                       >
                         이관
-                      </Button>{' '}
-                      <Button
-                        shape="round"
-                        size="small"
-                        onClick={this.openConfirmPopup}
-                        className="bg-basic color-white bold"
-                      >
-                        종료
                       </Button>
                     </div>
                   </List.Item>
@@ -437,15 +427,7 @@ class RoomList extends React.Component {
                     ) : null}
                     <div style={{ position: 'relative' }}>
                       {item.lastMessageDetail ? (
-                        <span
-                          className2="mrt10 mrb10 inblock bold pd-left5 pd-right5"
-                          className="roomlist-inner-link"
-                          style2={{
-                            backgroundColor: 'orange',
-                            color: '#fff',
-                            borderRadius: 10
-                          }}
-                        >
+                        <span className="roomlist-inner-link">
                           {item.lastMessageDetail}
                         </span>
                       ) : (
@@ -456,9 +438,9 @@ class RoomList extends React.Component {
                           {item.lastMessage}
                         </Paragraph>
                       )}
-                      <p style={{ position: 'absolute', top: 0, right: 0 }}>
+                      {/* <p style={{ position: 'absolute', top: 0, right: 0 }}>
                         <span className="red">{item.waitTime}</span>
-                      </p>
+                      </p> */}
                     </div>
                     <div className="center">
                       <Button
@@ -621,14 +603,26 @@ class RoomList extends React.Component {
                       </span>
                     ) : null}
                     <div style={{ position: 'relative' }}>
-                      <Paragraph
-                        style={{ marginTop: 10, width: '75%' }}
-                        ellipsis
-                      >
-                        {item.lastMessage}
-                      </Paragraph>
+                      {item.lastMessageDetail ? (
+                        <span className="roomlist-inner-link">
+                          {item.lastMessageDetail}
+                        </span>
+                      ) : (
+                        <Paragraph
+                          style={{ marginTop: 10, width: '75%' }}
+                          ellipsis
+                        >
+                          {item.lastMessage}
+                        </Paragraph>
+                      )}
                       <p style={{ position: 'absolute', top: 0, right: 0 }}>
-                        <span className="red">{item.waitTime}</span>
+                        <span className="color-basic">
+                          {Helper.convertDateToString(
+                            item.endDate,
+                            'YYYY-MM-DDTHH:mm:ss.SSSZ',
+                            'YYYY.MM.DD HH:mm'
+                          )}
+                        </span>
                       </p>
                     </div>
                     <div className="center">
@@ -648,22 +642,6 @@ class RoomList extends React.Component {
                       >
                         상담하기
                       </Button>{' '}
-                      <Button
-                        shape="round"
-                        size="small"
-                        onClick={this.openAlertPopup}
-                        className="bg-basic color-white bold"
-                      >
-                        이관
-                      </Button>{' '}
-                      <Button
-                        shape="round"
-                        size="small"
-                        onClick={this.openConfirmPopup}
-                        className="bg-basic color-white bold"
-                      >
-                        종료
-                      </Button>
                     </div>
                   </List.Item>
                 )}

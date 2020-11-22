@@ -5,6 +5,7 @@ import ModalType from '../config/ModalType';
 import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
 import ModalService from '../services/ModalService';
+import LoadingBar from '../utils/LoadingBar';
 
 class ChatStore {
   // 대기방 time 실시간으로 보여주는 용도
@@ -32,10 +33,10 @@ class ChatStore {
   @observable roomList = [];
 
   // 대기탭 상단 최장대기 고객 시간
-  @observable maxDateConvertString = '00:00:00';
+  @observable maxDateConvertString = '';
 
   // 진행 / 종료탭 상단 평균 상담 시간
-  @observable averageSpeakTimeString = '00:00:00';
+  @observable averageSpeakTimeString = '';
 
   // 내 상담만 보기
   @observable checkSelf = false;
@@ -47,17 +48,17 @@ class ChatStore {
   @observable searchValue = '';
 
   // 종료 방 검색 시작일
-  @observable startDate = moment();
+  @observable startDate = moment().subtract(12, 'months');
 
   // 종료 방 검색 종료일
-  @observable endDate = moment().subtract(1, 'months');
+  @observable endDate = moment();
 
   @observable ingRoomListApiCall = false;
 
   @action
   initDate() {
-    this.startDate = moment();
-    this.endDate = moment().subtract(1, 'months');
+    this.startDate = moment().subtract(12, 'months');
+    this.endDate = moment();
   }
 
   @action
@@ -99,7 +100,7 @@ class ChatStore {
             moment().diff(room.waitStartDate, 'seconds')
           );
         });
-        let maxDate = moment.max(waitStartDates);
+        let maxDate = moment.min(waitStartDates);
         let maxDateConvertString = '00:00:00';
         if (maxDate) {
           maxDateConvertString = Helper.convertStringBySecond(
@@ -129,6 +130,7 @@ class ChatStore {
   // 방 탭 변경
   @action
   changeRoomTab(tabName) {
+    LoadingBar.show();
     this.currentRoomTabName = tabName;
     if (tabName === Constant.ROOM_TYPE_WAIT) {
       this.listenWaitTimeRefreshEvent();

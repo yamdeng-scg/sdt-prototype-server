@@ -29,9 +29,11 @@ class AppStore {
       title: '로그아웃',
       body: '로그아웃하시겠습니까?',
       ok: () => {
-        this.token = '';
-        this.profile = null;
-        Helper.removeInfoByLocalStorage('token');
+        runInAction(() => {
+          this.token = '';
+          this.profile = null;
+          Helper.removeInfoByLocalStorage('token');
+        });
       }
     });
   }
