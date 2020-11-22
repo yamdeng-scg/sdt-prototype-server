@@ -41,4 +41,11 @@ Constant.ROOM_TYPE_CLOSE = 'close';
 Constant.READY_ROOM_SORT_JOIN_DATE = 'joinDate';
 Constant.READY_ROOM_SORT_WAIT_TIME = 'waitTime';
 
+// 왼쪽 메뉴 name
+Constant.SIDE_BAR_MENU_CHAT = 'chat';
+Constant.SIDE_BAR_MENU_TEMPLATE = 'template';
+Constant.SIDE_BAR_MENU_MANUAL = 'manual';
+Constant.SIDE_BAR_MENU_STATS = 'stats';
+Constant.SIDE_BAR_MENU_MANAGER = 'manager';
+
 export default Constant;

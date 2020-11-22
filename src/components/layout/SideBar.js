@@ -9,6 +9,7 @@ import {
   StarFilled,
   SoundFilled
 } from '@ant-design/icons';
+import Constant from '../../config/Constant';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -21,6 +22,7 @@ class SideBar extends React.Component {
 
   render() {
     let { uiStore } = this.props;
+    let { sideBarSelectMenuKName } = uiStore;
     return (
       <div
         style={{
@@ -34,9 +36,14 @@ class SideBar extends React.Component {
         }}
         className="side-bar bor-right"
       >
-        <Menu mode={'vertical'} theme={'light'} Divider={false}>
+        <Menu
+          mode={'vertical'}
+          theme={'light'}
+          Divider={false}
+          selectedKeys={[sideBarSelectMenuKName]}
+        >
           <Menu.Item
-            key="1"
+            key={Constant.SIDE_BAR_MENU_CHAT}
             className="center mrb20"
             style={{ paddingTop: 10, marginTop: 0 }}
             onClick={() => uiStore.goPage('/chat')}
@@ -48,7 +55,7 @@ class SideBar extends React.Component {
             <div className="color-basic center bold">채팅상담</div>
           </Menu.Item>
           <Menu.Item
-            key="2"
+            key={Constant.SIDE_BAR_MENU_TEMPLATE}
             className="center mrb20"
             style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/template')}
@@ -60,7 +67,7 @@ class SideBar extends React.Component {
             <div className="color-basic center bold">답변템플릿</div>
           </Menu.Item>
           <Menu.Item
-            key="3"
+            key={Constant.SIDE_BAR_MENU_MANUAL}
             className="center mrb20"
             style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/manual')}
@@ -72,7 +79,7 @@ class SideBar extends React.Component {
             <div className="color-basic center bold">상담도우미</div>
           </Menu.Item>
           <Menu.Item
-            key="4"
+            key={Constant.SIDE_BAR_MENU_STATS}
             className="center mrb20"
             style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/stats')}
@@ -84,7 +91,7 @@ class SideBar extends React.Component {
             <div className="color-basic center bold">통계</div>
           </Menu.Item>
           <Menu.Item
-            key="5"
+            key={Constant.SIDE_BAR_MENU_MANAGER}
             className="center mrb20"
             style={{ paddingTop: 10 }}
             onClick={() => uiStore.goPage('/manager')}

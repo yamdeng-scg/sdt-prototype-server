@@ -1,4 +1,6 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import { Route, Switch } from 'react-router-dom';
 import { Row, Col } from 'antd';
 import ManagerSettingLeftMenu from './ManagerSettingLeftMenu';
@@ -6,11 +8,21 @@ import MemberList from './MemberList';
 import TemplateCategoryContainer from './TemplateCategoryContainer';
 import AutoMessage from './AutoMessage';
 import BlackCustomerList from './BlackCustomerList';
+import Constant from '../../config/Constant';
 
+@withRouter
+@inject('appStore', 'uiStore')
+@observer
 class ManagerSettingContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.uiStore.changeSideBarSelectMenuKName(
+      Constant.SIDE_BAR_MENU_MANAGER
+    );
   }
 
   render() {

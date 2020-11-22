@@ -16,7 +16,7 @@ moment.locale('ko');
 
 // state의 상태는 action을 통해서만 가능하게끔 셋팅
 configure({
-  enforceActions: 'never'
+  enforceActions: 'always'
 });
 
 ReactDOM.render(

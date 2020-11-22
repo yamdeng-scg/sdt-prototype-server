@@ -7,6 +7,7 @@ import ManualDetail from '../manual/ManualDetail';
 import ManualForm from '../manual/ManualForm';
 import ManualList from '../manual/ManualList';
 import ManualEmpty from '../manual/ManualEmpty';
+import Constant from '../../config/Constant';
 
 @withRouter
 @inject('appStore', 'uiStore')
@@ -15,6 +16,12 @@ class ManualMain extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.uiStore.changeSideBarSelectMenuKName(
+      Constant.SIDE_BAR_MENU_MANUAL
+    );
   }
 
   render() {

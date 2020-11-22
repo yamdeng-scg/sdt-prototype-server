@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
 import ModalService from '../services/ModalService';
@@ -61,8 +61,10 @@ class AppStore {
     });
     ApiService.get('room', { params: { queryId: 'getCurrentTimeStats' } }).then(
       respone => {
-        let data = respone.data;
-        this.currentStatsInfo = data;
+        runInAction(() => {
+          let data = respone.data;
+          this.currentStatsInfo = data;
+        });
       }
     );
   }
@@ -105,8 +107,10 @@ class AppStore {
   @action
   loadCompanyList() {
     ApiService.get('company').then(respone => {
-      let data = respone.data;
-      this.companyList = data;
+      runInAction(() => {
+        let data = respone.data;
+        this.companyList = data;
+      });
     });
   }
 }

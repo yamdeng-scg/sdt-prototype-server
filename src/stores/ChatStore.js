@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, runInAction } from 'mobx';
 import moment from 'moment';
 import Constant from '../config/Constant';
 import ModalType from '../config/ModalType';
@@ -20,7 +20,7 @@ class ChatStore {
   @observable currentRoomTabName = 'wait';
 
   // 대기방 정렬 정보 : joinDate, waitTime
-  @observable readyRoomSort = Constant.READY_ROOM_SORT_JOIN_DATE;
+  @observable readyRoomSort = Constant.READY_ROOM_SORT_WAIT_TIME;
 
   // 채팅 하단 영역 display 여부
   @observable displayBottomContent = false;
@@ -88,25 +88,27 @@ class ChatStore {
       clearInterval(this.waitTimeRefreshIntervalHandler);
     }
     this.waitTimeRefreshIntervalHandler = setInterval(() => {
-      let waitStartDates = this.roomList.map(room =>
-        moment(room.waitStartDate)
-      );
-      this.roomList.forEach(room => {
-        room.waitTime = Helper.convertStringBySecond(
-          moment().diff(room.waitStartDate, 'seconds')
+      runInAction(() => {
+        let waitStartDates = this.roomList.map(room =>
+          moment(room.waitStartDate)
         );
+        this.roomList.forEach(room => {
+          room.waitTime = Helper.convertStringBySecond(
+            moment().diff(room.waitStartDate, 'seconds')
+          );
+        });
+        let maxDate = moment.max(waitStartDates);
+        let maxDateConvertString = '00:00:00';
+        if (maxDate) {
+          maxDateConvertString = Helper.convertStringBySecond(
+            moment().diff(maxDate, 'seconds')
+          );
+        }
+        this.maxDateConvertString = maxDateConvertString;
+        // maxDate = moment.max(moments)
+        // 대기 최장시간 추출
+        // 목록의 값의 속성을 추가시키고 해당 값을 변경함
       });
-      let maxDate = moment.max(waitStartDates);
-      let maxDateConvertString = '00:00:00';
-      if (maxDate) {
-        maxDateConvertString = Helper.convertStringBySecond(
-          moment().diff(maxDate, 'seconds')
-        );
-      }
-      this.maxDateConvertString = maxDateConvertString;
-      // maxDate = moment.max(moments)
-      // 대기 최장시간 추출
-      // 목록의 값의 속성을 추가시키고 해당 값을 변경함
     }, 1000);
   }
 
@@ -189,21 +191,23 @@ class ChatStore {
       apiParam.endDate = moment(this.endDate).format('YYYY-MM-DD');
     }
     ApiService.get('room', { params: apiParam }).then(response => {
-      let data = response.data;
-      let totalSpeakMinute = 0;
-      data.forEach(info => {
-        if (info.speakMinute) {
-          totalSpeakMinute = info.speakMinute;
+      runInAction(() => {
+        let data = response.data;
+        let totalSpeakMinute = 0;
+        data.forEach(info => {
+          if (info.speakMinute) {
+            totalSpeakMinute = info.speakMinute;
+          }
+        });
+        let averageSpeakMinute = 0;
+        if (totalSpeakMinute) {
+          averageSpeakMinute = Math.floor(totalSpeakMinute / data.length);
         }
+        this.averageSpeakTimeString = Helper.convertStringBySecond(
+          averageSpeakMinute * 60
+        );
+        this.roomList = data;
       });
-      let averageSpeakMinute = 0;
-      if (totalSpeakMinute) {
-        averageSpeakMinute = Math.floor(totalSpeakMinute / data.length);
-      }
-      this.averageSpeakTimeString = Helper.convertStringBySecond(
-        averageSpeakMinute * 60
-      );
-      this.roomList = data;
     });
   }
 

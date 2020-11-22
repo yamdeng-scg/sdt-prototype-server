@@ -124,6 +124,7 @@ class RoomList extends React.Component {
     let clientHeight = uiStore.clientHeight;
     let roomListCount = roomList.length;
     let pojoRoomList = roomList.toJS();
+    console.log('readyRoomSort : ' + readyRoomSort);
     return (
       <div
         style={{
@@ -171,10 +172,18 @@ class RoomList extends React.Component {
                   대기
                 </Badge>
               ) : (
-                <span className="font-em1">대기</span>
+                <span
+                  className={
+                    currentRoomTabName === Constant.ROOM_TYPE_WAIT
+                      ? 'font-em1 bold'
+                      : 'font-em1'
+                  }
+                >
+                  대기
+                </span>
               )
             }
-            key="wait"
+            key={Constant.ROOM_TYPE_WAIT}
           >
             <Row className="right pd10 bor-bottom">
               <Col span={24}>
@@ -328,7 +337,20 @@ class RoomList extends React.Component {
               </p>
             )}
           </TabPane>
-          <TabPane tab={<span className="font-em1">진행</span>} key="ing">
+          <TabPane
+            tab={
+              <span
+                className={
+                  currentRoomTabName === Constant.ROOM_TYPE_ING
+                    ? 'font-em1 bold'
+                    : 'font-em1'
+                }
+              >
+                진행
+              </span>
+            }
+            key={Constant.ROOM_TYPE_ING}
+          >
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -484,7 +506,20 @@ class RoomList extends React.Component {
               </p>
             )}
           </TabPane>
-          <TabPane tab={<span className="font-em1">종료</span>} key="close">
+          <TabPane
+            tab={
+              <span
+                className={
+                  currentRoomTabName === Constant.ROOM_TYPE_CLOSE
+                    ? 'font-em1 bold'
+                    : 'font-em1'
+                }
+              >
+                종료
+              </span>
+            }
+            key={Constant.ROOM_TYPE_CLOSE}
+          >
             <Row className="pd5">
               <Col span={8}>
                 <Select
@@ -514,6 +549,7 @@ class RoomList extends React.Component {
                   style={{ width: '90%' }}
                   onChange={dates => chatStore.changeDates(dates[0], dates[1])}
                   value={[startDate, endDate]}
+                  allowClear={false}
                 />{' '}
                 {'   '}
                 <ReloadOutlined

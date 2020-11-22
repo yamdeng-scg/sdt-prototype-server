@@ -10,6 +10,7 @@ import MemberReviewChart from './MemberReviewChart';
 import UseHistorySummary from './UseHistorySummary';
 import TalkTimeSummary from './TalkTimeSummary';
 import TalkCloseummary from './TalkCloseummary';
+import Constant from '../../config/Constant';
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
@@ -20,6 +21,12 @@ class CompanyStatsContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.uiStore.changeSideBarSelectMenuKName(
+      Constant.SIDE_BAR_MENU_STATS
+    );
   }
 
   render() {

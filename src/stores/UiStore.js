@@ -17,6 +17,14 @@ class UiStore {
   // 브라우저 inner height
   @observable clientHeight = document.documentElement.clientHeight;
 
+  // chat, template, manual, stats, manager
+  @observable sideBarSelectMenuKName = 'chat';
+
+  @action
+  changeSideBarSelectMenuKName(sideBarSelectMenuKName) {
+    this.sideBarSelectMenuKName = sideBarSelectMenuKName;
+  }
+
   constructor(rootStore) {
     this.rootStore = rootStore;
     window.addEventListener('resize', this.handleResizeEvent.bind(this));

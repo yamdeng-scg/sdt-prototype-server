@@ -1,4 +1,4 @@
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, runInAction } from 'mobx';
 import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
 
@@ -60,23 +60,25 @@ class LoginStore {
     apiParam.companyId = this.companyId;
     if (this.validForm()) {
       ApiService.post('auth/login', apiParam).then(response => {
-        let data = response.data;
-        let appStore = this.rootStore.appStore;
-        appStore.setLoginInfo(data);
-        if (saveLoginChecked) {
-          Helper.saveInfoToLocalStorage('companyId', this.companyId);
-          Helper.saveInfoToLocalStorage('loginName', this.loginName);
-          Helper.saveInfoToLocalStorage('name', this.name);
-          Helper.saveInfoToLocalStorage(
-            'saveLoginChecked',
-            this.saveLoginChecked
-          );
-        } else {
-          Helper.removeInfoByLocalStorage('companyId');
-          Helper.removeInfoByLocalStorage('loginName');
-          Helper.removeInfoByLocalStorage('name');
-          Helper.removeInfoByLocalStorage('saveLoginChecked');
-        }
+        runInAction(() => {
+          let data = response.data;
+          let appStore = this.rootStore.appStore;
+          appStore.setLoginInfo(data);
+          if (saveLoginChecked) {
+            Helper.saveInfoToLocalStorage('companyId', this.companyId);
+            Helper.saveInfoToLocalStorage('loginName', this.loginName);
+            Helper.saveInfoToLocalStorage('name', this.name);
+            Helper.saveInfoToLocalStorage(
+              'saveLoginChecked',
+              this.saveLoginChecked
+            );
+          } else {
+            Helper.removeInfoByLocalStorage('companyId');
+            Helper.removeInfoByLocalStorage('loginName');
+            Helper.removeInfoByLocalStorage('name');
+            Helper.removeInfoByLocalStorage('saveLoginChecked');
+          }
+        });
       });
     }
   }

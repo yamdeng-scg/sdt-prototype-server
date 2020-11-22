@@ -6,14 +6,21 @@ import RoomList from './RoomList';
 import MessageContainer from './MessageContainer';
 import ContractDeftail from './ContractDeftail';
 import MyTodayStats from './MyTodayStats';
+import Constant from '../../config/Constant';
 
 @withRouter
-@inject('chatStore')
+@inject('chatStore', 'uiStore')
 @observer
 class ChatContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.uiStore.changeSideBarSelectMenuKName(
+      Constant.SIDE_BAR_MENU_CHAT
+    );
   }
 
   render() {
