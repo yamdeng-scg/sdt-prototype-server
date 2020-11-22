@@ -690,7 +690,7 @@ ALTER TABLE customer_company ADD CONSTRAINT customer_company_customer_FK FOREIGN
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK_1 FOREIGN KEY (block_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
-ALTER TABLE customer_company ADD CONSTRAINT customer_company_room_FK FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE SET NULL;
+ALTER TABLE customer_company ADD CONSTRAINT customer_company_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 CREATE UNIQUE INDEX customer_company_customer_id_IDX USING BTREE ON customer_company (customer_id,company_id);
 

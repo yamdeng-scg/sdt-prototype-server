@@ -3,7 +3,9 @@
 	<query id="getCurrentTimeStats">
 		<![CDATA[
 			SELECT 
-				COUNT(1) AS ing_count, 
+				SUM(
+					CASE WHEN r.member_id IS NULL THEN 0 ELSE 1 end
+				) AS ing_count,
 				SUM(
 					CASE WHEN r.member_id IS NULL THEN 1 ELSE 0 end
 				) AS ready_count, 
@@ -63,6 +65,7 @@
 				sub_room.*, 
 				chat_message.id AS last_message_id, 
 				chat_message.message AS last_message, 
+				chat_message.message_detail AS last_message_detail, 
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
 				v_customer.is_block AS is_block_customer,
@@ -135,20 +138,18 @@
 								MIN(chat_message.create_date) 
 							FROM 
 								chat_message 
-								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
 								AND chat_message.is_employee = 0 
-								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0) 
 									FROM 
 										chat_message 
 									WHERE 
 										is_employee = 1 
 										AND room_id = r.id
+										AND is_system_message = 0
 								)
 						) AS wait_start_date,
 						mb.name as member_name
@@ -187,6 +188,7 @@
 				sub_room.*, 
 				chat_message.id AS last_message_id, 
 				chat_message.message AS last_message, 
+				chat_message.message_detail AS last_message_detail, 
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
 				v_customer.is_block AS is_block_customer,
@@ -259,20 +261,18 @@
 								MIN(chat_message.create_date) 
 							FROM 
 								chat_message 
-								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
 								AND chat_message.is_employee = 0 
-								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0)
 									FROM 
 										chat_message 
 									WHERE 
 										is_employee = 1 
 										AND room_id = r.id
+										AND is_system_message = 0
 								)
 						) AS wait_start_date,
 						mb.name as member_name
@@ -313,7 +313,8 @@
 			SELECT 
 				sub_room.*, 
 				chat_message.id AS last_message_id, 
-				chat_message.message AS last_message, 
+				chat_message.message AS last_message,
+				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
 				v_customer.is_block AS is_block_customer,
@@ -438,7 +439,8 @@
 			SELECT 
 				sub_room.*, 
 				chat_message.id AS last_message_id, 
-				chat_message.message AS last_message, 
+				chat_message.message AS last_message,
+				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
 				v_customer.is_block AS is_block_customer,
@@ -510,20 +512,18 @@
 								MIN(chat_message.create_date) 
 							FROM 
 								chat_message 
-								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
 								AND chat_message.is_employee = 0 
-								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0)
 									FROM 
 										chat_message 
 									WHERE 
 										is_employee = 1 
 										AND room_id = r.id
+										AND is_system_message = 0
 								)
 						) AS wait_start_date,
 						mb.name as member_name
@@ -559,7 +559,8 @@
 			SELECT 
 				sub_room.*, 
 				chat_message.id AS last_message_id, 
-				chat_message.message AS last_message, 
+				chat_message.message AS last_message,
+				chat_message.message_detail AS last_message_detail,
 				chat_message.create_date AS last_message_create_date, 
 				v_customer.name AS customer_name,
 				v_customer.is_block AS is_block_customer,
@@ -631,20 +632,18 @@
 								MIN(chat_message.create_date) 
 							FROM 
 								chat_message 
-								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
 								AND chat_message.is_employee = 0 
-								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0) 
 									FROM 
 										chat_message 
 									WHERE 
 										is_employee = 1 
 										AND room_id = r.id
+										AND is_system_message = 0
 								)
 						) AS wait_start_date,
 						mb.name as member_name

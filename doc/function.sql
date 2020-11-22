@@ -401,7 +401,7 @@ CREATE OR REPLACE PROCEDURE match_room(
         SET v_chatid = Last_Insert_ID();
 
         -- 방의 담당자 셋팅, 상태 변경, chatid 최신화
-        UPDATE room SET member_id = _member_id, state = 0, chatid = v_chatid, update_member_id = _member_id
+        UPDATE room SET member_id = _member_id, state = 1, chatid = v_chatid, update_member_id = _member_id
           WHERE id = _room_id;
 
         -- room_speaker 테이블 insert
