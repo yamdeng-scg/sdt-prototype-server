@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
 import Constant from '../../config/Constant';
 
 @inject('alertModalStore')
@@ -36,8 +36,10 @@ class AlertPopup extends React.Component {
           <Col span={24}>{body}</Col>
         </Row>
         <Row className="center">
-          <Col span={24} className="pd10 bold okbtn">
-            {okLabel}
+          <Col span={24}>
+            <Button block className="pd10 bold okbtn" onClick={this.ok}>
+              {okLabel}
+            </Button>
           </Col>
         </Row>
       </div>

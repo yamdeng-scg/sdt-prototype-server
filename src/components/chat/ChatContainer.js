@@ -23,6 +23,10 @@ class ChatContainer extends React.Component {
     );
   }
 
+  componentWillUnmount() {
+    this.props.chatStore.clear();
+  }
+
   render() {
     let { chatStore } = this.props;
     let { currentRoomInfo } = chatStore;

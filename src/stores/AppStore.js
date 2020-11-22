@@ -1,4 +1,4 @@
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, computed } from 'mobx';
 import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
 import ModalService from '../services/ModalService';
@@ -96,7 +96,21 @@ class AppStore {
   handle510StatusError(httpError) {}
 
   // 400, 401, 404, 412, 428, 426, 502, 503, 504, 510 status code를 제외한 에러 처리
-  handleServerCommonError(httpError) {}
+  // 403, 409, 412, 500, 501, 503, 504 status code 에러 처리
+  handleServerCommonError(httpError, companyCode) {
+    let response = httpError.response;
+    let data = response.data || {};
+    let serverErrorMessage = data.message || '알수없는 서버 오류입니다';
+    if (serverErrorMessage) {
+      serverErrorMessage = serverErrorMessage.replace(/\\n/g, '<br/>');
+    }
+    // 그외 서버 공통 에러 처리(status : 403, 409, 412, 500, 501, 503, 504)
+    let modalData = {
+      title: '서버오류',
+      body: serverErrorMessage
+    };
+    ModalService.alert(modalData);
+  }
 
   // response가 존재하지 않는 경우 : ex) option 메서드 오류
   handleNoResponseError() {}
@@ -114,6 +128,16 @@ class AppStore {
         this.companyList = data;
       });
     });
+  }
+
+  @computed
+  get isManager() {
+    let profile = this.profile;
+    let isManager = false;
+    if (profile && profile.authLevel < 4) {
+      isManager = true;
+    }
+    return isManager;
   }
 }
 

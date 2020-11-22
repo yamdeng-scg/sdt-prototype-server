@@ -24,7 +24,7 @@ const Logger = {
         debugDoc.currentRouteUrl = uiStore.currentRouteUrl || '';
         debugDoc.beforeRouteUrl = uiStore.beforeRouteUrl || '';
         debugDoc.message = message.substr(0, 2500);
-        SlackService.sendMessageToDebugChannel(JSON.stringify(debugDoc));
+        // SlackService.sendMessageToDebugChannel(JSON.stringify(debugDoc));
       } catch (e) {
         // eslint-disable-next-line
         console.debug('Logger debug : ' + JSON.stringify(e));
@@ -55,7 +55,7 @@ const Logger = {
       errorDoc.currentRouteUrl = uiStore.currentRouteUrl || '';
       errorDoc.beforeRouteUrl = uiStore.beforeRouteUrl || '';
       errorDoc.message = message.substr(0, 2500);
-      SlackService.sendMessageToErrorChannel(JSON.stringify(errorDoc));
+      // SlackService.sendMessageToErrorChannel(JSON.stringify(errorDoc));
     } catch (e) {
       // eslint-disable-next-line
       console.error('Logger error : ' + JSON.stringify(e));

@@ -53,18 +53,64 @@ class ChatStore {
   // 종료 방 검색 종료일
   @observable endDate = moment();
 
-  @observable ingRoomListApiCall = false;
+  @observable processingRoomListApiCall = false;
+
+  @observable ingCheckSelf = false;
+
+  @observable ingSearchType = 'customerName';
+
+  @observable ingSearchValue = '';
+
+  @observable closeCheckSelf = false;
+
+  @observable closeSearchType = 'customerName';
+
+  @observable closeSearchValue = '';
 
   @action
   initDate() {
     this.startDate = moment().subtract(12, 'months');
     this.endDate = moment();
+    this.search();
+  }
+
+  @action
+  changeIngCheckSelf(ingCheckSelf) {
+    this.ingCheckSelf = ingCheckSelf;
+    this.search();
+  }
+
+  @action
+  changeIngSearchType(ingSearchType) {
+    this.ingSearchType = ingSearchType;
+  }
+
+  @action
+  changeIngSearchValue(ingSearchValue) {
+    this.ingSearchValue = ingSearchValue;
+  }
+
+  @action
+  changeCloseCheckSelf(closeCheckSelf) {
+    this.closeCheckSelf = closeCheckSelf;
+    this.search();
+  }
+
+  @action
+  changeCloseSearchType(closeSearchType) {
+    this.closeSearchType = closeSearchType;
+  }
+
+  @action
+  changeCloseSearchValue(closeSearchValue) {
+    this.closeSearchValue = closeSearchValue;
   }
 
   @action
   changeDates(startDate, endDate) {
     this.startDate = startDate;
     this.endDate = endDate;
+    this.search();
   }
 
   @action
@@ -101,16 +147,13 @@ class ChatStore {
           );
         });
         let maxDate = moment.min(waitStartDates);
-        let maxDateConvertString = '00:00:00';
+        let maxDateConvertString = '';
         if (maxDate) {
           maxDateConvertString = Helper.convertStringBySecond(
             moment().diff(maxDate, 'seconds')
           );
         }
         this.maxDateConvertString = maxDateConvertString;
-        // maxDate = moment.max(moments)
-        // 대기 최장시간 추출
-        // 목록의 값의 속성을 추가시키고 해당 값을 변경함
       });
     }, 1000);
   }
@@ -138,6 +181,85 @@ class ChatStore {
       this.removeReadyTimeRefreshEvent();
     }
     this.search();
+  }
+
+  @action
+  matchRoom(roomInfo) {
+    // 종료 or 대기
+    if (roomInfo.state >= 2 || (roomInfo.state < 2 && !roomInfo.memberId)) {
+      ApiService.post('room/' + roomInfo.id + '/matchRoom').then(response => {
+        runInAction(() => {
+          let data = response.data;
+          this.currentRoomInfo = data;
+          this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+          this.search();
+        });
+      });
+    } else {
+      // 진행
+      ApiService.get('room/' + roomInfo.id).then(response => {
+        runInAction(() => {
+          let data = response.data;
+          this.currentRoomInfo = data;
+          this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+        });
+      });
+    }
+  }
+
+  @action
+  closeRoom(roomInfo) {
+    ModalService.confirm({
+      title: '상담종료',
+      body: '현재 상담을 종료하시겠습니까?',
+      ok: () => {
+        ApiService.post('room/' + roomInfo.id + '/closeRoom').then(response => {
+          ModalService.alert({
+            title: '상담종료',
+            body: '상담이 종료되었습니다',
+            ok: () => {
+              runInAction(() => {
+                this.currentRoomTabName = Constant.ROOM_TYPE_CLOSE;
+                this.search();
+              });
+            }
+          });
+        });
+      }
+    });
+  }
+
+  @action
+  transferRoom(roomInfo) {
+    ModalService.openMiddlePopup(ModalType.TALK_MOVE_POPUP, {
+      customerName: roomInfo.customerName,
+      ok: (transferValue, selectInfo) => {
+        debugger;
+        let apiParam = { transferType: 'ready' };
+        if (transferValue) {
+          apiParam = { transferType: 'toMember', memberId: transferValue };
+        }
+        ApiService.post('room/' + roomInfo.id + '/transferRoom', apiParam).then(
+          response => {
+            let transferName = selectInfo.id ? selectInfo.name : '상담 대기건';
+            ModalService.alert({
+              title: '상담이관 완료',
+              body: "'" + transferName + "'으로 이관 하였습니다",
+              ok: () => {
+                runInAction(() => {
+                  if (selectInfo.id) {
+                    this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+                  } else {
+                    this.currentRoomTabName = Constant.ROOM_TYPE_WAIT;
+                  }
+                  this.search();
+                });
+              }
+            });
+          }
+        );
+      }
+    });
   }
 
   // 방 선택
@@ -179,10 +301,7 @@ class ChatStore {
 
   @action
   search() {
-    // room?queryId=findReadyState&sort=joinDate
-    // room?queryId=findIngState&checkSelf=Y&searchType=message&searchValue=aaaaasdasdasdasdassdas
-    // room?queryId=findSearchCloseState&checkSelf=Y&startDate=2018-01-01&endDate=2021-01-01&searchType=customerName&searchValue=이유
-    this.ingRoomListApiCall = true;
+    this.processingRoomListApiCall = true;
     let apiParam = {};
     let currentRoomTabName = this.currentRoomTabName;
     if (currentRoomTabName === Constant.ROOM_TYPE_WAIT) {
@@ -190,15 +309,21 @@ class ChatStore {
       apiParam.sort = this.readyRoomSort;
     } else if (currentRoomTabName === Constant.ROOM_TYPE_ING) {
       apiParam.queryId = 'findIngState';
+      apiParam.checkSelf = this.ingCheckSelf ? 'Y' : 'N';
+      apiParam.searchType = this.ingSearchType;
+      apiParam.searchValue = this.ingSearchValue;
     } else if (currentRoomTabName === Constant.ROOM_TYPE_CLOSE) {
       apiParam.queryId = 'findSearchCloseState';
+      apiParam.checkSelf = this.closeCheckSelf ? 'Y' : 'N';
+      apiParam.searchType = this.closeSearchType;
+      apiParam.searchValue = this.closeSearchValue;
       apiParam.startDate = moment(this.startDate).format('YYYY-MM-DD');
       apiParam.endDate = moment(this.endDate).format('YYYY-MM-DD');
     }
     ApiService.get('room', { params: apiParam })
       .then(response => {
         runInAction(() => {
-          this.ingRoomListApiCall = false;
+          this.processingRoomListApiCall = false;
           let data = response.data;
           let totalSpeakMinute = 0;
           data.forEach(info => {
@@ -218,7 +343,7 @@ class ChatStore {
       })
       .catch(() => {
         runInAction(() => {
-          this.ingRoomListApiCall = false;
+          this.processingRoomListApiCall = false;
         });
       });
   }

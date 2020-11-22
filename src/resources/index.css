@@ -506,6 +506,10 @@ option:first {
   background-color: #dcf4ff;
 }
 
+.bg-yellow {
+  background-color: yellow;
+}
+
 .join-history-popup .ant-collapse-content > .ant-collapse-content-box {
   padding: 0
 }
@@ -553,4 +557,9 @@ option:first {
   background-color: orange;
   color: #fff;
   border-radius: 10px;
+}
+
+.ant-btn:focus {
+  color: #fff;
+  background-color: #35bffd;
 }

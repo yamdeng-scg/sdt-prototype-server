@@ -15,9 +15,11 @@ import {
 import classNames from 'classnames';
 import Code from '../../config/Code';
 import Constant from '../../config/Constant';
-import { ReloadOutlined, SmileOutlined } from '@ant-design/icons';
-import ModalService from '../../services/ModalService';
-import ModalType from '../../config/ModalType';
+import {
+  ReloadOutlined,
+  SmileOutlined,
+  SearchOutlined
+} from '@ant-design/icons';
 import Helper from '../../utils/Helper';
 
 import { observer, inject } from 'mobx-react';
@@ -25,21 +27,8 @@ import { withRouter } from 'react-router-dom';
 
 const { Paragraph, Title } = Typography;
 const { TabPane } = Tabs;
-const { Search } = Input;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-
-const data = [
-  '222Racing car sprays burning fuel into crowd.',
-  'Japanese princess to wed commoner.',
-  'Australian walks 100km after outback crash.',
-  'Man charged over missing wedding girl.',
-  'Los Angeles battles huge wildfires.',
-  'Los Angeles battles huge wildfires.',
-  'Los Angeles battles huge wildfires.',
-  'Los Angeles battles huge wildfires.',
-  '111'
-];
 
 const getCountLabelName = function(tabName) {
   let labelName = '상담대기';
@@ -66,6 +55,18 @@ const getTimeLabelName = function(tabName) {
   return labelName;
 };
 
+const replaceHighLighText = function(message, searchValue) {
+  let resultMessage = message;
+  if (searchValue) {
+    var regEx = new RegExp(searchValue, 'g');
+    resultMessage = message.replace(
+      regEx,
+      '<span class="bold bg-yellow">' + searchValue + '</span>'
+    );
+  }
+  return resultMessage;
+};
+
 @withRouter
 @inject('appStore', 'uiStore', 'chatStore')
 @observer
@@ -73,31 +74,6 @@ class RoomList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.openHitoryPopup = this.openHitoryPopup.bind(this);
-    this.openTalkMovePopup = this.openTalkMovePopup.bind(this);
-    this.openAlertPopup = this.openAlertPopup.bind(this);
-    this.openConfirmPopup = this.openConfirmPopup.bind(this);
-    this.openManualTagListPopup = this.openManualTagListPopup.bind(this);
-  }
-
-  openHitoryPopup() {
-    ModalService.openMiddlePopup(ModalType.CHAT_BOT_HISTORY_POPUP, {});
-  }
-
-  openTalkMovePopup() {
-    ModalService.openMiddlePopup(ModalType.TALK_MOVE_POPUP, {});
-  }
-
-  openAlertPopup() {
-    ModalService.openMiddlePopup(ModalType.ALERT_POPUP, { title: '방 이관' });
-  }
-
-  openConfirmPopup() {
-    ModalService.openMiddlePopup(ModalType.CONFRIM_POPUP, {});
-  }
-
-  openManualTagListPopup() {
-    ModalService.openMiddlePopup(ModalType.MANUAL_TAGLIST_POPUP, {});
   }
 
   componentDidMount() {
@@ -110,23 +86,32 @@ class RoomList extends React.Component {
   }
 
   render() {
-    let { chatStore } = this.props;
+    let { chatStore, appStore } = this.props;
+    let { isManager } = appStore;
     let {
       currentRoomTabName,
       readyRoomSort,
       roomList,
       maxDateConvertString,
       averageSpeakTimeString,
+      processingRoomListApiCall,
+      currentRoomInfo,
+      ingSearchType,
+      ingSearchValue,
+      ingCheckSelf,
+      closeSearchType,
+      closeSearchValue,
+      closeCheckSelf,
       startDate,
-      endDate,
-      ingRoomListApiCall
+      endDate
     } = chatStore;
     let roomListSearcTypeCodeList = Code.roomListSearcTypeCodeList;
     let uiStore = this.props.uiStore;
     let clientHeight = uiStore.clientHeight;
     let roomListCount = roomList.length;
     let pojoRoomList = roomList.toJS();
-    let roomListDivHeight = clientHeight - 245;
+    let roomListDivHeight = clientHeight;
+    // 245, 270, 310
     return (
       <div
         style={{
@@ -135,11 +120,7 @@ class RoomList extends React.Component {
         className="bor-right"
       >
         <div className="pd10 bor-bottom">
-          <Title
-            level={3}
-            className="text mr0"
-            onClick={this.openManualTagListPopup}
-          >
+          <Title level={3} className="text mr0">
             {getCountLabelName(currentRoomTabName)}{' '}
             <span className="color-basic">{roomListCount}</span> 건
           </Title>
@@ -156,7 +137,7 @@ class RoomList extends React.Component {
           </div>
         </div>
         <Tabs
-          defaultActiveKey="wait"
+          activeKey={currentRoomTabName}
           tabBarStyle={{
             padding: '0px 5px 0px 5px',
             marginBottom: 0,
@@ -170,7 +151,7 @@ class RoomList extends React.Component {
             tab={
               currentRoomTabName === Constant.ROOM_TYPE_WAIT &&
               roomListCount ? (
-                <Badge color={'orange'} className="font-em1">
+                <Badge color={'orange'} className="font-em1 bold">
                   대기
                 </Badge>
               ) : (
@@ -225,7 +206,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 245
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -234,11 +215,10 @@ class RoomList extends React.Component {
                       position: 'relative'
                     }}
                     className={
-                      index === 0
+                      currentRoomInfo && currentRoomInfo.id === item.id
                         ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
                         : 'pd-left20 pd-right5 bor-bottom'
                     }
-                    onClick={() => chatStore.selectRoom(item)}
                   >
                     <p
                       className={item.isOnline ? 'dot-fill' : 'dot'}
@@ -299,19 +279,19 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={this.openTalkMovePopup}
+                        onClick={() => chatStore.matchRoom(item)}
                         className="bg-basic color-white bold"
                       >
                         상담하기
                       </Button>{' '}
-                      <Button
+                      {/* <Button
                         shape="round"
                         size="small"
                         onClick={this.openAlertPopup}
                         className="bg-basic color-white bold"
                       >
                         이관
-                      </Button>
+                      </Button> */}
                     </div>
                   </List.Item>
                 )}
@@ -319,11 +299,13 @@ class RoomList extends React.Component {
             ) : (
               <div
                 className={
-                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                  processingRoomListApiCall
+                    ? 'none'
+                    : 'pd-top30 center bold font-em2'
                 }
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 245
                 }}
               >
                 대기중인 상담이 없습니다
@@ -347,9 +329,11 @@ class RoomList extends React.Component {
             <Row className="pd5">
               <Col span={8}>
                 <Select
-                  defaultValue="customerName"
                   style={{ width: '100%' }}
-                  onChange={() => {}}
+                  onChange={value => {
+                    chatStore.changeIngSearchType(value);
+                  }}
+                  value={ingSearchType}
                 >
                   {roomListSearcTypeCodeList.map(codeInfo => {
                     return (
@@ -359,19 +343,41 @@ class RoomList extends React.Component {
                 </Select>
               </Col>
               <Col span={16}>
-                <Search
-                  placeholder="검색어를 입력하세요"
-                  onSearch={value => {
-                    // console.log('aaa');
-                  }}
-                  style={{ width: '100%' }}
+                <Input
+                  placeholder="검색할 값을 입력해주세요"
+                  enterButton={null}
                   allowClear
+                  value={ingSearchValue}
+                  suffix={
+                    <SearchOutlined
+                      className="color-basic bold"
+                      style={{
+                        fontSize: 16
+                      }}
+                      onClick={() => {
+                        chatStore.search();
+                      }}
+                    />
+                  }
+                  onChange={event => {
+                    chatStore.changeIngSearchValue(event.target.value);
+                  }}
+                  onPressEnter={() => {
+                    chatStore.search();
+                  }}
                 />
               </Col>
             </Row>
-            <Row className="right pd-bottom5 bor-bottom">
+            <Row className={isManager ? 'right pd-bottom5 bor-bottom' : 'none'}>
               <Col span={24}>
-                <Checkbox onChange={() => {}}>내상담만 보기</Checkbox>
+                <Checkbox
+                  checked={ingCheckSelf}
+                  onChange={event =>
+                    chatStore.changeIngCheckSelf(event.target.checked)
+                  }
+                >
+                  내 상담만 보기
+                </Checkbox>
               </Col>
             </Row>
             {pojoRoomList.length ? (
@@ -380,7 +386,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 270
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -389,11 +395,10 @@ class RoomList extends React.Component {
                       position: 'relative'
                     }}
                     className={
-                      index === 0
+                      currentRoomInfo && currentRoomInfo.id === item.id
                         ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
                         : 'pd-left20 pd-right5 bor-bottom'
                     }
-                    onClick={() => chatStore.selectRoom(item)}
                   >
                     <p
                       className={item.isOnline ? 'dot-fill' : 'dot'}
@@ -431,12 +436,16 @@ class RoomList extends React.Component {
                           {item.lastMessageDetail}
                         </span>
                       ) : (
-                        <Paragraph
+                        <div
                           style={{ marginTop: 10, width: '75%' }}
                           ellipsis
-                        >
-                          {item.lastMessage}
-                        </Paragraph>
+                          dangerouslySetInnerHTML={{
+                            __html: replaceHighLighText(
+                              item.lastMessage,
+                              ingSearchType === 'message' ? ingSearchValue : ''
+                            )
+                          }}
+                        />
                       )}
                       {/* <p style={{ position: 'absolute', top: 0, right: 0 }}>
                         <span className="red">{item.waitTime}</span>
@@ -454,7 +463,7 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={this.openTalkMovePopup}
+                        onClick={() => chatStore.matchRoom(item)}
                         className="bg-basic color-white bold"
                       >
                         상담하기
@@ -462,7 +471,7 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={this.openAlertPopup}
+                        onClick={() => chatStore.transferRoom(item)}
                         className="bg-basic color-white bold"
                       >
                         이관
@@ -470,7 +479,7 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={this.openConfirmPopup}
+                        onClick={() => chatStore.closeRoom(item)}
                         className="bg-basic color-white bold"
                       >
                         종료
@@ -482,11 +491,13 @@ class RoomList extends React.Component {
             ) : (
               <div
                 className={
-                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                  processingRoomListApiCall
+                    ? 'none'
+                    : 'pd-top30 center bold font-em2'
                 }
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 270
                 }}
               >
                 진행중인 상담이 없습니다
@@ -510,9 +521,11 @@ class RoomList extends React.Component {
             <Row className="pd5">
               <Col span={8}>
                 <Select
-                  defaultValue="customerName"
                   style={{ width: '100%' }}
-                  onChange={() => {}}
+                  onChange={value => {
+                    chatStore.changeCloseSearchType(value);
+                  }}
+                  value={closeSearchType}
                 >
                   {roomListSearcTypeCodeList.map(codeInfo => {
                     return (
@@ -522,11 +535,28 @@ class RoomList extends React.Component {
                 </Select>
               </Col>
               <Col span={16}>
-                <Search
-                  placeholder="검색어를 입력하세요"
-                  onSearch={value => {}}
+                <Input
+                  placeholder="검색할 값을 입력해주세요"
+                  enterButton={null}
                   allowClear
-                  style={{ width: '100%' }}
+                  value={closeSearchValue}
+                  suffix={
+                    <SearchOutlined
+                      className="color-basic bold"
+                      style={{
+                        fontSize: 16
+                      }}
+                      onClick={() => {
+                        chatStore.search();
+                      }}
+                    />
+                  }
+                  onChange={event => {
+                    chatStore.changeCloseSearchValue(event.target.value);
+                  }}
+                  onPressEnter={() => {
+                    chatStore.search();
+                  }}
                 />
               </Col>
             </Row>
@@ -548,7 +578,14 @@ class RoomList extends React.Component {
             </Row>
             <Row className="right pd-bottom5 bor-bottom">
               <Col span={24}>
-                <Checkbox onChange={() => {}}>내상담만 보기</Checkbox>
+                <Checkbox
+                  checked={closeCheckSelf}
+                  onChange={event =>
+                    chatStore.changeCloseCheckSelf(event.target.checked)
+                  }
+                >
+                  내 상담만 보기
+                </Checkbox>
               </Col>
             </Row>
             {pojoRoomList.length ? (
@@ -557,7 +594,7 @@ class RoomList extends React.Component {
                 dataSource={pojoRoomList}
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 310
                 }}
                 rowKey="id"
                 renderItem={(item, index) => (
@@ -566,11 +603,13 @@ class RoomList extends React.Component {
                       position: 'relative'
                     }}
                     className={
-                      index === 0
+                      currentRoomInfo && currentRoomInfo.id === item.id
                         ? 'pd-left20 pd-right5 bor-bottom bg-baisc-low'
                         : 'pd-left20 pd-right5 bor-bottom'
                     }
-                    onClick={() => chatStore.selectRoom(item)}
+                    onDoubleClick={() => {
+                      chatStore.selectRoom(item);
+                    }}
                   >
                     <p
                       className={item.isOnline ? 'dot-fill' : 'dot'}
@@ -608,19 +647,25 @@ class RoomList extends React.Component {
                           {item.lastMessageDetail}
                         </span>
                       ) : (
-                        <Paragraph
+                        <div
                           style={{ marginTop: 10, width: '75%' }}
                           ellipsis
-                        >
-                          {item.lastMessage}
-                        </Paragraph>
+                          dangerouslySetInnerHTML={{
+                            __html: replaceHighLighText(
+                              item.lastMessage,
+                              closeSearchType === 'message'
+                                ? closeSearchValue
+                                : ''
+                            )
+                          }}
+                        />
                       )}
                       <p style={{ position: 'absolute', top: 0, right: 0 }}>
                         <span className="color-basic">
                           {Helper.convertDateToString(
                             item.endDate,
                             'YYYY-MM-DDTHH:mm:ss.SSSZ',
-                            'YYYY.MM.DD HH:mm'
+                            'MM.DD HH:mm'
                           )}
                         </span>
                       </p>
@@ -629,7 +674,10 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={() => chatStore.openChatbotHistoryPopup(item)}
+                        onClick={event => {
+                          event.stopPropagation();
+                          chatStore.openChatbotHistoryPopup(item);
+                        }}
                         className="bg-basic color-white bold"
                       >
                         챗봇대화
@@ -637,7 +685,10 @@ class RoomList extends React.Component {
                       <Button
                         shape="round"
                         size="small"
-                        onClick={this.openTalkMovePopup}
+                        onClick={event => {
+                          event.stopPropagation();
+                          chatStore.matchRoom(item);
+                        }}
                         className="bg-basic color-white bold"
                       >
                         상담하기
@@ -649,11 +700,13 @@ class RoomList extends React.Component {
             ) : (
               <div
                 className={
-                  ingRoomListApiCall ? 'none' : 'pd-top30 center bold font-em2'
+                  processingRoomListApiCall
+                    ? 'none'
+                    : 'pd-top30 center bold font-em2'
                 }
                 style={{
                   overflowY: 'scroll',
-                  height: roomListDivHeight
+                  height: roomListDivHeight - 310
                 }}
               >
                 검색결과가 존재하지 않습니다

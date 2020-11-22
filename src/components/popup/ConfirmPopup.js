@@ -17,7 +17,7 @@ class ConfirmPopup extends React.Component {
     let { alertModalStore, modalData } = this.props;
     if (modalData.ok) {
       alertModalStore.hideModal();
-      modalData.ok(modalData.apiParam);
+      modalData.ok();
     } else {
       alertModalStore.hideModal();
     }

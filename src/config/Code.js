@@ -5,9 +5,8 @@ const Code = {};
 
 // 룸 목록 조회 키워드 유형
 Code.roomListSearcTypeCodeList = [
-  { name: '전체', value: '' },
   { name: '고객명', value: 'customerName' },
-  { name: '대화내용', value: 'messageText' },
+  { name: '대화내용', value: 'message' },
   { name: '상담사', value: 'empName' }
 ];
 
