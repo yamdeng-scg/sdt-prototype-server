@@ -17,10 +17,6 @@ class MessageListTop extends React.Component {
     this.state = {};
   }
 
-  openMinwonHistoryPopup() {
-    ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {});
-  }
-
   openJoinHistoryPopup() {
     ModalService.openMiddlePopup(ModalType.JOIN_HISTORY_POPUP, {});
   }
@@ -68,19 +64,25 @@ class MessageListTop extends React.Component {
           <Col span={12} className="pd-left5 pd-right5">
             <Button
               block
-              onClick={this.openMinwonHistoryPopup}
+              onClick={() => chatStore.openMinwonHistoryPopup()}
               className="bg-basic color-white bold"
             >
               과거 채팅상담 기록
+              {currentRoomInfo.joinHistoryCount
+                ? '(' + currentRoomInfo.joinHistoryCount + ')'
+                : ''}
             </Button>
           </Col>
           <Col span={12} className="pd-left5 pd-right5">
             <Button
               block
-              onClick={this.openJoinHistoryPopup}
+              onClick={() => chatStore.openMinwonHistoryPopup()}
               className="bg-basic color-white bold"
             >
-              과거 채팅상담 내역(5)
+              민원등록 기록
+              {currentRoomInfo.minwonHistoryCount
+                ? '(' + currentRoomInfo.minwonHistoryCount + ')'
+                : ''}
             </Button>
           </Col>
         </Row>

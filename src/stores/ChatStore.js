@@ -335,25 +335,46 @@ class ChatStore {
 
   @action
   openMinwonAddPopup() {
-    // roomInfo.gasappMemberNumber
-    // roomInfo.useContractNum
-    // roomInfo.telNumber
-    // roomInfo.chatid
-    // roomInfo.roomId
-    // categorySmallId, minwonCode, memo
-    //   {
-    //     "gasappMemberNumber":"3716",
-    //     "useContractNum":"6004910783",
-    //     "categorySmallId": 20,
-    //     "minwonCode":"010202",
-    //     "telNumber":"01073384183",
-    //     "memo" : "메모모모",
-    //     "chatid":"116",
-    //     "roomId": 150
-    //  }
     let currentRoomInfo = this.currentRoomInfo;
     ModalService.openMiddlePopup(ModalType.MINWON_ADD_POPUP, {
-      ok: () => {}
+      customerName: currentRoomInfo.customerName,
+      chatid: currentRoomInfo.chatid,
+      gasappMemberNumber: currentRoomInfo.gasappMemberNumber,
+      ok: (smallCategoryInfo, memo) => {
+        let apiParam = {
+          gasappMemberNumber: currentRoomInfo.gasappMemberNumber,
+          useContractNum: null,
+          categorySmallId: smallCategoryInfo.id,
+          minwonCode: smallCategoryInfo.minwonCode,
+          telNumber: currentRoomInfo.telNumber,
+          memo: memo,
+          chatid: currentRoomInfo.chatid,
+          roomId: currentRoomInfo.id
+        };
+        ApiService.post('minwon', apiParam).then(response => {
+          ModalService.alert({
+            title: '민원등록 완료',
+            body: '민원이 등록되었습니다'
+          });
+          ApiService.get('room/' + currentRoomInfo.id).then(response => {
+            runInAction(() => {
+              let data = response.data;
+              this.currentRoomInfo = data;
+            });
+          });
+        });
+      }
+    });
+  }
+
+  @action
+  openMinwonHistoryPopup() {
+    let currentRoomInfo = this.currentRoomInfo;
+    ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {
+      customerName: currentRoomInfo.customerName,
+      chatid: currentRoomInfo.chatid,
+      gasappMemberNumber: currentRoomInfo.gasappMemberNumber,
+      roomId: currentRoomInfo.id
     });
   }
   @action

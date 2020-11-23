@@ -50,32 +50,14 @@ class MinwonAddPopup extends React.Component {
       expandedKeys: [],
       treeData: [],
       searchValue: '',
-      smallCategoryInfo: null
+      smallCategoryInfo: null,
+      memo: ''
     };
     this.treeRef = React.createRef();
+    this.ok = this.ok.bind(this);
+    this.cancel = this.cancel.bind(this);
+    this.changeMemo = this.changeMemo.bind(this);
   }
-
-  onDrop = tree => {
-    let sourceInfo = tree.dragNode.info;
-    let targetInfo = tree.node.info;
-    // debugger;
-    ApiService.get('category/tree').then(response => {
-      let data = response.data;
-      this.categoryAllList = [];
-      data.forEach(treeInfo => {
-        addCategoryList(this.categoryAllList, treeInfo);
-      });
-      let treeData = [
-        {
-          title: '전체',
-          key: '0',
-          children: data
-        }
-      ];
-      let expandedKeys = ['0'];
-      this.setState({ treeData: treeData, expandedKeys: expandedKeys });
-    });
-  };
 
   onChange = e => {
     const { value } = e.target;
@@ -97,16 +79,9 @@ class MinwonAddPopup extends React.Component {
       }
     }
     this.setState({
-      expandedKeys: ['0'].concat(_.uniq(expandedKeys)),
+      expandedKeys: _.uniq(expandedKeys),
       searchValue: value,
       autoExpandParent: true
-    });
-  };
-
-  onExpand = expandedKeys => {
-    this.setState({
-      expandedKeys,
-      autoExpandParent: false
     });
   };
 
@@ -117,6 +92,28 @@ class MinwonAddPopup extends React.Component {
     }
   };
 
+  onExpand = expandedKeys => {
+    this.setState({
+      expandedKeys,
+      autoExpandParent: false
+    });
+  };
+
+  changeMemo(event) {
+    this.setState({ memo: event.target.value });
+  }
+
+  ok() {
+    let { alertModalStore, modalData } = this.props;
+    let { smallCategoryInfo, memo } = this.state;
+    alertModalStore.hideModal();
+    modalData.ok(smallCategoryInfo, memo);
+  }
+
+  cancel() {
+    this.props.alertModalStore.hideModal();
+  }
+
   componentDidMount() {
     ApiService.get('category/tree').then(response => {
       let data = response.data;
@@ -124,20 +121,22 @@ class MinwonAddPopup extends React.Component {
       data.forEach(treeInfo => {
         addCategoryList(this.categoryAllList, treeInfo);
       });
-      let treeData = [
-        {
-          title: '전체',
-          key: '0',
-          children: data
-        }
-      ];
-      let expandedKeys = ['0'];
+      let treeData = data;
+      let expandedKeys = [];
       this.setState({ treeData: treeData, expandedKeys: expandedKeys });
     });
   }
 
   render() {
-    let { treeData, searchValue, expandedKeys, smallCategoryInfo } = this.state;
+    let {
+      treeData,
+      searchValue,
+      expandedKeys,
+      smallCategoryInfo,
+      memo
+    } = this.state;
+    let { modalData } = this.props;
+    let { customerName, gasappMemberNumber, chatid } = modalData;
     const loop = data =>
       data.map(item => {
         const index = item.title.indexOf(searchValue);
@@ -179,7 +178,10 @@ class MinwonAddPopup extends React.Component {
           <Row className="mrb10">
             <Col span={24}>
               <span className="bold font-em1">민원등록 고객 : </span>
-              <span className="color-basic bold">홍길동님(ID XXX)</span>
+              <span className="bold color-basic">{customerName}님</span>
+              <span className="bold">
+                ( 가스앱 ID : {gasappMemberNumber}, chatid :{chatid} )
+              </span>
             </Col>
           </Row>
           <Row className="mrb5">
@@ -208,9 +210,9 @@ class MinwonAddPopup extends React.Component {
                 onChange={this.onChange}
               />
             </Col>
-            <Col span={16} style={{ paddingLeft: 10 }}>
+            <Col span={16} style={{ paddingLeft: 10 }} className="color-basic">
               <Input
-                placeholder="카테고리를 선택해주세요"
+                placeholder="분류선택시 자동 표기됩니다.(ex. 요금 > 요금확인 > FAX발송요청)"
                 allowClear
                 size="large"
                 disabled
@@ -238,14 +240,12 @@ class MinwonAddPopup extends React.Component {
             <Col span={8}>
               <Tree
                 ref={this.treeRef}
-                draggable
-                onDrop={this.onDrop}
-                onExpand={this.onExpand}
                 height={350}
                 className="draggable-tree"
                 treeData={loop(treeData)}
                 expandedKeys={expandedKeys}
                 onSelect={this.onSelect}
+                onExpand={this.onExpand}
                 switcherIcon={
                   <CaretDownOutlined
                     style={{ fontSize: '16px', color: 'gray' }}
@@ -254,18 +254,23 @@ class MinwonAddPopup extends React.Component {
               />
             </Col>
             <Col span={16} style={{ paddingLeft: 10 }}>
-              <TextArea rows={15} />
+              <TextArea onChange={this.changeMemo} rows={15} />
             </Col>
           </Row>
         </div>
         <Row style={{ textAlign: 'center' }}>
           <Col span={12}>
-            <Button block className="pd10 bold cancelbtn">
+            <Button block className="pd10 bold cancelbtn" onClick={this.cancel}>
               취소
             </Button>
           </Col>
           <Col span={12}>
-            <Button block className="pd10 bold okbtn">
+            <Button
+              block
+              className="pd10 bold okbtn"
+              onClick={this.ok}
+              disabled={!memo || !smallCategoryInfo}
+            >
               확인
             </Button>
           </Col>

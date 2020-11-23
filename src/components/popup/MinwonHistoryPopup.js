@@ -1,6 +1,8 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
 import { Row, Col, Input, Collapse } from 'antd';
+import moment from 'moment';
+import ApiService from '../../services/ApiService';
 import { SearchOutlined } from '@ant-design/icons';
 const { Panel } = Collapse;
 
@@ -9,10 +11,41 @@ const { Panel } = Collapse;
 class MinwonHistoryPopup extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { minwonList: [], searchValue: '' };
+    this.changeSearchValue = this.changeSearchValue.bind(this);
+    this.search = this.search.bind(this);
+  }
+
+  changeSearchValue(event) {
+    let value = event.target.value;
+    this.setState({ searchValue: value });
+  }
+
+  search() {
+    let { modalData } = this.props;
+    let { roomId } = modalData;
+    let { searchValue } = this.state;
+    ApiService.get('minwon', {
+      params: { roomId: roomId, searchValue: searchValue }
+    }).then(response => {
+      let data = response.data;
+      this.setState({ minwonList: data });
+    });
+  }
+
+  componentDidMount() {
+    let { modalData } = this.props;
+    let { roomId } = modalData;
+    ApiService.get('minwon', { params: { roomId: roomId } }).then(response => {
+      let data = response.data;
+      this.setState({ minwonList: data });
+    });
   }
 
   render() {
+    let { modalData } = this.props;
+    let { minwonList, searchValue } = this.state;
+    let { customerName, chatid, gasappMemberNumber } = modalData;
     return (
       <div className="pd-top15">
         <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
@@ -20,10 +53,10 @@ class MinwonHistoryPopup extends React.Component {
         </Row>
         <Row className="mrt15 mrb10">
           <Col span={12} className="pd-left10">
-            <span className="bold font-em2">고객정보 :</span>{' '}
-            <span className="font-em2">홍길동 ID</span>
-            <span className="bold text text-under font-em2 inblock mrl5">
-              chatID
+            <span className="bold font-em1">고객정보 :</span>{' '}
+            <span className="color-basic bold">{customerName} ID</span>
+            <span className="bold text text-under inblock mrl5">
+              ( 가스앱 ID : {gasappMemberNumber}, chatid :{chatid} )
             </span>
             <br />
             {'    '}
@@ -31,55 +64,56 @@ class MinwonHistoryPopup extends React.Component {
           </Col>
           <Col span={12} className="pd5">
             <Input
-              placeholder="input search text"
+              placeholder="검색할 메모값을 입력해주세요"
               enterButton={null}
               allowClear
               size="large"
+              value={searchValue}
+              onChange={this.changeSearchValue}
+              onPressEnter={this.search}
               suffix={
                 <SearchOutlined
                   className="color-basic"
                   style={{
                     fontSize: 16
                   }}
+                  onClick={this.search}
                 />
               }
             />
           </Col>
         </Row>
         <div style={{ maxHeight: 500, overflowY: 'scroll' }}>
-          <Collapse defaultActiveKey={['1']}>
-            <Panel
-              header={
-                <div>
-                  <span className="bold">등록일</span> : YYYY-MM-DD 00:00:00
-                  <span className="bold inblock mrl20" />|
-                  <span className="bold inblock mrl20">담당자</span> : 안용성
-                </div>
-              }
-              key="1"
-            >
-              <div>
-                <span className="bold">* 요금 &gt; 요금확인 &gt; </span>
-                <span className="bold color-basic font-em1">상세</span>
-              </div>
-              <div className="mrl5">asdasdasd</div>
-            </Panel>
-            <Panel
-              header={
-                <div>
-                  <span className="bold">등록일</span> : YYYY-MM-DD 00:00:00
-                  <span className="bold inblock mrl20" />|
-                  <span className="bold inblock mrl20">담당자</span> : 안용성
-                </div>
-              }
-              key="2"
-            >
-              <div>
-                <span className="bold">* 요금 &gt; 요금확인 &gt; </span>
-                <span className="bold color-basic font-em1">상세</span>
-              </div>
-              <div className="mrl5">asdasdasd</div>
-            </Panel>
+          <Collapse>
+            {minwonList.map(minwonInfo => {
+              return (
+                <Panel
+                  header={
+                    <div>
+                      <span className="bold">등록일</span> :{' '}
+                      {moment(minwonInfo.createDate).format(
+                        'YYYY-MM-DD HH:mm:ss'
+                      )}
+                      <span className="bold inblock mrl20" />|
+                      <span className="bold inblock mrl20">담당자</span> :
+                      {minwonInfo.createMemberName}
+                    </div>
+                  }
+                  key={minwonInfo.id}
+                >
+                  <div>
+                    <span className="bold">
+                      * {minwonInfo.categoryLargeName} &gt;{' '}
+                      {minwonInfo.categoryMiddleName} &gt;{' '}
+                    </span>
+                    <span className="bold color-basic font-em1">
+                      {minwonInfo.categorySmallName}
+                    </span>
+                  </div>
+                  <div className="mrl5">{minwonInfo.memo}</div>
+                </Panel>
+              );
+            })}
           </Collapse>
         </div>
       </div>

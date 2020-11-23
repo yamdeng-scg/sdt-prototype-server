@@ -569,3 +569,7 @@ option:first {
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+
+.color-basic .ant-input[disabled] {
+  color: #35bffd;
+}

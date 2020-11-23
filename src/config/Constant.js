@@ -48,4 +48,8 @@ Constant.SIDE_BAR_MENU_MANUAL = 'manual';
 Constant.SIDE_BAR_MENU_STATS = 'stats';
 Constant.SIDE_BAR_MENU_MANAGER = 'manager';
 
+// 메시지 목록 래퍼 유형
+Constant.MESSAGE_LIST_WRAPPER_TYPE_CHAT = 'chat';
+Constant.MESSAGE_LIST_WRAPPER_TYPE_HISTORY = 'history';
+
 export default Constant;

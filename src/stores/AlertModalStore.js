@@ -23,6 +23,7 @@ class AlertModalStore {
 
   @action
   hideModal() {
+    this.modalType = '';
     this.displayModal = false;
   }
 }
