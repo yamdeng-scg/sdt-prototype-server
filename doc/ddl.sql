@@ -278,7 +278,7 @@ CREATE TABLE IF NOT EXISTS `chat_message` (
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT '메시지를 입력한 사용자 id(speaker table)',
   `room_id` bigint(5) unsigned NOT NULL COMMENT '방 id(room table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `message_type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:일반,1:img,2:mv,3:attach, 4:link',
+  `message_type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:일반,1:img,2:mv,3:attach,4:link',
   `not_read_count` smallint(5) signed NOT NULL DEFAULT 0 COMMENT '메시지 읽지 않은 사용자 count ',
   `is_system_message` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1:시스템메시지',
   `message` varchar(2047) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'message',
@@ -286,6 +286,7 @@ CREATE TABLE IF NOT EXISTS `chat_message` (
   `is_employee` tinyint(1) NOT NULL DEFAULT 0 COMMENT '직원 작성 여부',
   `message_detail` varchar(255) DEFAULT NULL COMMENT '첨부 파일/링크 이름',
   `template_id` bigint(5) unsigned DEFAULT NULL COMMENT '템플릿 id(template table)',
+  `is_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '메시지 삭제 여부(0, 1)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='메시지';
 
@@ -597,6 +598,10 @@ where state = 1;
 update room
 set join_message_id = null
 where join_message_id = 0;
+
+update room
+set state = 8, member_id = null, last_member_id = 1, join_message_id = null, chatid = concat(id, '')
+where state > 1
 
 -- room_join_history
 INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_message_id, end_message_id, end_date, last_member_id, category_small_id, join_history_json)

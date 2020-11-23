@@ -17,5 +17,6 @@
                   ON mh.update_member_id = m.id 
     WHERE  room_id = :roomId 
       AND memo LIKE CONCAT('%', :searchValue, '%')
+    ORDER BY create_date desc
   </query>
 </querys>
