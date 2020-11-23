@@ -11,6 +11,7 @@ import MessageList from './MessageList';
 import SendMessageInput from './SendMessageInput';
 import ChatAreaBottom from './ChatAreaBottom';
 import MessageListTop from './MessageListTop';
+import Constant from 'config/Constant';
 
 @withRouter
 @inject('appStore', 'uiStore', 'chatStore')
@@ -24,7 +25,12 @@ class MessageContainer extends React.Component {
   render() {
     let { uiStore, chatStore } = this.props;
     let { clientHeight } = uiStore;
-    let { displayBottomContent, displaySearchMessgeComponent } = chatStore;
+    let {
+      displayBottomContent,
+      displaySearchMessgeComponent,
+      messageList,
+      searchContent
+    } = chatStore;
     let listClientHeight = clientHeight - 270;
     if (displayBottomContent) {
       listClientHeight = clientHeight - 715;
@@ -36,26 +42,31 @@ class MessageContainer extends React.Component {
           <Col span={24} style={{ position: 'relative' }}>
             <React.Fragment>
               {/* 715, 270 */}
-              <MessageList clientHeight={listClientHeight} />
+              <MessageList
+                clientHeight={listClientHeight}
+                messageList={messageList}
+                wrapperType={Constant.MESSAGE_LIST_WRAPPER_TYPE_CHAT}
+                searchValue={searchContent}
+              />
               {/* 버튼 3개 */}
               <div
                 style={{ position: 'absolute', bottom: 10, right: 10 }}
                 className={displaySearchMessgeComponent ? 'none' : ''}
               >
                 <Button
-                  type="danger"
                   shape="circle"
                   size="large"
+                  type="primary"
                   onClick={() =>
                     chatStore.changeDisplaySearchMessgeComponent(true)
                   }
                 >
                   검색
                 </Button>{' '}
-                <Button type="danger" shape="circle" size="large">
+                <Button type="primary" shape="circle" size="large">
                   이관
                 </Button>{' '}
-                <Button type="danger" shape="circle" size="large">
+                <Button type="primary" shape="circle" size="large">
                   종료
                 </Button>
               </div>
@@ -79,7 +90,11 @@ class MessageContainer extends React.Component {
                   }}
                 >
                   <Row className="mrb5">
-                    <Col span={8} offset={8} className="center pd5 bold">
+                    <Col
+                      span={8}
+                      offset={8}
+                      className="center pd5 text bold font-em1"
+                    >
                       대화내용 검색
                     </Col>
                     <Col
@@ -94,7 +109,14 @@ class MessageContainer extends React.Component {
                   </Row>
                   <Row>
                     <Col span={24}>
-                      <Input style={{ width: '90%' }} allowClear />{' '}
+                      <Input
+                        style={{ width: '90%' }}
+                        allowClear
+                        value={searchContent}
+                        onChange={event => {
+                          chatStore.changeSearchContent(event.target.value);
+                        }}
+                      />{' '}
                       <UpCircleOutlined
                         className="color-basic"
                         style={{ fontSize: 18 }}

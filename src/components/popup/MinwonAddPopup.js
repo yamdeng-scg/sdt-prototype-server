@@ -178,7 +178,7 @@ class MinwonAddPopup extends React.Component {
           <Row className="mrb10">
             <Col span={24}>
               <span className="bold font-em1">민원등록 고객 : </span>
-              <span className="bold color-basic">{customerName}님</span>
+              <span className="bold color-basic">{customerName}님 </span>
               <span className="bold">
                 ( 가스앱 ID : {gasappMemberNumber}, chatid :{chatid} )
               </span>

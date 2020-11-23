@@ -1,14 +1,20 @@
 import { observable, action, runInAction } from 'mobx';
+import { message } from 'antd';
 import moment from 'moment';
+import io from 'socket.io-client';
 import Constant from '../config/Constant';
 import ModalType from '../config/ModalType';
 import Helper from '../utils/Helper';
 import ApiService from '../services/ApiService';
+import SocketService from '../services/SocketService';
 import ModalService from '../services/ModalService';
 import LoadingBar from '../utils/LoadingBar';
 import update from 'immutability-helper';
+import _ from 'lodash';
 
 class ChatStore {
+  socket = null;
+
   // 대기방 time 실시간으로 보여주는 용도
   waitTimeRefreshIntervalHandler = null;
 
@@ -70,6 +76,114 @@ class ChatStore {
   @observable closeSearchType = 'customerName';
 
   @observable closeSearchValue = '';
+
+  @observable messageList = [];
+
+  @observable message = '';
+
+  @observable selectTemplateId = null;
+
+  @observable searchContent = '';
+
+  @action
+  changeSearchContent(searchContent) {
+    this.searchContent = searchContent;
+  }
+
+  @action
+  changeMessage(message) {
+    this.message = message;
+  }
+
+  @action
+  sendMessage() {
+    let { profile } = this.rootStore.appStore;
+    let { companyId, speakerId } = profile;
+    let roomId = this.currentRoomInfo.id;
+    let socketParam = {
+      companyId: companyId,
+      speakerId: speakerId,
+      roomId: roomId,
+      isEmployee: 1,
+      templateId: this.selectTemplateId,
+      messageType: Constant.MESSAGE_TYPE_NORMAL,
+      isSystemMessage: 0,
+      messageAdminType: 0,
+      messageDetail: null,
+      message: this.message
+    };
+    SocketService.sendMessage(this.socket, socketParam);
+    this.selectTemplateId = null;
+    this.message = '';
+  }
+
+  @action
+  sendMessageTypeLink(messageDetailInfo) {
+    let { profile } = this.rootStore.appStore;
+    let { companyId, speakerId } = profile;
+    let roomId = this.currentRoomInfo.id;
+    let socketParam = {
+      companyId: companyId,
+      speakerId: speakerId,
+      roomId: roomId,
+      isEmployee: 1,
+      templateId: this.selectTemplateId,
+      messageType: Constant.MESSAGE_TYPE_LINK,
+      isSystemMessage: 0,
+      messageAdminType: 0,
+      messageDetail: messageDetailInfo.text,
+      message: messageDetailInfo.url
+    };
+    SocketService.sendMessage(this.socket, socketParam);
+    this.selectTemplateId = null;
+    this.message = '';
+  }
+
+  @action
+  sendSystemMessage(message) {
+    let { profile } = this.rootStore.appStore;
+    let { companyId, speakerId } = profile;
+    let roomId = this.currentRoomInfo.id;
+    let socketParam = {
+      companyId: companyId,
+      speakerId: speakerId,
+      roomId: roomId,
+      isEmployee: 1,
+      templateId: this.selectTemplateId,
+      messageType: Constant.MESSAGE_TYPE_LINK,
+      isSystemMessage: 1,
+      messageAdminType: 0,
+      messageDetail: message,
+      message: null
+    };
+    SocketService.sendMessage(this.socket, socketParam);
+    this.selectTemplateId = null;
+    this.message = '';
+  }
+
+  @action
+  sendImage() {
+    this.selectTemplateId = null;
+    this.message = '';
+  }
+
+  @action
+  sendEmotikon() {
+    this.selectTemplateId = null;
+    this.message = '';
+  }
+
+  @action
+  selectTemplate(templateId) {
+    this.selectTemplateId = templateId;
+    this.message = '';
+  }
+
+  @action
+  appendMessage(message) {
+    this.message = this.message + message;
+    this.message = '';
+  }
 
   @action
   openBlackCustomerPopup(roomInfo) {
@@ -215,26 +329,58 @@ class ChatStore {
 
   @action
   matchRoom(roomInfo) {
-    // 종료 or 대기
-    if (roomInfo.state >= 2 || (roomInfo.state < 2 && !roomInfo.memberId)) {
-      ApiService.post('room/' + roomInfo.id + '/matchRoom').then(response => {
-        runInAction(() => {
-          let data = response.data;
-          this.currentRoomInfo = data;
-          this.currentRoomTabName = Constant.ROOM_TYPE_ING;
-          this.search();
+    if (!this.currentRoomInfo || this.currentRoomInfo.id !== roomInfo.id) {
+      let { profile } = this.rootStore.appStore;
+      let { speakerId } = profile;
+      if (this.currentRoomInfo) {
+        SocketService.leave(this.socket, this.currentRoomInfo.id);
+      }
+      // 종료 or 대기
+      if (roomInfo.state >= 2 || (roomInfo.state < 2 && !roomInfo.memberId)) {
+        ApiService.post('room/' + roomInfo.id + '/matchRoom').then(response => {
+          runInAction(() => {
+            let data = response.data;
+            SocketService.join(this.socket, data.id, speakerId).then(
+              messageList => {
+                runInAction(() => {
+                  let oriMessageList = this.messageList.toJS();
+                  let newMessageList = _.concat(messageList, oriMessageList);
+                  this.messageList = newMessageList;
+                  setTimeout(() => {
+                    Helper.scrollBottomByDivId('messageListScroll', 500);
+                  }, 500);
+                });
+              }
+            );
+            this.currentRoomInfo = data;
+            this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+            this.search();
+          });
         });
-      });
-    } else {
-      // 진행
-      ApiService.get('room/' + roomInfo.id).then(response => {
-        runInAction(() => {
-          let data = response.data;
-          this.currentRoomInfo = data;
-          this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+      } else {
+        // 진행
+        ApiService.get('room/' + roomInfo.id).then(response => {
+          runInAction(() => {
+            let data = response.data;
+            SocketService.join(this.socket, data.id, speakerId).then(
+              messageList => {
+                runInAction(() => {
+                  let oriMessageList = this.messageList.toJS();
+                  let newMessageList = _.concat(messageList, oriMessageList);
+                  this.messageList = newMessageList;
+                  setTimeout(() => {
+                    Helper.scrollBottomByDivId('messageListScroll', 500);
+                  }, 500);
+                });
+              }
+            );
+            this.currentRoomInfo = data;
+            this.currentRoomTabName = Constant.ROOM_TYPE_ING;
+          });
         });
-      });
+      }
     }
+    this.selectTemplateId = null;
   }
 
   @action
@@ -299,7 +445,9 @@ class ChatStore {
   // 방 선택
   @action
   selectRoom(roomInfo) {
+    // TODO : 메시지 목록을 api로 가져온다
     this.currentRoomInfo = roomInfo;
+    this.selectTemplateId = null;
   }
 
   // 하단 탭 index 변경
@@ -370,12 +518,16 @@ class ChatStore {
   @action
   openMinwonHistoryPopup() {
     let currentRoomInfo = this.currentRoomInfo;
-    ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {
-      customerName: currentRoomInfo.customerName,
-      chatid: currentRoomInfo.chatid,
-      gasappMemberNumber: currentRoomInfo.gasappMemberNumber,
-      roomId: currentRoomInfo.id
-    });
+    if (currentRoomInfo.joinHistoryCount) {
+      ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {
+        customerName: currentRoomInfo.customerName,
+        chatid: currentRoomInfo.chatid,
+        gasappMemberNumber: currentRoomInfo.gasappMemberNumber,
+        roomId: currentRoomInfo.id
+      });
+    } else {
+      ModalService.alert({ body: '등록한 민원이 없습니다' });
+    }
   }
   @action
   search() {
@@ -424,6 +576,76 @@ class ChatStore {
           this.processingRoomListApiCall = false;
         });
       });
+  }
+
+  initSocket() {
+    let { profile, token } = this.rootStore.appStore;
+    let socketUrl = 'http://localhost:8090';
+    if (!this.socket || this.socket.disconnected) {
+      socketUrl =
+        socketUrl + '?companyId=' + profile.companyId + '&token=' + token;
+      this.socket = io(socketUrl);
+      this.initDefaultSocektEvent();
+    }
+  }
+
+  initDefaultSocektEvent() {
+    this.socket.on('connect', this.onConnect.bind(this));
+    this.socket.on('disconnect', this.onDisconnect.bind(this));
+    this.socket.on('welcome', this.onWelcome.bind(this));
+    this.socket.on('message-list', this.onMessageList.bind(this));
+    this.socket.on('message', this.onMessage.bind(this));
+    this.socket.on('error', this.onError.bind(this));
+    this.socket.on('read-message', this.onReadMessage.bind(this));
+    this.socket.on('receive-event', this.onReceiveEvent.bind(this));
+  }
+
+  onConnect() {
+    message.info('socket connect', 1);
+  }
+
+  onDisconnect() {
+    message.warning('socket disconnect', 1);
+  }
+
+  onWelcome(socketResponse) {
+    message.info('welcome : ' + JSON.stringify(socketResponse), 1);
+  }
+
+  onMessageList(messageList) {
+    console.log('messageList : ' + messageList);
+  }
+
+  onMessage(message) {
+    runInAction(() => {
+      let oriMessageList = this.messageList.toJS();
+      this.messageList = oriMessageList.concat([message]);
+      Helper.scrollBottomByDivId('messageListScroll', 500);
+    });
+  }
+
+  onError(error) {
+    console.log('error : ' + error);
+  }
+
+  onReadMessage(readMessage) {
+    console.log('readMessage : ' + readMessage);
+  }
+
+  onReceiveEvent(eventInfo) {
+    console.log('receiveEvent : ' + eventInfo);
+  }
+
+  handleAccordionChange(event, accordionName, isOpen) {
+    let offsetParent1 = event.target.offsetParent;
+    let parent1TageName = offsetParent1.tagName;
+    if (!isOpen && event.target.offsetParent) {
+      let moveScrollYposition = event.target.offsetParent.offsetTop;
+      if (parent1TageName === 'P') {
+        moveScrollYposition = event.target.offsetParent.offsetParent.offsetTop;
+      }
+    }
+    // Helper.scrollTopByDivId('messageListScroll', moveScrollYposition, 100);
   }
 
   @action

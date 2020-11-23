@@ -29,7 +29,11 @@ class AlertPopup extends React.Component {
     let okLabel = modalData.okLabel || Constant.LABEL_MODAL_OK;
     return (
       <div className="pd-top15">
-        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
+        <Row
+          className={
+            title ? 'center pd-bottom15 bor-bottom text font-em2 bold' : 'none'
+          }
+        >
           <Col
             span={24}
             dangerouslySetInnerHTML={{

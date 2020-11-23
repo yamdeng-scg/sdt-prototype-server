@@ -41,7 +41,11 @@ class ConfirmPopup extends React.Component {
     let cancelLabel = modalData.cancelLabel || Constant.LABEL_MODAL_CANCEL;
     return (
       <div className="pd-top15">
-        <Row className="center pd-bottom15 bor-bottom text font-em2 bold">
+        <Row
+          className={
+            title ? 'center pd-bottom15 bor-bottom text font-em2 bold' : 'none'
+          }
+        >
           <Col span={24}>{title}</Col>
         </Row>
         <Row className="center pd-top10 mrb10">

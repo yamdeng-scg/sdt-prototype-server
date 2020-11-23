@@ -270,6 +270,10 @@ option:first {
   color: #35bffd
 }
 
+.color-black {
+  color: #000
+}
+
 .bg-white {
   background-color: #fff;
 }

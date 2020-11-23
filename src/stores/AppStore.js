@@ -11,7 +11,7 @@ class AppStore {
   @observable token = Helper.getInfoByLocalStorage('token') || null;
 
   // 로그인한 사용자 정보
-  @observable profile = {};
+  @observable profile = Helper.getInfoByLocalStorage('profile') || {};
 
   // 회사 목록
   @observable companyList = [];
@@ -43,6 +43,7 @@ class AppStore {
     this.token = loginInfo.token;
     this.profile = loginInfo.profile;
     Helper.saveInfoToLocalStorage('token', loginInfo.token);
+    Helper.saveInfoToLocalStorage('profile', loginInfo.profile);
   }
 
   @action

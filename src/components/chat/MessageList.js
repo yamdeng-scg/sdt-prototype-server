@@ -2,9 +2,21 @@ import React from 'react';
 import EmptyStartImage from '../../resources/images/star_empty.png';
 import CloseImage from '../../resources/images/close.png';
 import ModalType from '../../config/ModalType';
+import Constant from '../../config/Constant';
 import ModalService from '../../services/ModalService';
+import moment from 'moment';
 
-const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const replaceHighLighText = function(message, searchValue) {
+  let resultMessage = message;
+  if (searchValue) {
+    var regEx = new RegExp(searchValue, 'g');
+    resultMessage = message.replace(
+      regEx,
+      '<span class="bg-yellow color-black">' + searchValue + '</span>'
+    );
+  }
+  return resultMessage;
+};
 
 class MessageList extends React.Component {
   constructor(props) {
@@ -12,23 +24,26 @@ class MessageList extends React.Component {
     this.state = {};
   }
 
-  openTemplateFormPopup = () => {
-    ModalService.openMiddlePopup(ModalType.TEMPLATE_FORM_POPUP, {});
-  };
-
-  render() {
-    let clientHeight = this.props.clientHeight;
-    return (
-      <React.Fragment>
-        <div
-          style={{
-            height: clientHeight,
-            overflowY: 'scroll',
-            position: 'relative',
-            padding: '0px 3px 50px 3px'
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: 15 }}>
+  convertMessageListToComponet() {
+    let { messageList, wrapperType, searchValue } = this.props;
+    let messsageListComponent = messageList.map(messageInfo => {
+      let isEmployee = messageInfo.isEmployee;
+      let isSystemMessage = messageInfo.isSystemMessage;
+      let messageType = messageInfo.messageType;
+      let messageId = messageInfo.id;
+      let message = messageInfo.message;
+      let messageDetail = messageInfo.messageDetail;
+      let messageComponent = null;
+      let resultMessage = messageDetail ? messageDetail : message;
+      resultMessage = replaceHighLighText(resultMessage, searchValue);
+      resultMessage = resultMessage.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+      if (isSystemMessage) {
+        messageComponent = (
+          <div
+            id={messageId + 'message'}
+            key={messageId}
+            style={{ textAlign: 'center', marginBottom: 15 }}
+          >
             <div
               style={{
                 maxWidth: '80%',
@@ -38,31 +53,43 @@ class MessageList extends React.Component {
                 color: 'red'
               }}
             >
-              <div>
-                메시지 asdasdasdaasda
-                <br />
-                asdasd
-              </div>
+              <div>{message}</div>
             </div>
           </div>
-          <div style={{ textAlign: 'right', marginBottom: 15 }}>
+        );
+      } else if (isEmployee) {
+        messageComponent = (
+          <div
+            id={messageId + 'message'}
+            key={messageId}
+            style={{ textAlign: 'right', marginBottom: 15 }}
+          >
             <div
               style={{
                 maxWidth: '80%',
                 display: 'inline-block',
                 position: 'relative',
                 borderRadius: '13px 0px 13px 13px',
-                backgroundColor: '#78c0fd',
+                backgroundColor:
+                  messageType === Constant.MESSAGE_TYPE_LINK
+                    ? 'orange'
+                    : '#78c0fd',
+                fontWeight:
+                  messageType === Constant.MESSAGE_TYPE_LINK ? 'bold' : '',
                 textAlign: 'left',
                 padding: '11px 15px 9px',
                 color: '#fff'
               }}
             >
-              <div>메시지 asdasdasdaasda</div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: resultMessage
+                }}
+              />
               <div
                 style={{
                   position: 'absolute',
-                  left: -70,
+                  left: -82,
                   bottom: -2,
                   textAlign: 'right',
                   color: 'black'
@@ -86,65 +113,112 @@ class MessageList extends React.Component {
                     backgroundPosition: 'left top',
                     width: 16,
                     height: 16,
-                    display: 'inline-block'
+                    display:
+                      wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_HISTORY
+                        ? 'none'
+                        : 'inline-block'
                   }}
                 />
-                <div style={{ color: '#a2a2a2' }}>오후 12:56</div>
+                <div style={{ color: '#a2a2a2' }}>
+                  {moment(messageInfo.createDate).format('LTS')}
+                </div>
               </div>
             </div>
           </div>
-          {/* left messsage */}
-          {data.map(info => {
-            return (
-              <div style={{ textAlign: 'left', marginBottom: 15 }}>
-                <div
+        );
+      } else {
+        messageComponent = (
+          <div
+            id={messageId + 'message'}
+            key={messageId}
+            style={{ textAlign: 'left', marginBottom: 15 }}
+          >
+            <div
+              style={{
+                maxWidth: '80%',
+                display: 'inline-block',
+                position: 'relative',
+                borderRadius: '13px 0px 13px 13px',
+                backgroundColor:
+                  messageType === Constant.MESSAGE_TYPE_LINK
+                    ? 'orange'
+                    : '#78c0fd',
+                fontWeight:
+                  messageType === Constant.MESSAGE_TYPE_LINK ? 'bold' : '',
+                textAlign: 'left',
+                padding: '11px 15px 9px',
+                color: '#fff'
+              }}
+            >
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: resultMessage
+                }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  right: -82,
+                  bottom: -2,
+                  textAlign: 'left',
+                  color: 'black'
+                }}
+              >
+                <span
                   style={{
-                    maxWidth: '80%',
-                    display: 'inline-block',
-                    position: 'relative',
-                    borderRadius: '13px 0px 13px 13px',
-                    backgroundColor: '#78c0fd',
-                    textAlign: 'left',
-                    padding: '11px 15px 9px',
-                    color: '#fff'
+                    backgroundImage: `url(${EmptyStartImage})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'left top',
+                    width: 16,
+                    height: 16,
+                    display: 'inline-block'
                   }}
-                >
-                  <div>메시지 asdasdasdaasda</div>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: -70,
-                      bottom: -2,
-                      textAlign: 'left',
-                      color: 'black'
-                    }}
-                  >
-                    <span
-                      style={{
-                        backgroundImage: `url(${EmptyStartImage})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'left top',
-                        width: 16,
-                        height: 16,
-                        display: 'inline-block'
-                      }}
-                    />
-                    <span
-                      style={{
-                        backgroundImage: `url(${CloseImage})`,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'left top',
-                        width: 16,
-                        height: 16,
-                        display: 'inline-block'
-                      }}
-                    />
-                    <div style={{ color: '#a2a2a2' }}>오후 12:56</div>
-                  </div>
+                />
+                <span
+                  style={{
+                    backgroundImage: `url(${CloseImage})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'left top',
+                    width: 16,
+                    height: 16,
+                    display:
+                      wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_HISTORY
+                        ? 'none'
+                        : 'inline-block'
+                  }}
+                />
+                <div style={{ color: '#a2a2a2' }}>
+                  {moment(messageInfo.createDate).format('LTS')}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          </div>
+        );
+      }
+      return messageComponent;
+    });
+    return messsageListComponent;
+  }
+
+  openTemplateFormPopup = () => {
+    ModalService.openMiddlePopup(ModalType.TEMPLATE_FORM_POPUP, {});
+  };
+
+  render() {
+    let { clientHeight } = this.props;
+    let messsageListComponent = this.convertMessageListToComponet();
+    return (
+      <React.Fragment>
+        <div
+          style={{
+            height: clientHeight,
+            overflowY: 'scroll',
+            position: 'relative',
+            padding: '10px 10px 50px 10px'
+          }}
+          id="messageListScroll"
+        >
+          {messsageListComponent}
         </div>
       </React.Fragment>
     );

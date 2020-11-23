@@ -21,6 +21,7 @@ class ChatContainer extends React.Component {
     this.props.uiStore.changeSideBarSelectMenuKName(
       Constant.SIDE_BAR_MENU_CHAT
     );
+    this.props.chatStore.initSocket();
   }
 
   componentWillUnmount() {
