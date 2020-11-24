@@ -33,8 +33,8 @@ class MessageList extends React.Component {
       let messageId = messageInfo.id;
       let message = messageInfo.message;
       let messageDetail = messageInfo.messageDetail;
-      let messageComponent = null;
       let resultMessage = messageDetail ? messageDetail : message;
+      let messageComponent = null;
       resultMessage = replaceHighLighText(resultMessage, searchValue);
       resultMessage = resultMessage.replace(/(?:\r\n|\r|\n)/g, '<br/>');
       if (isSystemMessage) {
@@ -205,7 +205,7 @@ class MessageList extends React.Component {
   };
 
   render() {
-    let { clientHeight } = this.props;
+    let { clientHeight, wrapperType } = this.props;
     let messsageListComponent = this.convertMessageListToComponet();
     return (
       <React.Fragment>
@@ -214,9 +214,13 @@ class MessageList extends React.Component {
             height: clientHeight,
             overflowY: 'scroll',
             position: 'relative',
-            padding: '10px 10px 50px 10px'
+            padding: '10px 10px 90px 10px'
           }}
-          id="messageListScroll"
+          id={
+            wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_CHAT
+              ? 'messageListScroll'
+              : ''
+          }
         >
           {messsageListComponent}
         </div>

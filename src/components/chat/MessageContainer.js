@@ -29,7 +29,10 @@ class MessageContainer extends React.Component {
       displayBottomContent,
       displaySearchMessgeComponent,
       messageList,
-      searchContent
+      searchContent,
+      disabledPrevButton,
+      disabledNextButton,
+      applySearchContent
     } = chatStore;
     let listClientHeight = clientHeight - 270;
     if (displayBottomContent) {
@@ -46,7 +49,7 @@ class MessageContainer extends React.Component {
                 clientHeight={listClientHeight}
                 messageList={messageList}
                 wrapperType={Constant.MESSAGE_LIST_WRAPPER_TYPE_CHAT}
-                searchValue={searchContent}
+                searchValue={applySearchContent}
               />
               {/* 버튼 3개 */}
               <div
@@ -116,15 +119,32 @@ class MessageContainer extends React.Component {
                         onChange={event => {
                           chatStore.changeSearchContent(event.target.value);
                         }}
+                        onPressEnter={() => {
+                          chatStore.changeApplySearchContent();
+                        }}
                       />{' '}
                       <UpCircleOutlined
-                        className="color-basic"
+                        className={
+                          disabledPrevButton ? 'color-gray' : 'color-basic'
+                        }
                         style={{ fontSize: 18 }}
+                        onClick={() => {
+                          if (!disabledPrevButton) {
+                            chatStore.gotoPrevMessage();
+                          }
+                        }}
                       />{' '}
                       {'  '}
                       <DownCircleOutlined
-                        className="color-basic"
+                        className={
+                          disabledNextButton ? 'color-gray' : 'color-basic'
+                        }
                         style={{ fontSize: 18 }}
+                        onClick={() => {
+                          if (!disabledNextButton) {
+                            chatStore.gotoNextMessage();
+                          }
+                        }}
                       />
                     </Col>
                   </Row>

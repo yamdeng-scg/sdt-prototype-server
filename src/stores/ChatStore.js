@@ -1,4 +1,4 @@
-import { observable, action, runInAction } from 'mobx';
+import { observable, action, runInAction, computed } from 'mobx';
 import { message } from 'antd';
 import moment from 'moment';
 import io from 'socket.io-client';
@@ -85,9 +85,134 @@ class ChatStore {
 
   @observable searchContent = '';
 
+  @observable applySearchContent = '';
+
+  @observable
+  currentSearchIndex = -1;
+
+  searchApplyArray = [];
+
+  @computed
+  get disabledNextButton() {
+    let disabled = true;
+    let searchApplyArray = this.searchApplyArray;
+    let currentSearchIndex = this.currentSearchIndex;
+    if (this.applySearchContent && searchApplyArray.length) {
+      if (currentSearchIndex !== searchApplyArray.length - 1) {
+        disabled = false;
+      }
+    }
+    return disabled;
+  }
+
+  @computed
+  get disabledPrevButton() {
+    let disabled = true;
+    let searchApplyArray = this.searchApplyArray;
+    let currentSearchIndex = this.currentSearchIndex;
+    if (this.applySearchContent && searchApplyArray.length) {
+      if (currentSearchIndex !== 0) {
+        disabled = false;
+      }
+    }
+    return disabled;
+  }
+
+  @action
+  gotoNextMessage() {
+    this.currentSearchIndex = this.currentSearchIndex + 1;
+    let searchApplyArray = this.searchApplyArray;
+    let currentMessageInfo = searchApplyArray[this.currentSearchIndex];
+    let findDom = document.getElementById(currentMessageInfo.id + 'message');
+    if (findDom) {
+      $(findDom).css({
+        animation: 'shake 0.5s',
+        'animation-iteration-count': 1.5
+      });
+      setTimeout(() => {
+        $(findDom).css({
+          animation: ''
+        });
+      }, 1500);
+      let scrollTopPosition =
+        findDom.offsetParent.offsetTop + findDom.offsetTop;
+      Helper.scrollTopByDivId(
+        'messageListScroll',
+        scrollTopPosition - 150,
+        100
+      );
+    }
+  }
+
+  @action
+  gotoPrevMessage() {
+    this.currentSearchIndex = this.currentSearchIndex - 1;
+    let searchApplyArray = this.searchApplyArray;
+    let currentMessageInfo = searchApplyArray[this.currentSearchIndex];
+    let findDom = document.getElementById(currentMessageInfo.id + 'message');
+    if (findDom) {
+      $(findDom).css({
+        animation: 'shake 0.5s',
+        'animation-iteration-count': 1.5
+      });
+      setTimeout(() => {
+        $(findDom).css({
+          animation: ''
+        });
+      }, 1500);
+      let scrollTopPosition =
+        findDom.offsetParent.offsetTop + findDom.offsetTop;
+      Helper.scrollTopByDivId(
+        'messageListScroll',
+        scrollTopPosition - 150,
+        100
+      );
+    }
+  }
+
   @action
   changeSearchContent(searchContent) {
     this.searchContent = searchContent;
+  }
+
+  @action
+  changeApplySearchContent() {
+    this.applySearchContent = this.searchContent;
+    let messageList = this.messageList.toJS();
+    let filterMessageList = _.filter(messageList, messageInfo => {
+      let message = messageInfo.message;
+      let messageDetail = messageInfo.messageDetail;
+      let messageText = messageDetail ? messageDetail : message;
+      return messageText.indexOf(this.applySearchContent) !== -1;
+    });
+    this.searchApplyArray = filterMessageList;
+    if (!filterMessageList.length) {
+      this.currentSearchIndex = -1;
+      message.warning('대화내용이 존재하지 않습니다');
+    } else {
+      this.currentSearchIndex = filterMessageList.length - 1;
+      let currentMessageInfo = filterMessageList[filterMessageList.length - 1];
+      // 이동 시킴
+      let findDom = document.getElementById(currentMessageInfo.id + 'message');
+      if (findDom) {
+        $(findDom).css({
+          animation: 'shake 0.5s',
+          'animation-iteration-count': 1.5
+        });
+        setTimeout(() => {
+          $(findDom).css({
+            animation: ''
+          });
+        }, 1500);
+        let scrollTopPosition =
+          findDom.offsetParent.offsetTop + findDom.offsetTop;
+        Helper.scrollTopByDivId(
+          'messageListScroll',
+          scrollTopPosition - 150,
+          100
+        );
+      }
+    }
   }
 
   @action
@@ -312,6 +437,12 @@ class ChatStore {
   @action
   changeDisplaySearchMessgeComponent(displaySearchMessgeComponent) {
     this.displaySearchMessgeComponent = displaySearchMessgeComponent;
+    if (!displaySearchMessgeComponent) {
+      this.searchContent = '';
+      this.applySearchContent = '';
+      this.currentSearchIndex = -1;
+      this.searchApplyArray = [];
+    }
   }
 
   // 방 탭 변경
@@ -518,7 +649,7 @@ class ChatStore {
   @action
   openMinwonHistoryPopup() {
     let currentRoomInfo = this.currentRoomInfo;
-    if (currentRoomInfo.joinHistoryCount) {
+    if (currentRoomInfo.minwonHistoryCount) {
       ModalService.openMiddlePopup(ModalType.MINWON_HISTORY_POPUP, {
         customerName: currentRoomInfo.customerName,
         chatid: currentRoomInfo.chatid,

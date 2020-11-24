@@ -239,6 +239,7 @@ class MinwonAddPopup extends React.Component {
           <Row>
             <Col span={8}>
               <Tree
+                draggable
                 ref={this.treeRef}
                 height={350}
                 className="draggable-tree"
