@@ -105,6 +105,9 @@ class ChatStore {
 
   @action
   sendMessage(index) {
+    if (!this['socket' + index]) {
+      return;
+    }
     let { speakerId, companyId, roomId } = this['customer' + index];
     let socket = this['socket' + index];
     let message = this['message' + index];

@@ -45,7 +45,6 @@ class Main extends React.Component {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.applyCustomerInfo = this.applyCustomerInfo.bind(this);
-    this.connect = this.connect.bind(this);
   }
 
   openModal(index) {
@@ -67,10 +66,6 @@ class Main extends React.Component {
     this.setState({ viewModal: false });
   }
 
-  connect() {}
-
-  disconnect() {}
-
   componentDidMount() {
     let { appStore } = this.props;
     appStore.loadProfile();
@@ -80,8 +75,6 @@ class Main extends React.Component {
     let { viewModal } = this.state;
     let { chatStore, uiStore } = this.props;
     let { clientHeight } = uiStore;
-    let { messageList1 } = chatStore;
-    console.log('clientHeight : ' + clientHeight);
     let listClientHeight = clientHeight - 280;
     return (
       <React.Fragment>
@@ -144,120 +137,126 @@ class Main extends React.Component {
             </Collapse>
           </Modal>
           <Row>
-            <Col span={8} className="bor-right">
-              <Row className="pd10 bor-bottom">
-                <Col span={24} className="mrb10">
-                  <Button
-                    type="primary"
-                    className="text bold font-em2"
-                    onClick={() => this.openModal(1)}
-                  >
-                    고객정보
-                  </Button>
+            {cutomerIndexArray.map((customerInfo, index) => {
+              index = index + 1;
+              return (
+                <Col span={8} className="bor-right">
+                  <Row className="pd10 bor-bottom">
+                    <Col span={24} className="mrb10">
+                      <Button
+                        type="primary"
+                        className="text bold font-em2"
+                        onClick={() => this.openModal(index)}
+                      >
+                        고객정보
+                      </Button>
+                    </Col>
+                    <Col span={6} className="mrb5">
+                      도시가스
+                    </Col>
+                    <Col span={18} className="mrb5">
+                      <Select
+                        placeholder="도시가스를 선택해주세요"
+                        style={{ width: '100%', textAlign: 'left' }}
+                        value={chatStore['companyId' + index]}
+                        onChange={value =>
+                          chatStore.changeCompanyId(value, index)
+                        }
+                      >
+                        {companyCodeList.map(companyInfo => {
+                          return (
+                            <Option value={companyInfo.value}>
+                              {companyInfo.name}
+                            </Option>
+                          );
+                        })}
+                      </Select>
+                    </Col>
+                    <Col span={6} className="mrb5">
+                      가스앱 id
+                    </Col>
+                    <Col span={18} className="mrb5">
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder="가스앱 id를 입력해주세요"
+                        allowClear
+                        value={chatStore['appId' + index]}
+                        onChange={event =>
+                          chatStore.changeAppId(event.target.value, index)
+                        }
+                        onPressEnter={this.onPressEnter}
+                      />
+                    </Col>
+                    <Col span={6} className="mrb5">
+                      이름
+                    </Col>
+                    <Col span={18} className="mrb5">
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder="사용자 이름을 입력해주세요"
+                        allowClear
+                        value={chatStore['name' + index]}
+                        onChange={event =>
+                          chatStore.changeName(event.target.value, index)
+                        }
+                        onPressEnter={this.onPressEnter}
+                      />
+                    </Col>
+                    <Col span={6} className="mrb5">
+                      핸드폰번호
+                    </Col>
+                    <Col span={18} className="mrb5">
+                      <Input
+                        style={{ width: '100%' }}
+                        placeholder="핸드폰번호를 입력해주세요"
+                        allowClear
+                        value={chatStore['telNumber' + index]}
+                        onChange={event =>
+                          chatStore.changeTelNumber(event.target.value, index)
+                        }
+                      />
+                    </Col>
+                    <Col span={18} offset={6}>
+                      {chatStore['connectedSocket' + index] ? (
+                        <Button
+                          block
+                          type="danger"
+                          className="bold"
+                          onClick={() => chatStore.disconnect(index)}
+                        >
+                          연결끊기
+                        </Button>
+                      ) : (
+                        <Button
+                          block
+                          type="primary"
+                          className="bold"
+                          onClick={() => chatStore.connectSocket(index)}
+                          disabled={chatStore['disabledButton' + index]}
+                        >
+                          로그인
+                        </Button>
+                      )}
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24} style={{ position: 'relative' }}>
+                      <React.Fragment>
+                        <MessageList
+                          clientHeight={listClientHeight}
+                          messageList={chatStore['messageList' + index]}
+                          searchValue={''}
+                          index={index}
+                        />
+                      </React.Fragment>
+                    </Col>
+                    <Col span={24}>
+                      <SendMessageInput index={index} />
+                    </Col>
+                  </Row>
                 </Col>
-                <Col span={6} className="mrb5">
-                  도시가스
-                </Col>
-                <Col span={18} className="mrb5">
-                  <Select
-                    placeholder="도시가스를 선택해주세요"
-                    style={{ width: '100%', textAlign: 'left' }}
-                    value={chatStore['companyId1']}
-                    onChange={value => chatStore.changeCompanyId(value, 1)}
-                  >
-                    {companyCodeList.map(companyInfo => {
-                      return (
-                        <Option value={companyInfo.value}>
-                          {companyInfo.name}
-                        </Option>
-                      );
-                    })}
-                  </Select>
-                </Col>
-                <Col span={6} className="mrb5">
-                  가스앱 id
-                </Col>
-                <Col span={18} className="mrb5">
-                  <Input
-                    style={{ width: '100%' }}
-                    placeholder="가스앱 id를 입력해주세요"
-                    allowClear
-                    value={chatStore['appId1']}
-                    onChange={event =>
-                      chatStore.changeAppId(event.target.value, 1)
-                    }
-                    onPressEnter={this.onPressEnter}
-                  />
-                </Col>
-                <Col span={6} className="mrb5">
-                  이름
-                </Col>
-                <Col span={18} className="mrb5">
-                  <Input
-                    style={{ width: '100%' }}
-                    placeholder="사용자 이름을 입력해주세요"
-                    allowClear
-                    value={chatStore['name1']}
-                    onChange={event =>
-                      chatStore.changeName(event.target.value, 1)
-                    }
-                    onPressEnter={this.onPressEnter}
-                  />
-                </Col>
-                <Col span={6} className="mrb5">
-                  핸드폰번호
-                </Col>
-                <Col span={18} className="mrb5">
-                  <Input
-                    style={{ width: '100%' }}
-                    placeholder="핸드폰번호를 입력해주세요"
-                    allowClear
-                    value={chatStore['telNumber1']}
-                    onChange={event =>
-                      chatStore.changeTelNumber(event.target.value, 1)
-                    }
-                  />
-                </Col>
-                <Col span={18} offset={6}>
-                  {chatStore['connectedSocket1'] ? (
-                    <Button
-                      block
-                      type="danger"
-                      className="bold"
-                      onClick={() => chatStore.disconnect(1)}
-                    >
-                      연결끊기
-                    </Button>
-                  ) : (
-                    <Button
-                      block
-                      type="primary"
-                      className="bold"
-                      onClick={() => chatStore.connectSocket(1)}
-                    >
-                      로그인
-                    </Button>
-                  )}
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24} style={{ position: 'relative' }}>
-                  <React.Fragment>
-                    <MessageList
-                      clientHeight={listClientHeight}
-                      messageList={messageList1}
-                      searchValue={''}
-                      index={1}
-                    />
-                  </React.Fragment>
-                </Col>
-                <Col span={24}>
-                  <SendMessageInput index={1} />
-                </Col>
-              </Row>
-            </Col>
-            <Col span={8}>123</Col>
-            <Col span={8}>123</Col>
+              );
+            })}
           </Row>
         </div>
       </React.Fragment>

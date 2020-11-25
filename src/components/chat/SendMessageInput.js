@@ -35,7 +35,7 @@ class SendMessageInput extends React.Component {
         <Button
           className="bg-basic color-white bold"
           style={{ position: 'absolute', bottom: 0, right: 0 }}
-          disabled={!message || !chatStore['connectedSocket1']}
+          disabled={!message || !chatStore['connectedSocket' + index]}
           onClick={() => chatStore.sendMessage(index)}
         >
           전송
