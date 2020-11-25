@@ -7,9 +7,6 @@ class AppStore {
   // company
   @observable company = 0;
 
-  // 로그인 token
-  @observable token = Helper.getInfoByLocalStorage('token') || null;
-
   // 로그인한 사용자 정보
   @observable profile = Helper.getInfoByLocalStorage('profile') || {};
 

@@ -12,8 +12,6 @@ import ErrorService from './services/ErrorService';
 import Login from './components/Login';
 import ModalContainer from './components/layout/ModalContainer';
 import { ConfigProvider, Spin } from 'antd';
-// import moment from 'moment';
-// import 'moment/locale/zh-cn';
 import locale from 'antd/lib/locale/ko_KR';
 
 @withRouter
@@ -104,17 +102,12 @@ class App extends Component {
     if (process.env.APP_ENV === Constant.APP_ENV_DEVELOPMENT) {
       DEV_TOOL_COMPONENT = <DevTools />;
     }
-    let currrentPathName = this.props.location.pathname;
     let MainComponent = <Main />;
-    if (currrentPathName.indexOf('manual') !== -1) {
-      MainComponent = <ManualMain />;
-    } else if (currrentPathName.indexOf('viewer') !== -1) {
-    }
     return (
       <ErrorBoundary>
         <Spin spinning={displayLoadingBar}>
           <ConfigProvider locale={locale}>
-            {token ? MainComponent : <Login />}
+            {MainComponent}
             {DEV_TOOL_COMPONENT}
             <ModalContainer />
           </ConfigProvider>

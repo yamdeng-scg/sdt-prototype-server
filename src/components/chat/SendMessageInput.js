@@ -14,8 +14,8 @@ class SendMessageInput extends React.Component {
   }
 
   render() {
-    let { chatStore } = this.props;
-    let { message } = chatStore;
+    let { chatStore, index } = this.props;
+    let message = chatStore['message' + index];
     return (
       <div style={{ position: 'relative', paddingRight: 60 }}>
         <TextArea
@@ -24,19 +24,19 @@ class SendMessageInput extends React.Component {
           placeholder="Ctrl 키와 Enter 키를 조합하면 메시지가 전송됩니다"
           value={message}
           onChange={event => {
-            chatStore.changeMessage(event.target.value);
+            chatStore.changeMessage(event.target.value, index);
           }}
           onKeyPress={event => {
             if (event.ctrlKey && event.key === 'Enter') {
-              chatStore.sendMessage();
+              chatStore.sendMessage(index);
             }
           }}
         />{' '}
         <Button
           className="bg-basic color-white bold"
           style={{ position: 'absolute', bottom: 0, right: 0 }}
-          disabled={!message}
-          onClick={() => chatStore.sendMessage()}
+          disabled={!message || !chatStore['connectedSocket1']}
+          onClick={() => chatStore.sendMessage(index)}
         >
           전송
         </Button>

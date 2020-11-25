@@ -19,6 +19,14 @@ class SocketService {
     socket.emit('message', messageInfo);
   }
 
+  end(socket, roomId) {
+    socket.emit('end', { roomId: roomId });
+  }
+
+  saveHistory(socket, roomId, historyJson) {
+    socket.emit('save-history', { roomId: roomId, data: historyJson });
+  }
+
   deleteMessage(socket, messageId) {
     return new Promise((resolve, reject) => {
       socket.emit(
@@ -35,22 +43,12 @@ class SocketService {
     });
   }
 
-  sendEvent(socket, eventInfo) {
-    socket.emit('send-event', eventInfo);
-  }
-
   readMessage(socket, roomId, speakerId, startId, endId) {
     socket.emit('read-message', {
       roomId: roomId,
       speakerId: speakerId,
       startId: startId,
       endId: endId
-    });
-  }
-
-  leave(socket, roomId) {
-    socket.emit('leave', {
-      roomId: roomId
     });
   }
 

@@ -1,9 +1,5 @@
 import React from 'react';
-import EmptyStartImage from '../../resources/images/star_empty.png';
-import CloseImage from '../../resources/images/close.png';
-import ModalType from '../../config/ModalType';
 import Constant from '../../config/Constant';
-import ModalService from '../../services/ModalService';
 import moment from 'moment';
 
 const replaceHighLighText = function(message, searchValue) {
@@ -25,7 +21,7 @@ class MessageList extends React.Component {
   }
 
   convertMessageListToComponet() {
-    let { messageList, wrapperType, searchValue } = this.props;
+    let { messageList, searchValue } = this.props;
     let messsageListComponent = messageList.map(messageInfo => {
       let isEmployee = messageInfo.isEmployee;
       let isSystemMessage = messageInfo.isSystemMessage;
@@ -95,30 +91,6 @@ class MessageList extends React.Component {
                   color: 'black'
                 }}
               >
-                <span
-                  style={{
-                    backgroundImage: `url(${EmptyStartImage})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'left top',
-                    width: 16,
-                    height: 16,
-                    display: 'inline-block'
-                  }}
-                  onClick={this.openTemplateFormPopup}
-                />
-                <span
-                  style={{
-                    backgroundImage: `url(${CloseImage})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'left top',
-                    width: 16,
-                    height: 16,
-                    display:
-                      wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_HISTORY
-                        ? 'none'
-                        : 'inline-block'
-                  }}
-                />
                 <div style={{ color: '#a2a2a2' }}>
                   {moment(messageInfo.createDate).format('LTS')}
                 </div>
@@ -164,29 +136,6 @@ class MessageList extends React.Component {
                   color: 'black'
                 }}
               >
-                <span
-                  style={{
-                    backgroundImage: `url(${EmptyStartImage})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'left top',
-                    width: 16,
-                    height: 16,
-                    display: 'inline-block'
-                  }}
-                />
-                <span
-                  style={{
-                    backgroundImage: `url(${CloseImage})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'left top',
-                    width: 16,
-                    height: 16,
-                    display:
-                      wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_HISTORY
-                        ? 'none'
-                        : 'inline-block'
-                  }}
-                />
                 <div style={{ color: '#a2a2a2' }}>
                   {moment(messageInfo.createDate).format('LTS')}
                 </div>
@@ -200,12 +149,8 @@ class MessageList extends React.Component {
     return messsageListComponent;
   }
 
-  openTemplateFormPopup = () => {
-    ModalService.openMiddlePopup(ModalType.TEMPLATE_FORM_POPUP, {});
-  };
-
   render() {
-    let { clientHeight, wrapperType } = this.props;
+    let { clientHeight, index } = this.props;
     let messsageListComponent = this.convertMessageListToComponet();
     return (
       <React.Fragment>
@@ -216,11 +161,7 @@ class MessageList extends React.Component {
             position: 'relative',
             padding: '10px 10px 90px 10px'
           }}
-          id={
-            wrapperType === Constant.MESSAGE_LIST_WRAPPER_TYPE_CHAT
-              ? 'messageListScroll'
-              : ''
-          }
+          id={'messageListScroll' + index}
         >
           {messsageListComponent}
         </div>
