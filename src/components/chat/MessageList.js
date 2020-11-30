@@ -29,6 +29,7 @@ class MessageList extends React.Component {
       let messageId = messageInfo.id;
       let message = messageInfo.message;
       let messageDetail = messageInfo.messageDetail;
+      let noReadCount = messageInfo.noReadCount;
       let resultMessage = messageDetail ? messageDetail : message;
       let messageComponent = null;
       resultMessage = replaceHighLighText(resultMessage, searchValue);
@@ -92,6 +93,9 @@ class MessageList extends React.Component {
                 }}
               >
                 <div style={{ color: '#a2a2a2' }}>
+                  <span className={noReadCount ? 'red' : 'none'}>
+                    {noReadCount}
+                  </span>
                   {moment(messageInfo.createDate).format('LTS')}
                 </div>
               </div>
@@ -138,6 +142,9 @@ class MessageList extends React.Component {
               >
                 <div style={{ color: '#a2a2a2' }}>
                   {moment(messageInfo.createDate).format('LTS')}
+                  <span className={noReadCount ? 'red' : 'none'}>
+                    {noReadCount}
+                  </span>
                 </div>
               </div>
             </div>

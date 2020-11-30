@@ -184,10 +184,12 @@ class ChatStore {
     });
   }
 
+  @action
   onConnect(socketResponse, index) {
     // message.info('socket connect : ' + index);
   }
 
+  @action
   onDisconnect(socketResponse, index) {
     message.warning('socket disconnect : ' + index);
     this['socket' + index] = null;
