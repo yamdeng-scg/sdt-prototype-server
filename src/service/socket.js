@@ -7,6 +7,7 @@ const SocketError = require('../error/SocketError');
 const logger = require('../util/logger');
 const dbService = require('./db');
 const companyService = require('./company');
+const helper = require('../util/helper');
 
 const service = {};
 
@@ -153,7 +154,11 @@ service.connect = function (socket) {
       .executeQueryByIdTogetherResult('message.create', messageParam)
       .then((dbResult) => {
         let newMessage = dbResult.result[0][0];
-        service.sendEventByRoomId(roomId, 'message', newMessage);
+        service.sendEventByRoomId(
+          roomId,
+          'message',
+          helper.changeKeyToCamelCase(newMessage)
+        );
         if (socket.isCustomer) {
           // 고객이 작성한 메시지이고 조인 메시지id와 마지막 생성된 메시지가 동일한 경우에
           if (newMessage.joinMessasgeId === newMessage.id) {
@@ -202,7 +207,7 @@ service.connect = function (socket) {
       .then((result) => {
         let countInfo = result[0];
         let readCount = countInfo.readCount;
-        if (readCount < 0) {
+        if (readCount <= 0) {
           service.sendError(socket, new SocketError('읽은 메시지입니다'));
         } else {
           return dbService

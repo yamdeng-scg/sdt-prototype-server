@@ -37,6 +37,7 @@ const changeResultKeyToUnderScore = function (dbResults) {
 };
 
 module.exports = {
+  changeKeyToCamelCase: changeKeyToCamelCase,
   changeKeyToUnderScore: changeKeyToUnderScore,
   changeResultKeyToUnderScore: changeResultKeyToUnderScore
 };

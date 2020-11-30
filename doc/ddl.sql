@@ -1,6 +1,6 @@
 -- company <--- comp : 회사
 CREATE TABLE IF NOT EXISTS `company` (
-  `id` varchar(255)  NOT NULL COMMENT 'PK',
+  `id` varchar(10)  NOT NULL COMMENT 'PK',
   `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
@@ -335,7 +335,7 @@ CREATE TABLE IF NOT EXISTS `minwon_history` (
   `tel_number` varchar(255) DEFAULT NULL COMMENT '고객 핸드폰 번호',
   `memo` varchar(2047) DEFAULT NULL COMMENT '메모',
   `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
-  `room_id` int(10) unsigned DEFAULT NULL COMMENT '방 id(room table)',
+  `room_id` bigint(5) unsigned NOT NULL COMMENT '방 id(room table)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='민원 이력';
 
@@ -485,7 +485,7 @@ CREATE TABLE IF NOT EXISTS `talk_review` (
 -- company
 INSERT INTO company (id, create_date, update_date, name, tel_number, homepage, fax_number, email, address, alias )
     SELECT CONCAT(id, ''), createdate, workdate, name, corpno, homepage, fax, email, addr, webname
-    FROM comp;
+    FROM Comp;
 
 -- member
 INSERT INTO member (id, create_date, update_date, company_id, auth_level, login_name, state, profile_image_id, speaker_id)
@@ -503,17 +503,17 @@ update member
 -- category_large
 INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name, sort_index)
     SELECT id, createdate, workdate, CONCAT(cid, ''), name,  mwcode, mwname, id
-    FROM catelg;
+    FROM CateLg;
 
 -- category_middle
 INSERT INTO category_middle (id, create_date, update_date, company_id, category_large_id,  name, minwon_code, minwon_name, sort_index)
     SELECT id, createdate, workdate, CONCAT(cid, ''), catelg, name,  mwcode, mwname, id
-    FROM catemd;
+    FROM CateMd;
 
 -- category_small
 INSERT INTO category_small (id, create_date, update_date, company_id, category_middle_id,  name, minwon_code, minwon_name, sort_index)
     SELECT id, createdate, workdate, CONCAT(cid, ''), catemd, name,  mwcode, mwname, id
-    FROM catesm
+    FROM CateSm
     where catemd != 82;
 
 -- customer2
@@ -525,10 +525,6 @@ FROM Customer;
 INSERT INTO customer_company (customer_id, create_date, update_date, company_id, is_block, block_type, block_date, remark, block_member_id, room_id, speaker_id, swear_count, insult_count, state )
 SELECT id, createdate, workdate, '1', 0, blocktype, blockdt, remark, blockemp, space, speaker, swear, insult, state
 FROM Customer;
-
-update customer2 m
-  join customer_company s on s.customer_id = m.id
-   set m.speaker_id = s.speaker_id;
 
 -- keyword2
 INSERT INTO keyword2 (id, create_date, update_date, company_id, name)
@@ -543,12 +539,12 @@ FROM PdfManual;
 -- manual_favorite
 INSERT INTO manual_favorite (id, create_date, update_date, company_id, member_id, manual_id)
 SELECT id, createdate, workdate, '1', emp, pdf
-FROM pdfmanualfavorite;
+FROM PdfManualFavorite;
 
 -- template2
 INSERT INTO template2 (id, create_date, update_date, company_id, category_small_id, ask, reply, link, image_path, image_name)
 SELECT id, createdate, workdate, '1', catesm, ask, reply, link, img, imgname
-FROM template;
+FROM Template;
 
 update template2 m
   join template s on s.id = m.id
@@ -615,12 +611,12 @@ where start_message_id = 0;
 -- speaker2
 INSERT INTO speaker2 (id, create_date, update_date, company_id, name, is_customer)
 SELECT id, createdate, workdate, CONCAT(cid, ''), name, iscustomer
-FROM speaker;
+FROM Speaker;
 
 -- chat_message
 INSERT INTO chat_message (id, create_date, update_date, company_id, room_id, speaker_id, message_type, not_read_count, is_system_message, message, message_admin_type, is_employee, message_detail)
 SELECT id, createdate, workdate, CONCAT(cid, ''), space, speaker, mtype, 0, sysmsg, msg, onlyadm, isemp, msgname
-FROM speak;
+FROM Speak;
 
 update chat_message
 set speaker_id = null
@@ -629,12 +625,12 @@ where speaker_id = 0;
 -- room_speaker
 INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
 SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 1
-FROM spacespeaker
+FROM SpaceSpeaker
 where spacename is not null;
 
 INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
 SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 0
-FROM spacespeaker
+FROM SpaceSpeaker
 where spacename is null;
 
 update room_speaker
@@ -651,8 +647,8 @@ where old_last_message_id = 0;
 
 -- message_read
 INSERT INTO message_read (create_date, update_date, read_date, company_id, room_id, message_id, speaker_id)
-SELECT speak.createdate, speak.workdate, speak.workdate, '1', speak.space, speak.id, SpaceSpeaker.speaker
-FROM speak inner join SpaceSpeaker on speak.space = SpaceSpeaker.space;
+SELECT Speak.createdate, Speak.workdate, Speak.workdate, '1', Speak.space, Speak.id, SpaceSpeaker.speaker
+FROM Speak inner join SpaceSpeaker on Speak.space = SpaceSpeaker.space;
 
 
 */
@@ -697,24 +693,24 @@ ALTER TABLE customer_company ADD CONSTRAINT customer_company_company_FK FOREIGN 
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK_1 FOREIGN KEY (block_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
-CREATE UNIQUE INDEX customer_company_customer_id_IDX USING BTREE ON customer_company (customer_id,company_id);
+CREATE UNIQUE INDEX customer_company_customer_id_IDX USING BTREE ON customer_company (company_id, customer_id);
 
 -- keyword2
 ALTER TABLE keyword2 ADD CONSTRAINT keyword_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE keyword2 ADD CONSTRAINT keyword_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
-CREATE UNIQUE INDEX keyword_company_id_IDX USING BTREE ON keyword2 (company_id,name);
+CREATE UNIQUE INDEX keyword_company_id_IDX USING BTREE ON keyword2 (company_id, name);
 
 -- manual
 ALTER TABLE manual ADD CONSTRAINT manual_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE manual ADD CONSTRAINT manual_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
-CREATE UNIQUE INDEX manual_company_id_IDX USING BTREE ON manual (company_id,manual_index,page_number);
-CREATE INDEX manual_company_id_IDX2 USING BTREE ON manual (company_id,manual_index);
+CREATE UNIQUE INDEX manual_company_id_IDX USING BTREE ON manual (company_id, manual_index, page_number);
+CREATE INDEX manual_company_id_IDX2 USING BTREE ON manual (company_id, manual_index);
 
 -- manual_favorite
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE CASCADE;
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_manual_FK FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE;
-CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id,manual_id);
+CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id, manual_id);
 
 -- template2
 ALTER TABLE template2 ADD CONSTRAINT template_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
@@ -730,14 +726,14 @@ ALTER TABLE auto_message ADD CONSTRAINT auto_message_member_FK FOREIGN KEY (upda
 ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE CASCADE;
 ALTER TABLE template_favorite ADD CONSTRAINT template_favorite_template_FK FOREIGN KEY (template_id) REFERENCES template2(id) ON DELETE CASCADE;
-CREATE UNIQUE INDEX template_favorite_member_id_IDX USING BTREE ON template_favorite (member_id,template_id);
+CREATE UNIQUE INDEX template_favorite_member_id_IDX USING BTREE ON template_favorite (member_id, template_id);
 
 -- template_keyword
 ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_keyword_FK FOREIGN KEY (keyword_id) REFERENCES keyword2(id) ON DELETE CASCADE;
 ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_template_FK FOREIGN KEY (template_id) REFERENCES template2(id) ON DELETE CASCADE;
 ALTER TABLE template_keyword ADD CONSTRAINT template_keyword_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
-CREATE UNIQUE INDEX template_keyword_template_id_IDX USING BTREE ON template_keyword (template_id,keyword_id);
+CREATE UNIQUE INDEX template_keyword_template_id_IDX USING BTREE ON template_keyword (template_id, keyword_id);
 
 -- room
 ALTER TABLE room ADD CONSTRAINT room_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
@@ -773,14 +769,14 @@ ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_room_FK FOREIGN KEY (room_i
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
-CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id,speaker_id);
+CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id, speaker_id);
 
 -- message_read
 ALTER TABLE message_read ADD CONSTRAINT message_read_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE message_read ADD CONSTRAINT message_read_room_FK FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE;
 ALTER TABLE message_read ADD CONSTRAINT message_read_chat_message_FK FOREIGN KEY (message_id) REFERENCES chat_message(id) ON DELETE CASCADE;
 ALTER TABLE message_read ADD CONSTRAINT message_read_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id) ON DELETE CASCADE;
-CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id,message_id,speaker_id);
+CREATE INDEX message_read_room_id_IDX USING BTREE ON message_read (room_id, message_id, speaker_id);
 
 -- minwon_history
 ALTER TABLE minwon_history ADD CONSTRAINT minwon_history_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
@@ -828,11 +824,16 @@ ALTER TABLE action_history ADD CONSTRAINT action_history_member_FK FOREIGN KEY (
 /*
 
    -- smigration check query
-   select sub.read_last_message_id
+   select *
+    from chat_message
+    where speaker_id in(
+    select speaker_id
     from (
-    select read_last_message_id
-    from room_speaker) sub
-    where sub.read_last_message_id not in(select id from chat_message)
+      select speaker_id
+      from chat_message
+      where speaker_id not in(select id from speaker2) 
+      ) as a
+    )
 
 */
 
@@ -912,3 +913,52 @@ drop table alarm_member;
 drop table action_history;
 
 */
+
+
+-- DROP PROCEDURE IF EXISTS cstalk.regist_member;
+
+-- DELIMITER $$
+-- $$
+-- CREATE PROCEDURE cstalk.regist_member(IN _company_id VARCHAR(255),
+-- 	IN _login_name VARCHAR(255),
+-- 	IN _name VARCHAR(255),
+--   IN _auth_level INT)
+-- BEGIN
+-- 	/*
+      
+--       기능명 : 회원 로그인(상담사 로그인)
+--       매개변수
+--         -회사 id : _company_id VARCHAR(255)
+--         -직원번호 : _login_name VARCHAR(255)
+--         -이름 : _name VARCHAR(255)
+
+--     */
+
+--     -- 회원 id
+--     -- 회원의 speaker id
+--     DECLARE v_member_id INT;
+--     DECLARE v_speaker_id INT;
+
+--     -- 기존 등록된 회원 조회
+--     SELECT id, speaker_id INTO v_member_id, v_speaker_id
+--       FROM member WHERE company_id = _company_id AND login_name = _login_name;
+
+--     -- 회원 존재 여부에 따라 분기
+--     IF v_member_id IS NULL THEN
+--         -- 등록된 회원이 없으면 speaker, member 테이블 insert 
+--         INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 0);
+--         SET v_speaker_id = LAST_INSERT_ID();
+        
+--         INSERT INTO member(company_id, speaker_id, login_name, name, auth_level) VALUES(_company_id, v_speaker_id, _login_name, _name, _auth_level);
+--     ELSE
+--         -- 회원이 존재하면 member, speaker 테이블의 이름 값 컬럼을 update
+--         UPDATE member
+--             SET name = _name
+--           WHERE id = v_member_id;
+          
+--         UPDATE speaker2
+--             SET name = _name
+--           WHERE id = v_speaker_id; 
+--     END IF;
+-- END$$
+-- DELIMITER ;

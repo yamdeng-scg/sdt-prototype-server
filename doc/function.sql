@@ -509,7 +509,8 @@ BEGIN
         INSERT INTO message_read (company_id, room_id, message_id, speaker_id)
               SELECT _company_id, room_id, v_message_id, speaker_id
                 FROM room_speaker
-              WHERE speaker_id != _speaker_id;
+              WHERE room_id = _room_id
+                AND speaker_id != _speaker_id;
         
         -- room 상태 가져오기
         SELECT state INTO v_room_state
@@ -539,7 +540,7 @@ BEGIN
 				WHERE
 					message_id = m.id
 					AND read_date IS NULL
-			) not_read_count,
+			) no_read_count,
 			r.name AS room_name,
 			s.name AS speaker_name,
 			r.is_online,
