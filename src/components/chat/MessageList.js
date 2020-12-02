@@ -157,7 +157,7 @@ class MessageList extends React.Component {
   }
 
   render() {
-    let { clientHeight, index } = this.props;
+    let { clientHeight } = this.props;
     let messsageListComponent = this.convertMessageListToComponet();
     return (
       <React.Fragment>
@@ -168,7 +168,7 @@ class MessageList extends React.Component {
             position: 'relative',
             padding: '10px 10px 90px 10px'
           }}
-          id={'messageListScroll' + index}
+          id={'messageListScroll'}
         >
           {messsageListComponent}
         </div>
