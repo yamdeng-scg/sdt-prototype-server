@@ -278,7 +278,7 @@ CREATE TABLE IF NOT EXISTS `chat_message` (
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT '메시지를 입력한 사용자 id(speaker table)',
   `room_id` bigint(5) unsigned NOT NULL COMMENT '방 id(room table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `message_type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:일반,1:img,2:mv,3:attach,4:link',
+  `message_type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0(일반), 1(이미지), 2(동영상 : X), 3(첨부파일 : X), 4(링크), 5(이모티콘), 6(전화번호)',
   `not_read_count` smallint(5) signed NOT NULL DEFAULT 0 COMMENT '메시지 읽지 않은 사용자 count ',
   `is_system_message` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1:시스템메시지',
   `message` varchar(2047) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'message',
