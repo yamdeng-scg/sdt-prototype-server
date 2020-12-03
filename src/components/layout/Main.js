@@ -64,11 +64,6 @@ class Main extends React.Component {
     this.setState({ viewModal: false });
   }
 
-  componentDidMount() {
-    let { appStore } = this.props;
-    appStore.loadProfile();
-  }
-
   render() {
     let { viewModal } = this.state;
     let { chatStore, uiStore } = this.props;

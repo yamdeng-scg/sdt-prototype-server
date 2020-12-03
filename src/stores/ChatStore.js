@@ -1,9 +1,15 @@
 import { observable, action, runInAction, computed } from 'mobx';
 import { message } from 'antd';
 import io from 'socket.io-client';
+import moment from 'moment';
 import Constant from '../config/Constant';
 import Helper from '../utils/Helper';
 import SocketService from '../services/SocketService';
+import _ from 'lodash';
+
+// http://localhost:8090
+// https://cstalk-prototype.herokuapp.com
+const serverUrl = 'http://localhost:8090';
 
 class ChatStore {
   @observable
@@ -25,6 +31,10 @@ class ChatStore {
   @observable appId = '';
 
   @observable telNumber = '';
+
+  @observable notMoreMessage = false;
+
+  @observable afterJoinListCall = false;
 
   constructor(rootStore) {
     this.rootStore = rootStore;
@@ -57,7 +67,7 @@ class ChatStore {
 
   @action
   sendMessage() {
-    if (this.socket) {
+    if (!this.socket) {
       return;
     }
     let { speakerId, companyId, roomId } = this.customer;
@@ -87,7 +97,7 @@ class ChatStore {
 
   @action
   connectSocket() {
-    let socketUrl = 'http://localhost:8090';
+    let socketUrl = serverUrl;
     let socket = this.socket;
     let companyId = this.companyId;
     let appId = this.appId;
@@ -159,19 +169,63 @@ class ChatStore {
 
   @action
   onMessageList(messageList) {
-    // message.info('messageList  : ' + messageList);
+    if (!messageList.length) {
+      this.notMoreMessage = true;
+    }
     let oriMessageList = this.messageList.toJS();
-    this.messageList = messageList.concat(oriMessageList);
-    setTimeout(() => {
-      Helper.scrollBottomByDivId('messageListScroll', 500);
-    }, 500);
+    let updateMessageList = messageList.concat(oriMessageList);
+    let groupingDate = '';
+    updateMessageList.forEach(messageInfo => {
+      messageInfo.groupingDate = '';
+      let createDateString = moment(messageInfo.createDate).format(
+        'YYYY-MM-DD'
+      );
+      if (groupingDate !== createDateString) {
+        messageInfo.groupingDate = createDateString;
+        groupingDate = createDateString;
+      }
+    });
+    this.messageList = updateMessageList;
+    if (!this.afterJoinListCall) {
+      setTimeout(() => {
+        Helper.scrollBottomByDivId('messageListScroll', 300);
+        setTimeout(() => {
+          runInAction(() => {
+            this.afterJoinListCall = true;
+          });
+        }, 500);
+      }, 500);
+    }
   }
 
   @action
-  onMessage(message) {
+  moreMessageList() {
+    let messageList = this.messageList.toJS();
+    if (messageList.length && this.afterJoinListCall && !this.notMoreMessage) {
+      let firstMessage = messageList[0];
+      let startId = firstMessage.id;
+      let socket = this.socket;
+      let { roomId } = this.customer;
+      SocketService.moreMessage(socket, roomId, startId);
+    }
+  }
+
+  @action
+  onMessage(newMessage) {
     runInAction(() => {
       let oriMessageList = this.messageList.toJS();
-      this.messageList = oriMessageList.concat([message]);
+      let searchIndex = _.findIndex(oriMessageList, messageInfo => {
+        return (
+          messageInfo.groupingDate ===
+          moment(newMessage.createDate).format('YYYY-MM-DD')
+        );
+      });
+      if (searchIndex === -1) {
+        newMessage.groupingDate = moment(newMessage.createDate).format(
+          'YYYY-MM-DD'
+        );
+      }
+      this.messageList = oriMessageList.concat([newMessage]);
       setTimeout(() => {
         Helper.scrollBottomByDivId('messageListScroll', 500);
       }, 500);

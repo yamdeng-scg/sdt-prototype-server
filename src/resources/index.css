@@ -596,3 +596,16 @@ option:first {
   90% { transform: translate(1px, 2px) rotate(0deg); }
   100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+
+h2.center-line {
+  width: 100%; 
+  text-align: center; 
+  border-bottom: 1px solid #000; 
+  line-height: 0.1em;
+  margin: 10px 0 20px; 
+} 
+
+h2.center-line span { 
+   background:#fff; 
+   padding:0 10px; 
+}

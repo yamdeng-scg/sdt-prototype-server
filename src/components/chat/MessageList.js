@@ -2,6 +2,9 @@ import React from 'react';
 import Constant from '../../config/Constant';
 import moment from 'moment';
 
+import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
+
 const replaceHighLighText = function(message, searchValue) {
   let resultMessage = message;
   if (searchValue) {
@@ -14,10 +17,23 @@ const replaceHighLighText = function(message, searchValue) {
   return resultMessage;
 };
 
+@withRouter
+@inject('chatStore', 'uiStore')
+@observer
 class MessageList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.scrollRef = React.createRef();
+    this.handleHistoryScrollEvent = this.handleHistoryScrollEvent.bind(this);
+  }
+
+  handleHistoryScrollEvent() {
+    let scrollDom = this.scrollRef.current,
+      scrollTop = scrollDom.scrollTop;
+    if (scrollTop < 30) {
+      this.props.chatStore.moreMessageList();
+    }
   }
 
   convertMessageListToComponet() {
@@ -134,7 +150,7 @@ class MessageList extends React.Component {
               <div
                 style={{
                   position: 'absolute',
-                  right: -82,
+                  right: -90,
                   bottom: -2,
                   textAlign: 'left',
                   color: 'black'
@@ -149,6 +165,16 @@ class MessageList extends React.Component {
               </div>
             </div>
           </div>
+        );
+      }
+      if (messageInfo.groupingDate) {
+        return (
+          <React.Fragment>
+            <h2 className="center-line">
+              <span>{messageInfo.groupingDate}</span>
+            </h2>
+            {messageComponent}
+          </React.Fragment>
         );
       }
       return messageComponent;
@@ -169,6 +195,8 @@ class MessageList extends React.Component {
             padding: '10px 10px 90px 10px'
           }}
           id={'messageListScroll'}
+          ref={this.scrollRef}
+          onScroll={this.handleHistoryScrollEvent}
         >
           {messsageListComponent}
         </div>
