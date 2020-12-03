@@ -8,6 +8,7 @@ const logger = require('../util/logger');
 const dbService = require('./db');
 const companyService = require('./company');
 const helper = require('../util/helper');
+const _ = require('lodash');
 
 const service = {};
 
@@ -62,7 +63,7 @@ service.connect = function (socket) {
     dbService
       .selectQueryById('room.getDetail', dbParam)
       .then((result) => {
-        socketCallBack(result[0]);
+        // socketCallBack(result[0]);
         service.sendEvent(socket, 'room-detail', result[0]);
       })
       .catch(errorSocketHandler(socket));
@@ -123,8 +124,9 @@ service.connect = function (socket) {
         dbService
           .selectQueryById('message.findByRoomIdToSpeaker', listSearchParam)
           .then((result) => {
-            socketCallBack(result);
-            service.sendEvent(socket, 'message-list', result);
+            let messageList = _.sortBy(result, ['createDate']);
+            // socketCallBack(messageList);
+            service.sendEvent(socket, 'message-list', messageList);
           })
           .catch(errorSocketHandler(socket));
       });
@@ -179,7 +181,7 @@ service.connect = function (socket) {
     dbService
       .selectQueryById('room.closeRoom', dbParam)
       .then(() => {
-        socketCallBack({ success: true });
+        // socketCallBack({ success: true });
       })
       .catch(errorSocketHandler(socket));
   });
@@ -193,7 +195,7 @@ service.connect = function (socket) {
     dbService
       .selectQueryById('room.updateJoinHistory', dbParam)
       .then(() => {
-        socketCallBack({ success: true });
+        // socketCallBack({ success: true });
       })
       .catch(errorSocketHandler(socket));
   });
@@ -220,7 +222,7 @@ service.connect = function (socket) {
               })
             )
             .then(() => {
-              socketCallBack({ success: true });
+              // socketCallBack({ success: true });
             });
         }
       })
@@ -260,7 +262,7 @@ service.connect = function (socket) {
           endId: endId,
           speakerId: data.speakerId
         });
-        socketCallBack({ success: true });
+        // socketCallBack({ success: true });
       })
       .catch(errorSocketHandler(socket));
   });
@@ -286,8 +288,9 @@ service.connect = function (socket) {
     dbService
       .selectQueryById('message.findByRoomIdToSpeaker', listSearchParam)
       .then((result) => {
-        socketCallBack(result);
-        service.sendEvent(socket, 'message-list', result);
+        let messageList = _.sortBy(result, ['createDate']);
+        service.sendEvent(socket, 'message-list', messageList);
+        // socketCallBack(messageList);
       })
       .catch(errorSocketHandler(socket));
   });

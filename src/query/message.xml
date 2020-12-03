@@ -102,7 +102,7 @@
 				) 
 				AND m.message_admin_type <= IFNULL(:messageAdminType, 0) 
 			ORDER BY 
-				m.id ASC 
+				m.id DESC 
 			LIMIT 
 				:pageSize
 		]]>
