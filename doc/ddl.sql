@@ -547,7 +547,7 @@ SELECT id, createdate, workdate, '1', catesm, ask, reply, link, img, imgname
 FROM Template;
 
 update template2 m
-  join template s on s.id = m.id
+  join Template s on s.id = m.id
    set m.update_member_id = s.emp, m.member_id = s.emp;
 
 update template2 set category_small_id = null where category_small_id in(1, 288);
