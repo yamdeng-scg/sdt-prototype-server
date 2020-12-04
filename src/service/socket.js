@@ -58,7 +58,7 @@ service.connect = function (socket) {
   }
 
   // 방 상세
-  socket.on('room-detail', (data, socketCallBack) => {
+  socket.on('room-detail', (data) => {
     let dbParam = { id: data.roomId };
     dbService
       .selectQueryById('room.getDetail', dbParam)
@@ -78,7 +78,7 @@ service.connect = function (socket) {
   });
 
   // 방 조인
-  socket.on('join', (data, socketCallBack) => {
+  socket.on('join', (data) => {
     let dbParam = { roomId: data.roomId, speakerId: data.speakerId };
     socket.join(data.roomId);
     dbService
@@ -173,7 +173,7 @@ service.connect = function (socket) {
   });
 
   // 고객의 상담 종료
-  socket.on('end', (data, socketCallBack) => {
+  socket.on('end', (data) => {
     logger.info('end : ' + data);
     let profile = socket.profile;
     let roomId = profile.roomId;
@@ -187,7 +187,7 @@ service.connect = function (socket) {
   });
 
   // 챗봇 이력 저장
-  socket.on('save-history', (data, socketCallBack) => {
+  socket.on('save-history', (data) => {
     logger.info('save-history : ' + data);
     let history = data.history;
     let roomId = data.roomId;
@@ -201,7 +201,7 @@ service.connect = function (socket) {
   });
 
   // 메시지 삭제
-  socket.on('delete-message', (data, socketCallBack) => {
+  socket.on('delete-message', (data) => {
     logger.info('delete-messages : ' + data);
     let id = data.id;
     dbService
@@ -241,7 +241,7 @@ service.connect = function (socket) {
   });
 
   // 메시지 읽음
-  socket.on('read-message', (data, socketCallBack) => {
+  socket.on('read-message', (data) => {
     logger.info('read-message : ' + data);
     let roomId = data.roomId;
     let speakerId = data.speakerId;
@@ -274,7 +274,7 @@ service.connect = function (socket) {
   });
 
   // 메시지 더 보기
-  socket.on('message-list', (data, socketCallBack) => {
+  socket.on('message-list', (data) => {
     logger.info('message-list : ' + data);
     // 메시지 목록을 반환
     let listSearchParam = {

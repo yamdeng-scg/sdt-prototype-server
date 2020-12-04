@@ -27,6 +27,7 @@ const linkRoute = require('./route/link');
 const manualRoute = require('./route/manual');
 const statsRoute = require('./route/stats');
 const customerRoute = require('./route/customer');
+const relayRoute = require('./route/relay');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -72,6 +73,7 @@ app.use(CONFIG.API_PREFIX_URL + '/link', linkRoute);
 app.use(CONFIG.API_PREFIX_URL + '/manual', manualRoute);
 app.use(CONFIG.API_PREFIX_URL + '/stats', statsRoute);
 app.use(CONFIG.API_PREFIX_URL + '/customer', customerRoute);
+app.use(CONFIG.API_PREFIX_URL + '/relay', relayRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)
