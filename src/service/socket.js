@@ -179,6 +179,18 @@ service.connect = function (socket) {
                     })
                     .catch(errorSocketHandler(socket));
                 });
+              } else {
+                dbService
+                  .selectQueryById(
+                    'message.findByRoomIdToSpeaker',
+                    listSearchParam
+                  )
+                  .then((result) => {
+                    let messageList = _.sortBy(result, ['createDate']);
+                    // socketCallBack(messageList);
+                    service.sendEvent(socket, 'message-list', messageList);
+                  })
+                  .catch(errorSocketHandler(socket));
               }
             } else {
               // 상담사가 조인했을 경우
