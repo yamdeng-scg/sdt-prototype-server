@@ -1,8 +1,19 @@
 'use strict';
 
+// MESSAGE_TYPE : 0(일반), 1(이미지), 2(동영상 : X), 3(첨부파일 : X), 4(링크), 5(이모티콘), 6(전화번호)
 module.exports = {
   YES: 'Y',
   NO: 'N',
   COMPANY_CODE_SEOUL: '1',
-  COMPANY_CODE_INCHEON: '2'
+  COMPANY_CODE_INCHEON: '2',
+  ROOM_STATE_READY: 0,
+  ROOM_STATE_ING: 1,
+  ROOM_STATE_CLOSE: 2,
+  MESSAGE_TYPE_NORMAL: 0,
+  MESSAGE_TYPE_IMAGE: 1,
+  MESSAGE_TYPE_MOVIE: 2,
+  MESSAGE_TYPE_ATTACH: 3,
+  MESSAGE_TYPE_LINK: 4,
+  MESSAGE_TYPE_EMOTICION: 5,
+  MESSAGE_TYPE_TEL: 6
 };

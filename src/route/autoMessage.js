@@ -9,9 +9,12 @@ const queryIdPrefix = 'template.';
 // 자동 메시지 목록
 router.get('/', function (req, res, next) {
   let paramObject = req.paramObject;
+  let { companyId, type } = paramObject;
+  type = type || null;
   dbService
-    .selectQueryById(queryIdPrefix + 'findAutoMessageAll', {
-      companyId: paramObject.companyId
+    .selectQueryById(queryIdPrefix + 'findAutoMessage', {
+      companyId: companyId,
+      type: type
     })
     .then((result) => {
       res.send(result);

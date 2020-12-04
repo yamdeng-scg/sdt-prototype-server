@@ -8,6 +8,7 @@ const logger = require('../util/logger');
 const dbService = require('./db');
 const companyService = require('./company');
 const helper = require('../util/helper');
+const Constant = require('../config/constant');
 const _ = require('lodash');
 
 const service = {};
@@ -79,54 +80,120 @@ service.connect = function (socket) {
 
   // 방 조인
   socket.on('join', (data) => {
-    let dbParam = { roomId: data.roomId, speakerId: data.speakerId };
-    socket.join(data.roomId);
+    let { roomId, speakerId } = data;
+    let dbParam = { roomId: roomId, speakerId: speakerId };
+    socket.join(roomId);
     dbService
       .executeQueryByIdTogetherResult('room.joinRoom', dbParam)
       .then((result) => {
         let joinResult = result.result[1][0];
         let maxMessageId = joinResult['@maxMessageId'];
         let readLastMessageId = joinResult['@readLastMessageId'] || 0;
-        // 마지막 메시지가 null 이거나 마지막 읽음 메시지와 마지막 메시지가 동일하면 읽음 여부를 전달하지 않는다(그외는 전달)
-        if (maxMessageId) {
-          if (maxMessageId !== readLastMessageId) {
-            service.sendEventByRoomIdExceptMe(
-              socket,
-              data.roomId,
-              'read-message',
-              {
-                roomId: data.roomId,
-                startId: readLastMessageId,
-                endId: maxMessageId,
-                speakerId: data.speakerId
-              }
-            );
-          }
-        }
-        // 방을 온라인 상태로 변경
-        if (socket.isCustomer) {
-          dbService
-            .executeQueryById('room.updateOnline', {
-              roomId: data.roomId,
-              isOnline: 1
-            })
-            .catch(errorSocketHandler(socket));
-        }
-        // 메시지 목록을 반환
-        let listSearchParam = {
-          roomId: data.roomId,
-          speakerId: data.speakerId,
-          messageAdminType: null,
-          startId: null,
-          intervalDay: Config.DEFAULT_MESSAGE_INTERVAL_DAY,
-          pageSize: Config.DEFAULT_MESSAGE_MORE_PAGE_SIZE
-        };
         dbService
-          .selectQueryById('message.findByRoomIdToSpeaker', listSearchParam)
+          .selectQueryById('room.getDetail', { id: roomId })
           .then((result) => {
-            let messageList = _.sortBy(result, ['createDate']);
-            // socketCallBack(messageList);
-            service.sendEvent(socket, 'message-list', messageList);
+            let roomInfo = result[0];
+            let roomState = roomInfo.state;
+            // 마지막 메시지가 null 이거나 마지막 읽음 메시지와 마지막 메시지가 동일하면 읽음 여부를 전달하지 않는다(그외는 전달)
+            if (maxMessageId) {
+              if (maxMessageId !== readLastMessageId) {
+                service.sendEventByRoomIdExceptMe(
+                  socket,
+                  data.roomId,
+                  'read-message',
+                  {
+                    roomId: data.roomId,
+                    startId: readLastMessageId,
+                    endId: maxMessageId,
+                    speakerId: data.speakerId
+                  }
+                );
+              }
+            }
+            // 메시지 목록을 반환
+            let listSearchParam = {
+              roomId: data.roomId,
+              speakerId: data.speakerId,
+              messageAdminType: null,
+              startId: null,
+              intervalDay: Config.DEFAULT_MESSAGE_INTERVAL_DAY,
+              pageSize: Config.DEFAULT_MESSAGE_MORE_PAGE_SIZE
+            };
+            if (socket.isCustomer) {
+              // 고객이 조인했을때
+              // 방을 온라인 상태로 변경
+              dbService
+                .executeQueryById('room.updateOnline', {
+                  roomId: data.roomId,
+                  isOnline: 1
+                })
+                .catch(errorSocketHandler(socket));
+              // 방 상태가 종료이면(최초여도 종료임) : 시작 메시지를 보낸다. ---> 최초 조인을 했거나 종료 이후 다시 조인을 했을 경우
+              if (roomState === Constant.ROOM_STATE_CLOSE) {
+                let companyId = socket.companyId;
+                companyService.isHoliDay(companyId).then((isHoliDay) => {
+                  let startMessage = companyService.getStartMessage(
+                    companyId,
+                    isHoliDay
+                  );
+                  // 시작 메시지를 보낸다
+                  let messageParam = {
+                    companyId: companyId,
+                    roomId: roomId,
+                    speakerId: speakerId,
+                    mesasgeType: Constant.MESSAGE_TYPE_NORMAL,
+                    isSystemMessage: 1,
+                    message: startMessage,
+                    messageAdminType: 0,
+                    isEmployee: 1,
+                    messageDetail: '',
+                    templateId: null
+                  };
+                  dbService
+                    .executeQueryByIdTogetherResult(
+                      'message.create',
+                      messageParam
+                    )
+                    .then((dbResult) => {
+                      let newMessage = dbResult.result[0][0];
+                      service.sendEventByRoomId(
+                        roomId,
+                        'message',
+                        helper.changeKeyToCamelCase(newMessage)
+                      );
+                      dbService
+                        .selectQueryById(
+                          'message.findByRoomIdToSpeaker',
+                          listSearchParam
+                        )
+                        .then((result) => {
+                          let messageList = _.sortBy(result, ['createDate']);
+                          // socketCallBack(messageList);
+                          service.sendEvent(
+                            socket,
+                            'message-list',
+                            messageList
+                          );
+                        })
+                        .catch(errorSocketHandler(socket));
+                    })
+                    .catch(errorSocketHandler(socket));
+                });
+              }
+            } else {
+              // 상담사가 조인했을 경우
+              dbService
+                .selectQueryById(
+                  'message.findByRoomIdToSpeaker',
+                  listSearchParam
+                )
+                .then((result) => {
+                  let messageList = _.sortBy(result, ['createDate']);
+                  // socketCallBack(messageList);
+                  service.sendEvent(socket, 'message-list', messageList);
+                })
+                .catch(errorSocketHandler(socket));
+            }
           })
           .catch(errorSocketHandler(socket));
       });
@@ -139,6 +206,7 @@ service.connect = function (socket) {
     let profile = socket.profile;
     let roomId = data.roomId;
     let speakerId = data.speakerId || profile.speakerId;
+    let disableSendPush = data.disableSendPush;
     let isCustomer = socket.isCustomer;
     let messageParam = {
       companyId: companyId,
@@ -167,6 +235,16 @@ service.connect = function (socket) {
             service.sendEventByRoomId('speaker' + companyId, 'receive-event', {
               eventName: 'reload-ready-room'
             });
+          }
+        } else {
+          // 상담사가 작성한 메시지인 경우 push 보내기
+          // newMessage.messageAdminType
+          if (!newMessage.isOnline && !disableSendPush) {
+            companyService.sendPush(
+              companyId,
+              newMessage.gasappMemberNumber,
+              newMessage.message
+            );
           }
         }
       });

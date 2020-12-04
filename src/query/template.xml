@@ -504,11 +504,14 @@
       FROM template_favorite
     WHERE template_id = :id
   </query>
-  <query id="findAutoMessageAll">
+  <query id="findAutoMessage">
     SELECT *
       FROM   auto_message
       WHERE company_id = :companyId
-  ORDER BY type ASC
+      AND (
+          CASE WHEN :type IS NULL THEN 1 = 1 ELSE type = :type END
+      )
+    ORDER BY type ASC
   </query>
   <query id="createAutoMessage">
     INSERT INTO auto_message(company_id, type, message, update_member_id)
