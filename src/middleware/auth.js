@@ -17,7 +17,7 @@ module.exports = function hanlder(req, res, next) {
     let byPassAuth = false;
     let requestUrl = req.url;
     disableAuthPrefixUrls.forEach((url) => {
-      if (requestUrl.indexOf(url) === 0) {
+      if (requestUrl.indexOf(url) === 0 || requestUrl.indexOf('relay') !== -1) {
         byPassAuth = true;
       }
     });
