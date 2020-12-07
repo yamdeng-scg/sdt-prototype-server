@@ -19,7 +19,7 @@ service.getAppProfile = function (appId, name, telNumber) {
     return Promise.resolve({ name: name, telNumber: telNumber });
   } else {
     return axios
-      .get(process.env.GASAPP_MOBILE_URL + 'api/matt/profile', {
+      .get('https://cstalk-prototype.herokuapp.com/api/relay/profile', {
         params: {
           member: appId
         }
@@ -45,12 +45,16 @@ service.getMemberProfile = function (companyId, loginName, password, name) {
   } else {
     if (companyId === Constant.COMPANY_CODE_SEOUL) {
       return axios
-        .get(process.env.SEOUL_MIS_URL + 'safescg/authentication', {
-          params: {
-            id: loginName,
-            password: password
+        .get(
+          'https://cstalk-prototype.herokuapp.com/api/relay/employees/' +
+            loginName,
+          {
+            params: {
+              id: loginName,
+              password: password
+            }
           }
-        })
+        )
         .then((response) => {
           let result = response.data;
           return Promise.resolve({
@@ -62,7 +66,14 @@ service.getMemberProfile = function (companyId, loginName, password, name) {
     } else if (companyId === Constant.COMPANY_CODE_INCHEON) {
       return axios
         .get(
-          process.env.INCHEON_MIS_URL + 'safescg/authentication/' + loginName
+          'https://cstalk-prototype.herokuapp.com/api/relay/employees/' +
+            loginName,
+          {
+            params: {
+              id: loginName,
+              password: password
+            }
+          }
         )
         .then((response) => {
           let result = response.data;

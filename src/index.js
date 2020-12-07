@@ -36,7 +36,6 @@ socketService.setSocketIo(io);
 io.on('connection', (socket) => {
   logger.info('connection socket : ' + socket);
   socketService.connect(socket);
-  socket.emit('receive-event', 'welcome');
 });
 
 server.listen(serverListenPort, () => {
