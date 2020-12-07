@@ -103,6 +103,7 @@ class ChatStore {
     let appId = this.appId;
     let name = this.name;
     let telNumber = this.telNumber;
+    this.afterJoinListCall = false;
     if (!socket || socket.disconnected) {
       socketUrl =
         socketUrl +
@@ -164,7 +165,10 @@ class ChatStore {
     let { roomId, speakerId } = customer;
     this.customer = customer;
     let socket = this.socket;
-    SocketService.join(socket, roomId, speakerId);
+    if (socket) {
+      SocketService.join(socket, roomId, speakerId);
+      this.saveHistory();
+    }
   }
 
   @action
@@ -188,13 +192,13 @@ class ChatStore {
     this.messageList = updateMessageList;
     if (!this.afterJoinListCall) {
       setTimeout(() => {
-        Helper.scrollBottomByDivId('messageListScroll', 300);
+        Helper.scrollBottomByDivId('messageListScroll', 500);
         setTimeout(() => {
           runInAction(() => {
             this.afterJoinListCall = true;
           });
-        }, 500);
-      }, 500);
+        }, 100);
+      }, 1000);
     }
   }
 
@@ -225,10 +229,22 @@ class ChatStore {
           'YYYY-MM-DD'
         );
       }
-      this.messageList = oriMessageList.concat([newMessage]);
       setTimeout(() => {
         Helper.scrollBottomByDivId('messageListScroll', 500);
       }, 500);
+      let socket = this.socket;
+      let { speakerId, roomId } = this.customer;
+      if (newMessage.speakerId !== speakerId) {
+        SocketService.readMessage(
+          socket,
+          roomId,
+          speakerId,
+          newMessage.id,
+          newMessage.id
+        );
+        newMessage.noReadCount = newMessage.noReadCount - 1;
+      }
+      this.messageList = oriMessageList.concat([newMessage]);
     });
   }
 
@@ -238,8 +254,25 @@ class ChatStore {
   }
 
   @action
-  onReadMessage(readMessage) {
-    message.info('readMessage : ' + readMessage);
+  onReadMessage(data) {
+    message.info('readMessage : ' + data);
+    let { speakerId, roomId } = this.customer;
+    // room 정보가 동일하고 speakerId가 내가 아닌 경우에만 처리
+    if (roomId === data.roomId) {
+      if (speakerId !== data.speakerId) {
+        let messageList = this.messageList.toJS();
+        let newMessageList = messageList.map(info => {
+          if (info.noReadCount !== 0) {
+            // id가 startId 보다 크거나 endId 보다 작거나 같은 경우에 읽음 처리 -1
+            if (info.id >= data.startId - 1 && info.id <= data.endId) {
+              info.noReadCount = info.noReadCount - 1;
+            }
+          }
+          return info;
+        });
+        this.messageList = newMessageList;
+      }
+    }
   }
 
   @action
@@ -258,6 +291,12 @@ class ChatStore {
   }
 
   @action
+  review(reviewScore) {
+    let socket = this.socket;
+    SocketService.review(socket, reviewScore);
+  }
+
+  @action
   end() {
     let socket = this.socket;
     let customer = this.customer;
@@ -266,13 +305,13 @@ class ChatStore {
   }
 
   @action
-  saveHistory(historyJson) {
+  saveHistory() {
     let socket = this.socket;
     let customer = this.customer;
     let { roomId } = customer;
-    SocketService.end(socket, roomId, [
+    SocketService.saveHistory(socket, roomId, [
       {
-        m: '나도 오늘 저녁이 기대된다!',
+        m: '나도 오늘 저녁이 기대된다!222',
         t: '2019-08-23 17:41:28'
       },
       {

@@ -78,6 +78,9 @@ class Main extends React.Component {
       messageList
     } = chatStore;
     let listClientHeight = clientHeight - 280;
+    if (connectedSocket) {
+      listClientHeight = clientHeight - 350;
+    }
     return (
       <React.Fragment>
         <div
@@ -232,6 +235,32 @@ class Main extends React.Component {
                       로그인
                     </Button>
                   )}
+                </Col>
+                <Col
+                  span={18}
+                  offset={6}
+                  className={connectedSocket ? '' : 'none'}
+                >
+                  <Button
+                    block
+                    className="bold mrt5"
+                    onClick={() => chatStore.end()}
+                  >
+                    종료
+                  </Button>
+                </Col>
+                <Col
+                  span={18}
+                  offset={6}
+                  className={connectedSocket ? '' : 'none'}
+                >
+                  <Button
+                    block
+                    className="bold mrt5"
+                    onClick={() => chatStore.review(1)}
+                  >
+                    리뷰
+                  </Button>
                 </Col>
               </Row>
               <Row>

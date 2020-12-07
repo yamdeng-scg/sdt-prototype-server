@@ -19,6 +19,10 @@ class SocketService {
     socket.emit('message', messageInfo);
   }
 
+  review(socket, reviewScore) {
+    socket.emit('review', { reviewScore: reviewScore });
+  }
+
   end(socket, roomId) {
     socket.emit('end', { roomId: roomId });
   }
