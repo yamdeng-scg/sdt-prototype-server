@@ -272,6 +272,7 @@ service.connect = function (socket) {
       .selectQueryById('room.closeRoom', dbParam)
       .then(() => {
         // socketCallBack({ success: true });
+        socket.close();
       })
       .catch(errorSocketHandler(socket));
   });
@@ -279,7 +280,7 @@ service.connect = function (socket) {
   // 챗봇 이력 저장
   socket.on('save-history', (data) => {
     logger.info('save-history : ' + data);
-    let history = data.history;
+    let history = data.data;
     let roomId = data.roomId;
     let dbParam = { roomId: roomId, history: JSON.stringify(history) };
     dbService
@@ -397,6 +398,25 @@ service.connect = function (socket) {
         })
         .catch(errorSocketHandler(socket));
     }
+  });
+
+  // 리뷰하기
+  socket.on('review', (data) => {
+    logger.info('review : ' + data);
+    let { reviewScore } = data;
+    let profile = socket.profile;
+    let { companyId, gasappMemberNumber } = profile;
+    let dbParam = {
+      companyId: companyId,
+      gasappMemberNumber: gasappMemberNumber,
+      reviewScore: reviewScore
+    };
+    dbService
+      .insert('talk_review', dbParam)
+      .then(() => {
+        service.sendEvent(socket, 'end', { success: true });
+      })
+      .catch(errorSocketHandler(socket));
   });
 };
 
