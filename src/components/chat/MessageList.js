@@ -1,6 +1,7 @@
 import React from 'react';
 import Constant from '../../config/Constant';
 import moment from 'moment';
+import { Button, Modal } from 'antd';
 
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -23,9 +24,19 @@ const replaceHighLighText = function(message, searchValue) {
 class MessageList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { viewModal: false, imageSrc: '' };
     this.scrollRef = React.createRef();
     this.handleHistoryScrollEvent = this.handleHistoryScrollEvent.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
+
+  openModal(imageSrc) {
+    this.setState({ viewModal: true, imageSrc: imageSrc });
+  }
+
+  closeModal() {
+    this.setState({ viewModal: false });
   }
 
   handleHistoryScrollEvent() {
@@ -63,7 +74,8 @@ class MessageList extends React.Component {
                 display: 'inline-block',
                 textAlign: 'center',
                 padding: '11px 15px 9px',
-                color: 'red'
+                color: 'red',
+                wordBreak: 'break-all'
               }}
             >
               <div>{message}</div>
@@ -91,14 +103,24 @@ class MessageList extends React.Component {
                   messageType === Constant.MESSAGE_TYPE_LINK ? 'bold' : '',
                 textAlign: 'left',
                 padding: '11px 15px 9px',
-                color: '#fff'
+                color: '#fff',
+                wordBreak: 'break-all'
               }}
             >
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: resultMessage
-                }}
-              />
+              {messageType === Constant.MESSAGE_TYPE_IMAGE ? (
+                <img
+                  src={message}
+                  style={{ maxHeight: 300, width: '100%' }}
+                  alt=""
+                  onClick={() => this.openModal(message)}
+                />
+              ) : (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: resultMessage
+                  }}
+                />
+              )}
               <div
                 style={{
                   position: 'absolute',
@@ -139,7 +161,8 @@ class MessageList extends React.Component {
                   messageType === Constant.MESSAGE_TYPE_LINK ? 'bold' : '',
                 textAlign: 'left',
                 padding: '11px 15px 9px',
-                color: '#fff'
+                color: '#fff',
+                wordBreak: 'break-all'
               }}
             >
               <div
@@ -184,9 +207,18 @@ class MessageList extends React.Component {
 
   render() {
     let { clientHeight } = this.props;
+    let { viewModal, imageSrc } = this.state;
     let messsageListComponent = this.convertMessageListToComponet();
     return (
       <React.Fragment>
+        {/* 연결 url 모달/ */}
+        <Modal
+          visible={viewModal}
+          footer={null}
+          onCancel={() => this.closeModal()}
+        >
+          <img src={imageSrc} style={{ width: '100%' }} alt="" />
+        </Modal>
         <div
           style={{
             height: clientHeight,

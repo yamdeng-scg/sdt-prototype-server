@@ -27,7 +27,8 @@ class SendMessageInput extends React.Component {
             chatStore.changeMessage(event.target.value);
           }}
           onKeyPress={event => {
-            if (event.ctrlKey && event.key === 'Enter') {
+            console.log('event.key : ' + event.key);
+            if (event.ctrlKey && event.charCode === 13) {
               chatStore.sendMessage();
             }
           }}
