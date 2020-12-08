@@ -423,7 +423,7 @@ CREATE OR REPLACE PROCEDURE match_room(
         -- room_speaker 테이블 insert
         IF v_room_speaker_id IS NULL THEN
             INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_customer)
-                VALUES(_room_id, v_speaker_id, v_max_message_id, 0);
+                VALUES(_room_id, v_speaker_id, NULL, 0);
         END IF;
         
         -- 방의 사용자 정보 삭제시키기(사용자 유형이 상담사인 경우만 삭제하고 상담할 상담사는 제외) : 정상적인 경우에는 필요없음 2차 검증
@@ -533,14 +533,14 @@ BEGIN
 				CASE WHEN m.is_employee = 1 THEN 0 ELSE 1 END
 			) AS is_customer,
 			(
-				SELECT
-					COUNT(1)
-				FROM
-					message_read
-				WHERE
-					message_id = m.id
-					AND read_date IS NULL
-			) no_read_count,
+        SELECT
+          CASE WHEN m.is_employee = 0 AND r.member_id IS NULL THEN 1 ELSE COUNT(1) END
+        FROM
+          message_read
+        WHERE
+          message_id = m.id
+          AND read_date IS NULL
+      ) no_read_count,
 			r.name AS room_name,
 			s.name AS speaker_name,
 			r.is_online,
