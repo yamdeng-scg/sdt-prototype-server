@@ -184,7 +184,8 @@ service.getBillDetail = function (
   return axios
     .get(
       'https://cstalk-prototype.herokuapp.com/api/relay/contract/' +
-        useContractnum,
+        useContractnum +
+        '/bill',
       {
         requestYm: requestYm,
         deadlineFlag: deadlineFlag

@@ -37,10 +37,27 @@ router.get('/:useContractNum', function (req, res, next) {
   let useContractNum = req.params.useContractNum;
   let paramObject = req.paramObject;
   let { companyId } = paramObject;
+  let result = null;
   companyService
-    .getContracts(companyId, useContractNum)
-    .then((data) => {
-      res.send(data);
+    .getContractDetail(companyId, useContractNum)
+    .then((contractInfo) => {
+      result = contractInfo;
+      if (result && result.history && result.history.length) {
+        let firstHistoryInfo = result.history[0];
+        return companyService
+          .getBillDetail(
+            companyId,
+            useContractNum,
+            firstHistoryInfo.requestYm,
+            firstHistoryInfo.deadlineFlag
+          )
+          .then((billInfo) => {
+            result.bill = billInfo;
+            res.send(result);
+          });
+      } else {
+        res.send(result);
+      }
     })
     .catch(errorRouteHandler(next));
 });
