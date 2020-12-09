@@ -169,14 +169,14 @@ router.post('/minwon', function (req, res) {
 });
 
 // 사용계약정보 상세
-router.get('/contractInfo/:useContractNum', function (req, res) {
+router.get('/contract/:useContractNum', function (req, res) {
   let useContractNum = req.params.useContractNum;
   console.log('useContractNum : ' + useContractNum);
   res.send(contractInfo);
 });
 
 // 사용계약번호 결제 상세 정보
-router.get('/bill/:useContractNum/detail', function (req, res) {
+router.get('/contract/:useContractNum/bill', function (req, res) {
   let paramObject = req.paramObject;
   let useContractNum = req.params.useContractNum;
   let { requestYm, deadlineFlag } = paramObject;

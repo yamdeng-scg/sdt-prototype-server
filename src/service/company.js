@@ -28,7 +28,8 @@ service.getAppProfile = function (appId, name, telNumber) {
         let result = response.data;
         return Promise.resolve({
           name: result.name,
-          telNumber: result.handphone
+          telNumber: result.handphone,
+          cash: result.cash
         });
       });
   }
@@ -145,6 +146,53 @@ service.sendPush = function (companyId, gasappMemberNumber, message) {
       let result = response.data;
       let isHoliday = result.isHoliday;
       return Promise.resolve(isHoliday);
+    });
+};
+
+// 계약번호 목록 가져오기
+service.getContracts = function (companyId, gasappMemberNumber) {
+  return axios
+    .get('https://cstalk-prototype.herokuapp.com/api/relay/contract', {
+      member: gasappMemberNumber
+    })
+    .then((response) => {
+      let result = response.data;
+      return Promise.resolve(result);
+    });
+};
+
+// 계약번호 상세 가져오기
+service.getContractDetail = function (companyId, useContractnum) {
+  return axios
+    .get(
+      'https://cstalk-prototype.herokuapp.com/api/relay/contract/' +
+        useContractnum
+    )
+    .then((response) => {
+      let result = response.data;
+      return Promise.resolve(result);
+    });
+};
+
+// 결제 상세 가져오기
+service.getBillDetail = function (
+  companyId,
+  useContractnum,
+  requestYm,
+  deadlineFlag
+) {
+  return axios
+    .get(
+      'https://cstalk-prototype.herokuapp.com/api/relay/contract/' +
+        useContractnum,
+      {
+        requestYm: requestYm,
+        deadlineFlag: deadlineFlag
+      }
+    )
+    .then((response) => {
+      let result = response.data;
+      return Promise.resolve(result);
     });
 };
 

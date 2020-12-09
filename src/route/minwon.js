@@ -22,6 +22,7 @@ router.post('/', function (req, res, next) {
     updateMemberId: paramObject.loginId,
     roomId: paramObject.roomId
   };
+  // TODO : company service를 통해서 민원 등록하기
   dbService
     .insert('minwon_history', dbQueryParam)
     .then((result) => {

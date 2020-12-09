@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `member` (
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
   `name` varchar(255) DEFAULT NULL COMMENT '직원 이름',
   `is_available` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
+  `password` varchar(255) DEFAULT NULL COMMENT '패스워드',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='회원';
 
