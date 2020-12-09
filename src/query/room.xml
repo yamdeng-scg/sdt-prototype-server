@@ -126,12 +126,10 @@
 								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
-								AND chat_message.is_employee = 0 
-								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
+								AND chat_message.is_employee = 0
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0)
 									FROM 
 										chat_message 
 									WHERE 
@@ -248,24 +246,16 @@
 						) AS customer_speaker_id, 
 						(
 							SELECT 
-								COUNT(DISTINCT chat_message.id) 
+								COUNT(distinct message_read.message_id)
 							FROM 
 								chat_message 
 								INNER JOIN message_read ON chat_message.id = message_read.message_id 
 							WHERE 
 								chat_message.room_id = r.id 
 								AND chat_message.is_employee = 0 
+								AND message_read.room_id = r.id
 								AND message_read.speaker_id != chat_message.speaker_id 
-								AND message_read.read_date IS NULL 
-								AND chat_message.id > (
-									SELECT 
-										MAX(id) 
-									FROM 
-										chat_message 
-									WHERE 
-										is_employee = 1 
-										AND room_id = r.id
-								)
+								AND message_read.read_date IS NULL
 						) AS no_read_count, 
 						(
 							SELECT 
@@ -521,7 +511,7 @@
 								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0)
 									FROM 
 										chat_message 
 									WHERE 
@@ -647,7 +637,7 @@
 								AND message_read.read_date IS NULL 
 								AND chat_message.id > (
 									SELECT 
-										MAX(id) 
+										IFNULL(MAX(id), 0) 
 									FROM 
 										chat_message 
 									WHERE 
