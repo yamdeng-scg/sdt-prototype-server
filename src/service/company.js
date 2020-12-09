@@ -152,7 +152,7 @@ service.sendPush = function (companyId, gasappMemberNumber, message) {
 // 계약번호 목록 가져오기
 service.getContracts = function (companyId, gasappMemberNumber) {
   return axios
-    .get('https://cstalk-prototype.herokuapp.com/api/relay/contract', {
+    .get('https://cstalk-prototype.herokuapp.com/api/relay/contracts', {
       member: gasappMemberNumber
     })
     .then((response) => {
