@@ -124,6 +124,75 @@ router.get('/tree', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
+// 카테고리 전체 목록 : 트리 형식으로(민원코드 존재한 것 들만)
+router.get('/tree/minwon', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let promiseList = [];
+  let categoryLargeList = [];
+  let categoryMiddleList = [];
+  let categorySmallList = [];
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryLargeByMinwonCodeExist', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryLargeList = result;
+        categoryLargeList.forEach((info) => {
+          info.key = 'a' + info.id;
+          info.title = info.name;
+          info.level = 1;
+        });
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategoryMiddleByMinwonCodeExist', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categoryMiddleList = result;
+        categoryMiddleList.forEach((info) => {
+          info.key = 'b' + info.id;
+          info.title = info.name;
+          info.level = 2;
+        });
+        return true;
+      })
+  );
+  promiseList.push(
+    dbService
+      .selectQueryById(queryIdPrefix + 'findCategorySmallByMinwonCodeExist', {
+        companyId: paramObject.companyId
+      })
+      .then((result) => {
+        categorySmallList = result;
+        categorySmallList.forEach((info) => {
+          info.key = 'c' + info.id;
+          info.title = info.name;
+          info.level = 3;
+        });
+        return true;
+      })
+  );
+  Promise.all(promiseList)
+    .then(() => {
+      categoryMiddleList.forEach((middleInfo) => {
+        middleInfo.children = _.filter(categorySmallList, (smallInfo) => {
+          return middleInfo.id === smallInfo.categoryMiddleId;
+        });
+      });
+      categoryLargeList.forEach((largeInfo) => {
+        largeInfo.children = _.filter(categoryMiddleList, (middleInfo) => {
+          return largeInfo.id === middleInfo.categoryLargeId;
+        });
+      });
+      res.send(categoryLargeList);
+    })
+    .catch(errorRouteHandler(next));
+});
+
 // 대분류 목록
 router.get('/large', function (req, res, next) {
   let paramObject = req.paramObject;

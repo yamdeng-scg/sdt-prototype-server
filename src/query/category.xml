@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <querys>
+  <query id="findCategoryLargeByMinwonCodeExist">
+    SELECT *
+      FROM category_large
+      WHERE company_id = :companyId
+        AND minwon_code IS NOT NULL
+      ORDER BY sort_index ASC
+  </query>
   <query id="findCategoryLarge">
     SELECT *
       FROM category_large
@@ -15,6 +22,16 @@
       WHERE  m.company_id = :companyId
       ORDER  BY m.sort_index ASC
   </query>
+  <query id="findCategoryMiddleByMinwonCodeExist">
+    SELECT m.*, 
+       l.name AS category_large_name 
+      FROM   category_middle m 
+            INNER JOIN category_large l 
+                    ON m.category_large_id = l.id 
+      WHERE  m.company_id = :companyId
+        AND m.minwon_code IS NOT NULL
+      ORDER  BY m.sort_index ASC
+  </query>
   <query id="findCategoryMiddleByLargeId">
     SELECT m.*, 
            l.NAME AS category_large_name 
@@ -23,6 +40,13 @@
                     ON m.category_large_id = l.id 
       WHERE  category_large_id = :largeId 
       ORDER  BY m.sort_index ASC 
+  </query>
+  <query id="findCategorySmallByMinwonCodeExist">
+    SELECT *
+      FROM v_category
+      WHERE company_id = :companyId
+        AND minwon_code IS NOT NULL
+      ORDER BY sort_index ASC
   </query>
   <query id="findCategorySmall">
     SELECT *
