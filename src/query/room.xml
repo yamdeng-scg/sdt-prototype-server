@@ -404,7 +404,7 @@
 	<query id="findSearchJoinHistory">
 		<![CDATA[
 			SELECT 
-				rjh.create_date AS join_start_date, 
+				rjh.create_date AS start_date, 
 				TIMESTAMPDIFF(
 					MINUTE, rjh.create_date, rjh.end_date
 				) speak_minute, 
@@ -414,7 +414,12 @@
 				(SELECT GROUP_CONCAT(DISTINCT message_detail)
            FROM chat_message
         	WHERE room_id = :roomId AND id BETWEEN IFNULL(rjh.start_message_id, 0) 
-              AND rjh.end_message_id) AS tags
+              AND rjh.end_message_id) AS tags,
+				(SELECT GROUP_CONCAT(DISTINCT category_small.name)
+						FROM chat_message left outer join template2 ON chat_message.template_id = template2.id
+												left outer join category_small on chat_message.id = category_small.id = template2.category_small_id
+					WHERE chat_message.room_id = :roomId AND chat_message.id BETWEEN IFNULL(rjh.start_message_id, 0) 
+							AND rjh.end_message_id) AS tags2
 			FROM 
 				room_join_history rjh
 				LEFT OUTER JOIN member mb ON mb.id = rjh.member_id 

@@ -160,7 +160,9 @@ router.post('/:id/transferRoom', function (req, res, next) {
 router.get('/:id/findSearchJoinHistory', function (req, res, next) {
   let id = req.params.id;
   let paramObject = req.paramObject;
-  let dbParam = { roomId: id, message: paramObject.message };
+  let { message } = paramObject;
+  message = message || '';
+  let dbParam = { roomId: id, message: message };
   let queryId = queryIdPrefix + 'findSearchJoinHistory';
   dbService
     .selectQueryById(queryId, dbParam)
