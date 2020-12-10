@@ -27,21 +27,21 @@ config.LOG_MAX_FILE_COUNT = 3;
 // };
 
 // db connection info
-// config.db = {
-//   host: 'localhost',
-//   user: 'scglab2',
-//   password: '1234',
-//   port: 3306,
-//   database: 'sdtprototype'
-// };
-
 config.db = {
-  host: '18.219.1.127',
-  user: 'cstalk',
-  password: 'cstalk1234',
+  host: 'localhost',
+  user: 'scglab2',
+  password: '1234',
   port: 3306,
-  database: 'cstalk'
+  database: 'sdtprototype'
 };
+
+// config.db = {
+//   host: '18.219.1.127',
+//   user: 'cstalk',
+//   password: 'cstalk1234',
+//   port: 3306,
+//   database: 'cstalk'
+// };
 
 // 메시지 조회 기간
 config.DEFAULT_MESSAGE_INTERVAL_DAY = 1500;

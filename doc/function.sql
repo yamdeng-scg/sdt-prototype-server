@@ -543,6 +543,7 @@ BEGIN
       ) no_read_count,
 			r.name AS room_name,
 			s.name AS speaker_name,
+      r.join_message_id as join_message_id,
 			r.is_online,
 			(
 			    SELECT
