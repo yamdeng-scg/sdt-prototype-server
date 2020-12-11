@@ -44,6 +44,7 @@ router.post('/login', function (req, res, next) {
             let filterProfile = _.pick(
               profile,
               'id',
+              'loginId',
               'companyId',
               'companyUseConfigJson',
               'companyName',
@@ -85,6 +86,7 @@ router.get('/profile', function (req, res, next) {
           let filterProfile = _.pick(
             profile,
             'id',
+            'loginId',
             'companyId',
             'companyUseConfigJson',
             'companyName',

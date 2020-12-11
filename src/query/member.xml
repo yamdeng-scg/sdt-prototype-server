@@ -61,7 +61,8 @@
 	<query id="getByLoginName">
     SELECT c.name            AS company_name, 
        c.use_config_json AS company_use_config_json, 
-       m.*
+       m.*,
+			 m.id as login_id
 		FROM   member m 
 					INNER JOIN company c 
 									ON m.company_id = c.id 
@@ -92,7 +93,8 @@
 	<query id="getDetail">
     SELECT c.name            AS company_name, 
        c.use_config_json AS company_use_config_json, 
-       m.* 
+       m.*,
+			 m.id as login_id
 		FROM   member m 
 					INNER JOIN company c 
 									ON m.company_id = c.id 
