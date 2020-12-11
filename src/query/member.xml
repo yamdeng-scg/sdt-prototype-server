@@ -56,7 +56,7 @@
 		]]>
 	</query>
 	<query id="regist">
-    CALL regist_member(:companyId, :loginName, :name, :authLevel)
+    CALL regist_member(:companyId, :loginName, :name, :authLevel, :deptName, :positionName, :useStatus)
 	</query>
 	<query id="getByLoginName">
     SELECT c.name            AS company_name, 

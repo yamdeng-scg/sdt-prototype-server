@@ -31,8 +31,10 @@ CREATE TABLE IF NOT EXISTS `member` (
   `profile_image_id` bigint(5) unsigned DEFAULT NULL COMMENT '파일첨부 id(file_attach table)',
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
   `name` varchar(255) DEFAULT NULL COMMENT '직원 이름',
-  `is_available` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
+  `use_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
   `password` varchar(255) DEFAULT NULL COMMENT '패스워드',
+  `dept_name` varchar(255) DEFAULT NULL COMMENT '부서명',
+  `position_name` varchar(255) DEFAULT NULL COMMENT '직급명',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='회원';
 
@@ -48,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `category_large` (
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
   `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
+  `use_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='카테고리 대분류';
 
@@ -64,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `category_middle` (
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
   `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
+  `use_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='카테고리 중분류';
 
@@ -80,6 +84,7 @@ CREATE TABLE IF NOT EXISTS `category_small` (
   `minwon_code` varchar(255) DEFAULT NULL COMMENT '민원코드',
   `minwon_name` varchar(255) DEFAULT NULL COMMENT '민원코드명',
   `sort_index` INT DEFAULT NULL COMMENT '정렬 정보',
+  `use_status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '사용가능 여부',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='카테고리 소분류';
 

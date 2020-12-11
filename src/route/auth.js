@@ -29,7 +29,9 @@ router.post('/login', function (req, res, next) {
         name: profile.name,
         loginName: profile.loginName,
         deptName: profile.deptName,
-        authLevel: 9
+        positionName: profile.positionName,
+        authLevel: profile.authLevel,
+        useStatus: profile.useStatus
       };
       return dbService.executeQueryById(queryIdPrefix + 'regist', dbParam);
     })
@@ -51,7 +53,10 @@ router.post('/login', function (req, res, next) {
               'state',
               'profileImageId',
               'speakerId',
-              'name'
+              'name',
+              'deptName',
+              'positionName',
+              'useStatus'
             );
             let authJsonWebToken = jwt.sign(
               Object.assign({}, filterProfile),
@@ -89,7 +94,10 @@ router.get('/profile', function (req, res, next) {
             'state',
             'profileImageId',
             'speakerId',
-            'name'
+            'name',
+            'deptName',
+            'positionName',
+            'useStatus'
           );
           let authJsonWebToken = jwt.sign(
             Object.assign({}, filterProfile),

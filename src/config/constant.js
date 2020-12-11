@@ -1,6 +1,7 @@
 'use strict';
 
 // MESSAGE_TYPE : 0(일반), 1(이미지), 2(동영상 : X), 3(첨부파일 : X), 4(링크), 5(이모티콘), 6(전화번호)
+// 0:sys, 1:super, 2:admin, 3:mgr, 4:emp, 7:reader,9:guest
 module.exports = {
   YES: 'Y',
   NO: 'N',
@@ -15,5 +16,12 @@ module.exports = {
   MESSAGE_TYPE_ATTACH: 3,
   MESSAGE_TYPE_LINK: 4,
   MESSAGE_TYPE_EMOTICION: 5,
-  MESSAGE_TYPE_TEL: 6
+  MESSAGE_TYPE_TEL: 6,
+  MEMBER_AUTH_SYS: 0,
+  MEMBER_AUTH_SUPER: 1,
+  MEMBER_AUTH_ADMIN: 2,
+  MEMBER_AUTH_MANAGER: 3,
+  MEMBER_AUTH_EMP: 4,
+  MEMBER_AUTH_READER: 7,
+  MEMBER_AUTH_GUEST: 9
 };

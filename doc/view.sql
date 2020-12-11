@@ -87,7 +87,8 @@ AS
          `s`.`update_member_id`        AS `member_id`,
          `s`.`minwon_code`     AS `minwon_code`,
          `s`.`minwon_name`     AS `minwon_name`,
-         `s`.`sort_index`     AS `sort_index`
+         `s`.`sort_index`     AS `sort_index`,
+         `s`.`use_status`     AS `use_status`
   from   ((`category_small` `s`
            join `category_middle` `m`
              on (( `s`.`category_middle_id` = `m`.`id` )))

@@ -184,6 +184,11 @@
       FROM chat_message
     WHERE id = :id
 	</query>
+	<query id="deleteApplyValue">
+    UDPATE chat_message
+      SET is_delete = 1
+    WHERE id = :id
+	</query>
 	<query id="deleteMessageRead">
     DELETE 
       FROM message_read

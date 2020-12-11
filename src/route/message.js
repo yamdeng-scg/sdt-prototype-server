@@ -5,6 +5,7 @@ const router = express.Router();
 const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const Config = require('../config/config');
+const companyConfig = require('../config/company');
 const AppError = require('../error/AppError');
 const queryIdPrefix = 'message.';
 
@@ -31,6 +32,8 @@ router.get('/', function (req, res, next) {
 // 메시지 삭제
 router.delete('/:id', function (req, res, next) {
   let id = req.params.id;
+  let { companyId } = req.paramObject;
+  let isMessageDelete = companyConfig[companyId].isMessageDelete;
   dbService
     .selectQueryById(queryIdPrefix + 'getReadCountByMessageId', { id: id })
     .then((result) => {
@@ -39,18 +42,28 @@ router.delete('/:id', function (req, res, next) {
       if (readCount < 0) {
         throw new AppError('읽은 메시지입니다', null, 500);
       } else {
-        return dbService
-          .selectQueryById(queryIdPrefix + 'deleteMessageRead', {
-            id: id
-          })
-          .then(() =>
-            dbService.selectQueryById(queryIdPrefix + 'delete', {
+        if (isMessageDelete) {
+          return dbService
+            .executeQueryById(queryIdPrefix + 'deleteMessageRead', {
               id: id
             })
-          )
-          .then(() => {
-            res.send({ success: true });
-          });
+            .then(() =>
+              dbService.executeQueryById(queryIdPrefix + 'delete', {
+                id: id
+              })
+            )
+            .then(() => {
+              res.send({ success: true });
+            });
+        } else {
+          return dbService
+            .executeQueryById(queryIdPrefix + 'deleteApplyValue', {
+              id: id
+            })
+            .then(() => {
+              res.send({ success: true });
+            });
+        }
       }
     })
     .catch(errorRouteHandler(next));

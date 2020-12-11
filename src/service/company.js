@@ -2,14 +2,7 @@
 const axios = require('axios');
 const moment = require('moment');
 const Constant = require('../config/constant');
-
-const companyConfig = {};
-companyConfig[Constant.COMPANY_CODE_SEOUL] = {
-  launch: { start: '11:00', end: '12:00' }
-};
-companyConfig[Constant.COMPANY_CODE_INCHEON] = {
-  launch: { start: '11:30', end: '12:30' }
-};
+const companyConfig = require('../config/company');
 
 const service = {};
 
@@ -41,7 +34,10 @@ service.getMemberProfile = function (companyId, loginName, password, name) {
     return Promise.resolve({
       name: name,
       deptName: '인사과',
-      loginName: loginName
+      loginName: loginName,
+      positionName: '과장',
+      authLevel: 9,
+      useStatus: 1
     });
   } else {
     if (companyId === Constant.COMPANY_CODE_SEOUL) {
@@ -61,7 +57,10 @@ service.getMemberProfile = function (companyId, loginName, password, name) {
           return Promise.resolve({
             name: result.name,
             deptName: result.deptName,
-            loginName: loginName
+            loginName: loginName,
+            positionName: '과장',
+            authLevel: 9,
+            useStatus: 1
           });
         });
     } else if (companyId === Constant.COMPANY_CODE_INCHEON) {
@@ -81,7 +80,10 @@ service.getMemberProfile = function (companyId, loginName, password, name) {
           return Promise.resolve({
             name: result.name,
             deptName: result.deptName,
-            loginName: loginName
+            loginName: loginName,
+            positionName: '과장',
+            authLevel: 9,
+            useStatus: 1
           });
         });
     }
@@ -108,8 +110,8 @@ service.isHoliDay = function (companyId) {
 service.getStartMessage = function (companyId, isHoliDay) {
   console.log('companyId : ' + companyId);
   let message = '';
-  let launchInfo = companyConfig[companyId].launch;
-  let { start, end } = launchInfo;
+  let launchTime = companyConfig[companyId].launchTime;
+  let { start, end } = launchTime;
   let today = moment();
   let beforeTime = moment(start, 'hh:mm');
   let afterTime = moment(end, 'hh:mm');
