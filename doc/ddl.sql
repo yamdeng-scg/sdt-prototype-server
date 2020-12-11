@@ -773,8 +773,8 @@ ALTER TABLE chat_message ADD CONSTRAINT chat_message_template_FK FOREIGN KEY (te
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
-ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES chat_message(id);
-ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
+-- ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES chat_message(id);
+-- ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id, speaker_id);
 

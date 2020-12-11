@@ -32,38 +32,59 @@ router.get('/', function (req, res, next) {
 // 메시지 삭제
 router.delete('/:id', function (req, res, next) {
   let id = req.params.id;
-  let { companyId } = req.paramObject;
+  let { companyId, loginSpeakerId } = req.paramObject;
   let isMessageDelete = companyConfig[companyId].isMessageDelete;
   dbService
-    .selectQueryById(queryIdPrefix + 'getReadCountByMessageId', { id: id })
+    .selectQueryById(queryIdPrefix + 'getDetail', { id: id })
     .then((result) => {
-      let countInfo = result[0];
-      let readCount = countInfo.readCount;
-      if (readCount < 0) {
-        throw new AppError('읽은 메시지입니다', null, 500);
+      let messageInfo = result[0];
+      if (!messageInfo.isEmployee) {
+        throw new AppError(
+          '고객이 작성한 메시지는 삭제할 수 없습니다.',
+          null,
+          500
+        );
+      } else if (messageInfo.speakerId == loginSpeakerId) {
+        return dbService
+          .selectQueryById(queryIdPrefix + 'getReadCountByMessageId', {
+            id: id
+          })
+          .then((result) => {
+            let countInfo = result[0];
+            let readCount = countInfo.readCount;
+            if (readCount < 0) {
+              throw new AppError('읽은 메시지입니다', null, 500);
+            } else {
+              if (isMessageDelete) {
+                return dbService
+                  .executeQueryById(queryIdPrefix + 'deleteMessageRead', {
+                    id: id
+                  })
+                  .then(() =>
+                    dbService.executeQueryById(queryIdPrefix + 'delete', {
+                      id: id
+                    })
+                  )
+                  .then(() => {
+                    res.send({ success: true });
+                  });
+              } else {
+                return dbService
+                  .executeQueryById(queryIdPrefix + 'deleteApplyValue', {
+                    id: id
+                  })
+                  .then(() => {
+                    res.send({ success: true });
+                  });
+              }
+            }
+          });
       } else {
-        if (isMessageDelete) {
-          return dbService
-            .executeQueryById(queryIdPrefix + 'deleteMessageRead', {
-              id: id
-            })
-            .then(() =>
-              dbService.executeQueryById(queryIdPrefix + 'delete', {
-                id: id
-              })
-            )
-            .then(() => {
-              res.send({ success: true });
-            });
-        } else {
-          return dbService
-            .executeQueryById(queryIdPrefix + 'deleteApplyValue', {
-              id: id
-            })
-            .then(() => {
-              res.send({ success: true });
-            });
-        }
+        throw new AppError(
+          '메시지 삭제는 메시지 작성자만 가능합니다.',
+          null,
+          500
+        );
       }
     })
     .catch(errorRouteHandler(next));
