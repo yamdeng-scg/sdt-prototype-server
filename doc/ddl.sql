@@ -181,6 +181,7 @@ CREATE TABLE IF NOT EXISTS `template2` (
   `reply` varchar(1023) DEFAULT NULL COMMENT '답변',
   `link` varchar(255) DEFAULT NULL COMMENT 'link url',
   `link_protocol` varchar(10) DEFAULT NULL COMMENT '링크 프로토콜(web, app, tel)',
+  `link_text` varchar(10) DEFAULT NULL COMMENT '링크 text(내부 링크시 사용 : table relation을 걸지는 않음)',
   `image_path` varchar(511) DEFAULT NULL COMMENT 'image path(사용 X)',
   `image_name` varchar(127) DEFAULT NULL COMMENT 'image name(사용 X)',
   PRIMARY KEY (`id`)
@@ -233,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `room` (
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
   `member_id` bigint(5) unsigned DEFAULT NULL COMMENT '담당 회원 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `state` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:대기 or 방 최초 생성, 1:진행,8:종료,9:폐쇄 <--- (0:진행중,1:종료대기,2:종료,9:폐쇄)',
+  `state` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:대기, 1:진행, 8:종료(방 최초 생성), 9:폐쇄 <--- (0:진행중,1:종료대기,2:종료,9:폐쇄)',
   `join_message_id` bigint(5) unsigned DEFAULT NULL COMMENT 'join 시작(또는 재시작) 메시지 id(chat_message table)',
   `chatid` int(10) unsigned DEFAULT NULL COMMENT '상담ID(기간계 연동)',
   `join_history_json` varchar(2047) DEFAULT NULL COMMENT 'join 이전 history(json)',
@@ -558,6 +559,11 @@ update template2 m
    set m.update_member_id = s.emp, m.member_id = s.emp;
 
 update template2 set category_small_id = null where category_small_id in(1, 288);
+
+update template2 t
+  join link_detail l on t.link = l.link_url
+   set t.link = l.link_url
+where t.link is not null and t.link != '' and t.link like 'scg%';
 
 -- auto_message
 INSERT INTO auto_message (id, create_date, update_date, update_member_id, company_id, type, message)

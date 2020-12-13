@@ -37,6 +37,7 @@ router.post('/', function (req, res, next) {
   dbParam.reply = paramObject.reply;
   dbParam.link = paramObject.link;
   dbParam.linkProtocol = paramObject.linkProtocol;
+  dbParam.linkText = paramObject.linkText || '';
   dbParam.imagePath = paramObject.imagePath;
   dbParam.imageName = paramObject.imageName;
   dbService
@@ -101,6 +102,7 @@ router.put('/:id', function (req, res, next) {
   dbParam.ask = paramObject.ask;
   dbParam.reply = paramObject.reply;
   dbParam.link = paramObject.link;
+  dbParam.linkText = paramObject.linkText || '';
   dbParam.linkProtocol = paramObject.linkProtocol;
   dbParam.imagePath = paramObject.imagePath;
   dbParam.imageName = paramObject.imageName;

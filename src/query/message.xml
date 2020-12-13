@@ -168,7 +168,7 @@
 		]]>
 	</query>
 	<query id="create">
-    CALL make_message(:companyId, :roomId, :speakerId, :mesasgeType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail, :templateId) 
+    CALL make_message(:companyId, :roomId, :speakerId, :messageType, :isSystemMessage, :message, :messageAdminType, :isEmployee, :messageDetail, :templateId) 
 	</query>
 	<query id="readMessage">
     CALL read_message(:roomId, :speakerId, :startId, :endId) 
