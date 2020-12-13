@@ -49,6 +49,14 @@ let contractInfo = {
       num1: '02',
       num2: '701',
       num3: '6654'
+    },
+    address: {
+      address2: '851, 제7789부대 방패기계실 (남현동)',
+      address1: '서울특별시 관악구 과천대로'
+    },
+    maskingAddress: {
+      address2: '****, 제7789부대 방패기계실 (***)',
+      address1: '서울특별시 관악구 ****'
     }
   },
   history: [
@@ -111,14 +119,27 @@ let contracts = [
     main: 1,
     alias: '우리집',
     jinbunAddress: null,
-    newAddress: '서울특별시 마포구 ********,103호 (***)'
+    address: {
+      address2: '851, 제7789부대 방패기계실 (남현동)',
+      address1: '서울특별시 관악구 과천대로'
+    },
+    maskingAddress: {
+      address2: '****, 제7789부대 방패기계실 (***)',
+      address1: '서울특별시 관악구 ****'
+    }
   },
   {
     useContractNum: '6000000502',
     main: 0,
     alias: '장모님',
-    jinbunAddress: null,
-    newAddress: '서울특별시 마포구 ******, (****)'
+    address: {
+      address2: '851, 제7789부대 방패기계실 (남현동)',
+      address1: '서울특별시 관악구 과천대로'
+    },
+    maskingAddress: {
+      address2: '****, 제7789부대 방패기계실 (***)',
+      address1: '서울특별시 관악구 ****'
+    }
   }
 ];
 
