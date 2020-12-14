@@ -61,11 +61,11 @@ let contractInfo = {
   },
   history: [
     {
-      requestYm: '201912',
+      requestYm: '2019-12',
       deadlineFlag: '20'
     },
     {
-      requestYm: '201911',
+      requestYm: '2019-11',
       deadlineFlag: '20'
     }
   ]

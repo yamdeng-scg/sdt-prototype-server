@@ -18,13 +18,13 @@ config.LOG_MAX_FILE_SIZE = 10485760;
 config.LOG_MAX_FILE_COUNT = 3;
 
 // db connection info
-// config.db = {
-//   host: 'localhost',
-//   user: 'cstalk',
-//   password: 'cstalk12#$',
-//   port: 3306,
-//   database: 'cstalk'
-// };
+config.db = {
+  host: 'localhost',
+  user: 'cstalk',
+  password: 'cstalk12#$',
+  port: 3306,
+  database: 'cstalk'
+};
 
 // db connection info
 // config.db = {
@@ -35,13 +35,13 @@ config.LOG_MAX_FILE_COUNT = 3;
 //   database: 'sdtprototype'
 // };
 
-config.db = {
-  host: '18.219.1.127',
-  user: 'cstalk',
-  password: 'cstalk1234',
-  port: 3306,
-  database: 'cstalk'
-};
+// config.db = {
+//   host: '18.219.1.127',
+//   user: 'cstalk',
+//   password: 'cstalk1234',
+//   port: 3306,
+//   database: 'cstalk'
+// };
 
 // 메시지 조회 기간
 config.DEFAULT_MESSAGE_INTERVAL_DAY = 1500;
