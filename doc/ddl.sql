@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `template2` (
   `category_small_id` bigint(5) unsigned DEFAULT NULL COMMENT '카테고리 소분류 id(category_small table)',
   `ask` varchar(1023) NOT NULL COMMENT '질문',
   `reply` varchar(1023) DEFAULT NULL COMMENT '답변',
-  `link` varchar(255) DEFAULT NULL COMMENT 'link url',
+  `link_url` varchar(255) DEFAULT NULL COMMENT 'link url',
   `link_protocol` varchar(10) DEFAULT NULL COMMENT '링크 프로토콜(web, app, tel)',
   `link_text` varchar(10) DEFAULT NULL COMMENT '링크 text(내부 링크시 사용 : table relation을 걸지는 않음)',
   `image_path` varchar(511) DEFAULT NULL COMMENT 'image path(사용 X)',
@@ -550,8 +550,8 @@ SELECT id, createdate, workdate, '1', emp, pdf
 FROM PdfManualFavorite;
 
 -- template2
-INSERT INTO template2 (id, create_date, update_date, company_id, category_small_id, ask, reply, link, image_path, image_name)
-SELECT id, createdate, workdate, '1', catesm, ask, reply, link, img, imgname
+INSERT INTO template2 (id, create_date, update_date, company_id, category_small_id, ask, reply, link_url, image_path, image_name)
+SELECT id, createdate, workdate, '1', catesm, ask, reply, link_url, img, imgname
 FROM Template;
 
 update template2 m
@@ -561,9 +561,9 @@ update template2 m
 update template2 set category_small_id = null where category_small_id in(1, 288);
 
 update template2 t
-  join link_detail l on t.link = l.link_url
-   set t.link = l.link_url
-where t.link is not null and t.link != '' and t.link like 'scg%';
+  join link_detail l on t.link_url = l.link_url
+   set t.link_url = l.link_url
+where t.link_url is not null and t.link_url != '' and t.link_url like 'scg%';
 
 -- auto_message
 INSERT INTO auto_message (id, create_date, update_date, update_member_id, company_id, type, message)
