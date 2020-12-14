@@ -461,8 +461,8 @@
 		]]>
   </query>
   <query id="create">
-    INSERT INTO template2 (company_id, category_small_id, ask, reply, link, link_protocol, link_text, image_path, image_name, member_id, update_member_id)
-              VALUES (:companyId, :categorySmallId, :ask, :reply, :link, :linkProtocol, :linkText, :imagePath, :imageName, :loginId, :loginId)
+    INSERT INTO template2 (company_id, category_small_id, ask, reply, link_url, link_protocol, link_text, image_path, image_name, member_id, update_member_id)
+              VALUES (:companyId, :categorySmallId, :ask, :reply, :linkUrl, :linkProtocol, :linkText, :imagePath, :imageName, :loginId, :loginId)
   </query>
   <query id="createKeyword">
     INSERT INTO template_keyword(company_id, keyword_id, template_id, update_member_id)
@@ -480,7 +480,7 @@
       member_id = :loginId, 
       ask = :ask, 
       reply = :reply, 
-      link = :link,
+      link_url = :linkUrl,
       link_protocol = :linkProtocol,
       link_text = :linkText
       image_path = :imagePath, 

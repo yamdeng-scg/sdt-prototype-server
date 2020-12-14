@@ -35,7 +35,7 @@ router.post('/', function (req, res, next) {
   dbParam.categorySmallId = paramObject.categorySmallId;
   dbParam.ask = paramObject.ask;
   dbParam.reply = paramObject.reply;
-  dbParam.link = paramObject.link;
+  dbParam.linkUrl = paramObject.linkUrl;
   dbParam.linkProtocol = paramObject.linkProtocol;
   dbParam.linkText = paramObject.linkText || '';
   dbParam.imagePath = paramObject.imagePath;
