@@ -2,6 +2,7 @@
 
 // MESSAGE_TYPE : 0(일반), 1(이미지), 2(동영상 : X), 3(첨부파일 : X), 4(링크), 5(이모티콘), 6(전화번호)
 // 0:sys, 1:super, 2:admin, 3:mgr, 4:emp, 7:reader,9:guest
+// 0:신규대화인사말,1:배정지연,2:답변지연,3:상담 불가 시간 안내 메시지
 module.exports = {
   YES: 'Y',
   NO: 'N',
@@ -23,5 +24,9 @@ module.exports = {
   MEMBER_AUTH_MANAGER: 3,
   MEMBER_AUTH_EMP: 4,
   MEMBER_AUTH_READER: 7,
-  MEMBER_AUTH_GUEST: 9
+  MEMBER_AUTH_GUEST: 9,
+  AUTO_MESSAGE_TYPE_NEW: 0,
+  AUTO_MESSAGE_TYPE_MATCH_DELAY: 1,
+  AUTO_MESSAGE_TYPE_REPLY_DELAY: 2,
+  AUTO_MESSAGE_TYPE_NOT_TIME: 3
 };

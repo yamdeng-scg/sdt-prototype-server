@@ -458,6 +458,8 @@
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
+				v_customer.swear_count,
+				v_customer.insult_count,
 				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
@@ -584,6 +586,8 @@
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
+				v_customer.swear_count,
+				v_customer.insult_count,
 				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)

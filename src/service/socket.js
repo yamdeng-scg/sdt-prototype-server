@@ -259,7 +259,8 @@ service.connect = function (socket) {
             );
           }
         }
-      });
+      })
+      .catch(errorSocketHandler(socket));
   });
 
   // 고객의 상담 종료

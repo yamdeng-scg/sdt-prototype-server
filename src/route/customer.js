@@ -6,6 +6,27 @@ const dbService = require('../service/db');
 const errorRouteHandler = require('../error/routeHandler');
 const queryIdPrefix = 'customer.';
 
+// 욕설 사용 회수, 부적절한 멘트 횟수 반영
+router.put('/:id/badTalkCount', function (req, res, next) {
+  let id = req.params.id;
+  let paramObject = req.paramObject;
+  let dbParam = {
+    id: id,
+    swearCount: paramObject.swearCount,
+    insultCount: paramObject.insultCount,
+    loginId: paramObject.loginId,
+    companyId: paramObject.companyId
+  };
+  dbService
+    .executeQueryById(queryIdPrefix + 'updateSwearInsultCount', dbParam)
+    .then(() => {
+      return dbService.selectOne('v_customer', id).then((result) => {
+        res.send(result);
+      });
+    })
+    .catch(errorRouteHandler(next));
+});
+
 // 관심고객 지정 / 해제
 router.put('/:id/block', function (req, res, next) {
   let id = req.params.id;

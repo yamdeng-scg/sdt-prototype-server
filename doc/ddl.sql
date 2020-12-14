@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `auto_message` (
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
   `update_member_id` bigint(5) unsigned DEFAULT NULL COMMENT '수정자 id(member table)',
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:신규대화인사말,1:배정지연,2:답변지연',
+  `type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '0:신규대화인사말,1:배정지연,2:답변지연,3:상담 불가 시간 안내 메시지',
   `message` varchar(1023) NOT NULL COMMENT '멘트',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='자동 메시지';
