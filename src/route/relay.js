@@ -45,11 +45,7 @@ let contractInfo = {
     paymentType: '은행이체',
     contractStatus: '정상',
     productName: '업무난방용',
-    telNumber: {
-      num1: '02',
-      num2: '701',
-      num3: '6654'
-    },
+    handphone: '010-9702-6654',
     address: {
       address2: '851, 제7789부대 방패기계실 (남현동)',
       address1: '서울특별시 관악구 과천대로'
@@ -118,7 +114,6 @@ let contracts = [
     useContractNum: '6000000486',
     main: 1,
     alias: '우리집',
-    jinbunAddress: null,
     address: {
       address2: '851, 제7789부대 방패기계실 (남현동)',
       address1: '서울특별시 관악구 과천대로'
