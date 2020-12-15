@@ -101,7 +101,7 @@ router.put('/:id', function (req, res, next) {
   dbParam.categorySmallId = paramObject.categorySmallId;
   dbParam.ask = paramObject.ask;
   dbParam.reply = paramObject.reply;
-  dbParam.link = paramObject.link;
+  dbParam.linkUrl = paramObject.linkUrl;
   dbParam.linkText = paramObject.linkText || '';
   dbParam.linkProtocol = paramObject.linkProtocol;
   dbParam.imagePath = paramObject.imagePath;

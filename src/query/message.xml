@@ -12,7 +12,8 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+					  room_id = r.id
+						AND message_id = m.id
 						AND read_date IS NULL
 				) no_read_count,
 				r.name as room_name,
@@ -73,7 +74,8 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+						room_id = r.id
+						AND message_id = m.id
 						AND read_date IS NULL
 				) no_read_count,
 				r.name as room_name,
@@ -119,7 +121,8 @@
 					FROM
 						message_read
 					WHERE
-						message_id = m.id
+						room_id = r.id
+						AND message_id = m.id
 						AND read_date IS NULL
 				) no_read_count,
 				r.name as room_name,

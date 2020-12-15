@@ -414,7 +414,9 @@
 				(SELECT GROUP_CONCAT(DISTINCT message_detail)
            FROM chat_message
         	WHERE room_id = :roomId AND id BETWEEN IFNULL(rjh.start_message_id, 0) 
-              AND rjh.end_message_id) AS tags,
+              AND rjh.end_message_id
+  						AND message_detail IS NOT NULL
+	    			  AND message_detail != '') AS tags,
 				(SELECT GROUP_CONCAT(DISTINCT category_small.name)
 						FROM chat_message left outer join template2 ON chat_message.template_id = template2.id
 												left outer join category_small on chat_message.id = category_small.id = template2.category_small_id
