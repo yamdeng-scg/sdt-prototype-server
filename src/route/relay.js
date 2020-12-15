@@ -46,6 +46,7 @@ let contractInfo = {
     contractStatus: '정상',
     productName: '업무난방용',
     handphone: '010-9702-6654',
+    meterReplaceDate: '2017-03-20',
     address: {
       address2: '851, 제7789부대 방패기계실 (남현동)',
       address1: '서울특별시 관악구 과천대로'
@@ -53,6 +54,11 @@ let contractInfo = {
     maskingAddress: {
       address2: '****, 제7789부대 방패기계실 (***)',
       address1: '서울특별시 관악구 ****'
+    },
+    safeCheck: {
+      sendDate: '2020-08-07',
+      checkResult: '적합',
+      notPassDetail: null
     }
   },
   history: [
