@@ -195,6 +195,22 @@ service.getBillDetail = function (
     )
     .then((response) => {
       let result = response.data;
+      let previousUnpayInfos = result.previousUnpayInfos || [];
+      let newPreviousUnpayInfos = [];
+      let previousUnpayLatelyMonth =
+        companyConfig[companyId].previousUnpayLatelyMonth;
+      let latelyPreviousUnpayAmounts = 0;
+      for (let index = 0; index < previousUnpayInfos.length; index++) {
+        if (index < previousUnpayLatelyMonth) {
+          let unpayInfo = previousUnpayInfos[index];
+          newPreviousUnpayInfos.push(unpayInfo);
+          latelyPreviousUnpayAmounts =
+            latelyPreviousUnpayAmounts + unpayInfo.unpayAmtAll;
+        }
+      }
+      result.latelyPreviousUnpayAmounts = latelyPreviousUnpayAmounts;
+      result.previousUnpayInfos = newPreviousUnpayInfos;
+      result.previousUnpayCount = previousUnpayInfos.length;
       return Promise.resolve(result);
     });
 };
