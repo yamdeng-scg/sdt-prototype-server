@@ -43,21 +43,19 @@ router.post('/', function (req, res, next) {
   dbService
     .insert('template2', dbParam)
     .then((newTemplate) => {
-      if (isFavorite === 1) {
+      let promiseList = [];
+      if (isFavorite) {
         let favoriteParam = {};
         favoriteParam.companyId = paramObject.companyId;
         favoriteParam.loginId = paramObject.loginId;
         favoriteParam.templateId = newTemplate.id;
-        dbService
-          .executeQueryById(
-            queryIdPrefix + 'createTemplateFavorite',
+        promiseList.push(
+          dbService.executeQueryById(
+            queryIdPrefix + 'createFavorite',
             favoriteParam
           )
-          .catch((error) => {
-            logger.error('createTemplateFavorite error : ' + error);
-          });
+        );
       }
-      let promiseList = [];
       let keywordIds = paramObject.keywordIds;
       if (keywordIds && keywordIds.length) {
         for (
@@ -112,21 +110,30 @@ router.put('/:id', function (req, res, next) {
     })
     .then(() => {
       return dbService.update('template2', dbParam, id).then(() => {
+        let promiseList = [];
         let favoriteParam = {};
         favoriteParam.companyId = paramObject.companyId;
         favoriteParam.loginId = paramObject.loginId;
         favoriteParam.templateId = id;
-        if (isFavorite === 1) {
-          dbService
-            .executeQueryById(
-              queryIdPrefix + 'createTemplateFavorite',
+        let favoritePromise = null;
+        if (isFavorite) {
+          favoritePromise = dbService
+            .selectQueryById(
+              queryIdPrefix + 'getFavoriteByLoginId',
               favoriteParam
             )
-            .catch((error) => {
-              logger.error('createTemplateFavorite error : ' + error);
+            .then((result) => {
+              if (result.length === 0) {
+                return dbService.executeQueryById(
+                  queryIdPrefix + 'createFavorite',
+                  favoriteParam
+                );
+              } else {
+                return Promise.resolve();
+              }
             });
         } else {
-          dbService
+          favoritePromise = dbService
             .executeQueryById(
               queryIdPrefix + 'deleteFavoriteToMember',
               favoriteParam
@@ -135,7 +142,7 @@ router.put('/:id', function (req, res, next) {
               logger.error('deleteFavoriteToMember error : ' + error);
             });
         }
-        let promiseList = [];
+        promiseList.push(favoritePromise);
         let keywordIds = paramObject.keywordIds;
         if (keywordIds && keywordIds.length) {
           for (
