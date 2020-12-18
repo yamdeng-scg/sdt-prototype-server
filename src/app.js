@@ -55,7 +55,7 @@ app
 
 app.use(authMiddleware);
 app.use(loggerMiddleware);
-app.use(CONFIG.API_PREFIX_URL + '/auth', authRoute);
+app.use('/auth', authRoute);
 app.use(CONFIG.API_PREFIX_URL + '/company', companyRoute);
 app.use(CONFIG.API_PREFIX_URL + '/application', applicationRoute);
 app.use(CONFIG.API_PREFIX_URL + '/search-query', searchQueryRoute);

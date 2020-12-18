@@ -5,8 +5,8 @@ const AppError = require('../error/AppError');
 const jwt = require('jsonwebtoken');
 const CONFIG = require('../config');
 const disableAuthPrefixUrls = [
-  '/api/auth/login',
-  '/api/auth/profile',
+  '/auth/login',
+  '/auth/profile',
   '/api/company',
   '/api/auth/admin/login',
   '/socket.io'

@@ -113,7 +113,7 @@ router.get('/profile', function (req, res, next) {
       })
       .catch(errorRouteHandler(next));
   } catch (err) {
-    throw new AppError('인증정보가 존재하지 않습니다', [err], 403);
+    throw new AppError('인증정보가 존재하지 않습니다', [err], 401);
   }
 });
 
