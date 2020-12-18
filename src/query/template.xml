@@ -280,11 +280,13 @@
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
-        ) AS is_favortie 
+        ) AS is_favortie,
+        m.name as member_name
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
-        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id AND f.member_id = :loginId
+        INNER JOIN member m ON t.member_id = m.id 
       WHERE 
         t.company_id = :companyId 
         AND (
@@ -319,7 +321,7 @@
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :searchType = 'keyword' THEN t.id IN (
+          CASE WHEN :searchType = 'keyword' AND :searchValue != '' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
@@ -348,7 +350,8 @@
             WHERE 
               name LIKE CONCAT('%', :searchValue, '%')
           ) 
-          OR t.id IN (
+          OR (
+            CASE WHEN :searchValue != '' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
@@ -362,6 +365,7 @@
                 WHERE 
                   name = :searchValue
               )
+            ) ELSE 1 = 1 END
           ) ELSE 1 = 1 END
         ) 
       ORDER BY 
@@ -378,7 +382,8 @@
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
-        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id 
+        LEFT OUTER JOIN template_favorite f ON t.id = f.template_id AND f.member_id = :loginId
+        INNER JOIN member m ON t.member_id = m.id
       WHERE 
         t.company_id = :companyId
         AND (
@@ -413,7 +418,7 @@
           ) ELSE 1 = 1 END
         ) 
         AND (
-          CASE WHEN :searchType = 'keyword' THEN t.id IN (
+          CASE WHEN :searchType = 'keyword' AND :searchValue != '' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
@@ -442,7 +447,8 @@
             WHERE 
               name LIKE CONCAT('%', :searchValue, '%')
           ) 
-          OR t.id IN (
+          OR (
+            CASE WHEN :searchValue != '' THEN t.id IN (
             SELECT 
               template_id 
             FROM 
@@ -456,6 +462,7 @@
                 WHERE 
                   name = :searchValue
               )
+            ) ELSE 1 = 1 END
           ) ELSE 1 = 1 END
         )
 		]]>
@@ -471,6 +478,11 @@
   <query id="createFavorite">
     INSERT INTO template_favorite(company_id, template_id, member_id)
         VALUES (:companyId, :templateId, :loginId)
+  </query>
+  <query id="getFavoriteByLoginId">
+    SELECT *
+    FROM template_favorite
+    WHERE member_id = :loginId and template_id = :templateId
   </query>
   <query id="update">
     UPDATE 
