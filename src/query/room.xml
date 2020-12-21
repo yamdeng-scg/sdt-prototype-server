@@ -73,7 +73,7 @@
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
 				c.name as company_name,
-				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
+				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
 					FROM room_join_history rjh
@@ -199,7 +199,7 @@
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
 				c.name as company_name,
-				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
+				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
 					FROM room_join_history rjh
@@ -322,7 +322,7 @@
 				v_customer.is_block AS is_block_customer,
 				v_customer.gasapp_member_number as gasapp_member_number,
 				v_customer.tel_number as tel_number,
-				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
+				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
 					FROM room_join_history rjh
@@ -406,7 +406,7 @@
 			SELECT 
 				rjh.create_date AS start_date, 
 				TIMESTAMPDIFF(
-					MINUTE, rjh.create_date, rjh.end_date
+					SECOND, rjh.create_date, rjh.end_date
 				) speak_minute, 
 				rjh.*, 
 				mb.name AS member_name,
@@ -462,7 +462,7 @@
 				v_customer.tel_number as tel_number,
 				v_customer.swear_count,
 				v_customer.insult_count,
-				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
+				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
 					FROM room_join_history rjh
@@ -590,7 +590,7 @@
 				v_customer.tel_number as tel_number,
 				v_customer.swear_count,
 				v_customer.insult_count,
-				TIMESTAMPDIFF(MINUTE, sub_room.join_start_date, chat_message.create_date) as speak_minute,
+				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)
 						FROM room_join_history rjh
