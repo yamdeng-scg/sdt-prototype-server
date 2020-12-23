@@ -527,7 +527,7 @@ BEGIN
         -- 방 상태가 종료 이상인 경우 : 상태를 대기로, 종료일, 조인 메시지 id를 최신화
         IF v_room_state > 1 THEN
             UPDATE room
-              SET state = 0, end_date = null, join_message_id = v_message_id, state = 0, join_date = now()
+              SET state = 0, end_date = null, join_message_id = v_message_id
             WHERE id = _room_id;
         END IF;
         

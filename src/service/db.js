@@ -291,7 +291,7 @@ service.select = function (tableName, searchParam) {
         return service
           .selectQueryByStr(selectFullQuerySting, queryParam)
           .then((data) => {
-            result.data = data;
+            result.list = data;
             return result;
           });
       });

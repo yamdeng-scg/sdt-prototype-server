@@ -462,6 +462,7 @@
 				v_customer.tel_number as tel_number,
 				v_customer.swear_count,
 				v_customer.insult_count,
+				v_customer.block_type,
 				TIMESTAMPDIFF(SECOND, sub_room.join_start_date, chat_message.create_date) as speak_minute,
 				(
 					SELECT COUNT(1)

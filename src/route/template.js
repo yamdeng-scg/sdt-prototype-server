@@ -283,7 +283,7 @@ router.get('/', function (req, res, next) {
       return dbService
         .selectQueryById(queryIdPrefix + 'findSearch', dbParam)
         .then((data) => {
-          result.data = data;
+          result.list = data;
           res.send(result);
         });
     })
