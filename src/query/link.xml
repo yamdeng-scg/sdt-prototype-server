@@ -12,7 +12,7 @@
     SELECT *
       FROM link_menu
       WHERE company_id = :companyId
-      ORDER BY name ASC
+      ORDER BY id ASC
   </query>
   <query id="findDetailAll">
     SELECT *
