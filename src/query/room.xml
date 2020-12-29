@@ -2,6 +2,7 @@
 <querys>
 	<query id="getCurrentTimeStats">
 		<![CDATA[
+			set session sql_mode='NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES';
 			SELECT 
 				SUM(
 					CASE WHEN r.member_id IS NULL THEN 0 ELSE 1 end
