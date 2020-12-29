@@ -11,6 +11,8 @@ if (process.env.NODE_ENV === 'production') {
 } else if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: path.join(__dirname, '../.env.development') });
 } else if (process.env.NODE_ENV === 'local') {
+  dotenv.config({ path: path.join(__dirname, '../.env.local') });
+} else {
   dotenv.config({ path: path.join(__dirname, '../.env') });
 }
 

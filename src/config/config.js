@@ -49,4 +49,7 @@ config.DEFAULT_MESSAGE_INTERVAL_DAY = 1500;
 // 더보기 메시지 size
 config.DEFAULT_MESSAGE_MORE_PAGE_SIZE = 30;
 
+// 파일 업로드 경로
+config.fileUploadPath = 'upload';
+
 module.exports = config;

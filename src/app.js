@@ -29,6 +29,7 @@ const statsRoute = require('./route/stats');
 const customerRoute = require('./route/customer');
 const contractRoute = require('./route/contract');
 const relayRoute = require('./route/relay');
+const fileRoute = require('./route/file');
 const errorMiddleware = require('./middleware/error');
 const authMiddleware = require('./middleware/auth');
 const loggerMiddleware = require('./middleware/logger');
@@ -37,15 +38,6 @@ appInit(app);
 
 app
   .use(compress())
-  .use(
-    history({
-      index: '/index.html',
-      rewrites: [
-        { from: /\/manual/, to: '/manual.html' },
-        { from: /\/admin/, to: '/admin.html' }
-      ]
-    })
-  )
   .use(express.static(__dirname + '/../public'))
   .use(bodyParser.json())
   .use(bodyParser.urlencoded({ extended: true }))
@@ -76,6 +68,7 @@ app.use(CONFIG.API_PREFIX_URL + '/stats', statsRoute);
 app.use(CONFIG.API_PREFIX_URL + '/customer', customerRoute);
 app.use(CONFIG.API_PREFIX_URL + '/contract', contractRoute);
 app.use(CONFIG.API_PREFIX_URL + '/relay', relayRoute);
+app.use(CONFIG.API_PREFIX_URL + '/file', fileRoute);
 
 app
   .use(errorMiddleware.notFoundHandler)

@@ -7,6 +7,7 @@ const SocketError = require('../error/SocketError');
 const logger = require('../util/logger');
 const dbService = require('./db');
 const companyService = require('./company');
+const fileService = require('./file');
 const helper = require('../util/helper');
 const Constant = require('../config/constant');
 const _ = require('lodash');
@@ -216,21 +217,35 @@ service.connect = function (socket) {
     logger.info('message : ' + data);
     let companyId = socket.companyId;
     let profile = socket.profile;
-    let roomId = data.roomId;
-    let speakerId = data.speakerId || profile.speakerId;
-    let disableSendPush = data.disableSendPush;
+    let {
+      roomId,
+      speakerId,
+      disableSendPush,
+      messageType,
+      isSystemMessage,
+      message,
+      messageAdminType,
+      messageDetail,
+      templateId,
+      fileName
+    } = data;
+    speakerId = speakerId || profile.speakerId;
     let isCustomer = socket.isCustomer;
+    if (fileName) {
+      message = fileService.saveFile(fileName);
+      messageDetail = 'image';
+    }
     let messageParam = {
       companyId: companyId,
       roomId: roomId,
       speakerId: speakerId,
-      messageType: data.messageType || 0,
-      isSystemMessage: data.isSystemMessage || 0,
-      message: data.message,
-      messageAdminType: data.messageAdminType || 0,
+      messageType: messageType || 0,
+      isSystemMessage: isSystemMessage || 0,
+      message: message,
+      messageAdminType: messageAdminType || 0,
       isEmployee: isCustomer ? 0 : 1,
-      messageDetail: data.messageDetail || '',
-      templateId: data.templateId || null
+      messageDetail: messageDetail || '',
+      templateId: templateId || null
     };
     dbService
       .executeQueryByIdTogetherResult('message.create', messageParam)
