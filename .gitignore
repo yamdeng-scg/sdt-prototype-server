@@ -4,3 +4,5 @@ package-lock.json
 work/*
 yarn.lock
 *audit.json
+upload/*
+attach/*

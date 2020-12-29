@@ -11,7 +11,7 @@
       "name": "프로그램 시작",
       "runtimeExecutable": "yarn",
       "cwd": "${workspaceFolder}",
-      "runtimeArgs": ["start"],
+      "runtimeArgs": ["local"],
       "port": 5858
     }
   ]

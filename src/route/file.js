@@ -33,7 +33,7 @@ router.post('/uploadImage', upload.single('imageFile'), function (req, res) {
     file.originalname.lastIndexOf('.') + 1
   );
   uploadFileInfo.fileFullName =
-    uploadFileInfo.fileTempName + '.' + uploadFileInfo.fileExtension;
+    uploadFileInfo.fileName + '.' + uploadFileInfo.fileExtension;
   uploadFileInfo.fileType = file.mimetype;
   uploadFileInfo.fileUrl =
     process.env.FILE_DOWNLOAD_URL + 'temp/' + uploadFileInfo.fileName;

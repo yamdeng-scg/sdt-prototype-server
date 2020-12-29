@@ -16,6 +16,8 @@ const service = {};
 
 let socketIo = null;
 
+const imageTypeMessageDetailText = '이미지';
+
 // io 모듈 셋팅
 service.setSocketIo = function (io) {
   socketIo = io;
@@ -233,7 +235,7 @@ service.connect = function (socket) {
     let isCustomer = socket.isCustomer;
     if (fileName) {
       message = fileService.saveFile(fileName);
-      messageDetail = 'image';
+      messageDetail = imageTypeMessageDetailText;
     }
     let messageParam = {
       companyId: companyId,

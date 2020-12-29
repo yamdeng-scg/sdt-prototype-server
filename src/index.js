@@ -1,8 +1,6 @@
 'use strict';
 
-const logger = require('./util/logger');
 const process = require('process');
-const socketService = require('./service/socket');
 const path = require('path');
 const dotenv = require('dotenv');
 
@@ -15,6 +13,9 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   dotenv.config({ path: path.join(__dirname, '../.env') });
 }
+
+const logger = require('./util/logger');
+const socketService = require('./service/socket');
 
 // PORT 아규먼트가 전달이 않되어있을때는 8080 PORT를 default로 server run
 let serverListenPort = process.env.PORT || 8090;
