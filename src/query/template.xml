@@ -28,7 +28,7 @@
       t.*, 
       (
         CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 end
-      ) AS is_favortie 
+      ) AS is_favorite 
     FROM 
       template2 t 
       INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -68,7 +68,7 @@
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
-        ) AS is_favortie 
+        ) AS is_favorite 
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -111,7 +111,7 @@
         t.*, 
         (
           CASE WHEN f.member_id = 1 THEN 1 ELSE 0 END
-        ) AS is_favortie 
+        ) AS is_favorite 
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -155,7 +155,7 @@
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
-        ) AS is_favortie 
+        ) AS is_favorite 
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -199,7 +199,7 @@
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
-        ) AS is_favortie 
+        ) AS is_favorite 
       FROM 
         template2 t 
         INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -240,7 +240,7 @@
           tk.template_id = t.id
       ) AS keyword_names,
       t.*, 
-      1 AS is_favortie 
+      1 AS is_favorite 
     FROM 
       template2 t 
       INNER JOIN v_category vc ON t.category_small_id = vc.id 
@@ -280,7 +280,7 @@
         t.*, 
         (
           CASE WHEN f.member_id = :loginId THEN 1 ELSE 0 END
-        ) AS is_favortie,
+        ) AS is_favorite,
         m.name as member_name
       FROM 
         template2 t 
