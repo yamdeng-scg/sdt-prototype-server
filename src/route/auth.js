@@ -101,12 +101,12 @@ router.get('/profile', function (req, res, next) {
             'positionName',
             'useStatus'
           );
-          let authJsonWebToken = jwt.sign(
-            Object.assign({}, filterProfile),
-            Config.JSONTOKEN_SECRETKEY,
-            { expiresIn: Config.JSONTOKEN_EXPIRE }
-          );
-          res.send({ token: authJsonWebToken, profile: profile });
+          // let authJsonWebToken = jwt.sign(
+          //   Object.assign({}, filterProfile),
+          //   Config.JSONTOKEN_SECRETKEY,
+          //   { expiresIn: Config.JSONTOKEN_EXPIRE }
+          // );
+          res.send(filterProfile);
         } else {
           return Promise.reject(new AppError('존재하지 않는 ID 입니다'));
         }
