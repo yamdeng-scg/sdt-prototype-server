@@ -305,7 +305,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 // 템플릿 즐겨찾기 추가 / 삭제
-router.put('/:id/favorite', function (req, res, next) {
+router.post('/:id/favorite', function (req, res, next) {
   let id = req.params.id;
   let paramObject = req.paramObject;
   let value = paramObject.value;

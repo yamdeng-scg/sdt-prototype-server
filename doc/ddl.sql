@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `company` (
   `homepage` varchar(255) DEFAULT NULL COMMENT '회사 homepage',
   `use_config_json` varchar(1023) DEFAULT NULL COMMENT '회사별 설정 정보(json)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='회사';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='회사';
 
 
 -- member <--- emp : 회원
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `member` (
   `is_admin` tinyint(1) NOT NULL DEFAULT 0 COMMENT '시스템관리자 여부',
   `auth_level` tinyint(1) unsigned NOT NULL DEFAULT 7 COMMENT '0:sys, 1:super, 2:admin, 3:mgr, 4:emp, 7:reader,9:guest',
   `login_name` varchar(255) NOT NULL COMMENT '로그인 name(직원번호)',
-  `state` tinyint(1) unsigned NOT NULL DEFAULT 9 COMMENT '0:정상,1:휴식,2:회의,3:콜중,5:퇴근,9:기타',
+  `state` tinyint(1) unsigned NOT NULL DEFAULT 9 COMMENT '0:상담중,1:휴식,2:회의,3:콜중,5:퇴근,9:기타',
   `profile_image_id` bigint(5) unsigned DEFAULT NULL COMMENT '파일첨부 id(file_attach table)',
   `speaker_id` bigint(5) unsigned DEFAULT NULL COMMENT 'mesasge를 사용하는 1:1의 관계의 사용자 id(speaker는 customer, member와 같은 개념이므로 분류함 : speaker table)',
   `name` varchar(255) DEFAULT NULL COMMENT '직원 이름',
@@ -296,7 +296,7 @@ CREATE TABLE IF NOT EXISTS `chat_message` (
   `template_id` bigint(5) unsigned DEFAULT NULL COMMENT '템플릿 id(template table)',
   `is_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '메시지 삭제 여부(0, 1)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='메시지';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='메시지';
 
 -- room_speaker <--- spacespeaker : 방, 사용자 맵핑 정보
 CREATE TABLE IF NOT EXISTS `room_speaker` (
@@ -723,7 +723,7 @@ CREATE INDEX manual_company_id_IDX2 USING BTREE ON manual (company_id, manual_in
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE CASCADE;
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_manual_FK FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE;
-CREATE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id, manual_id);
+CREATE UNIQUE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id, manual_id);
 
 -- template2
 ALTER TABLE template2 ADD CONSTRAINT template_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
@@ -759,8 +759,8 @@ ALTER TABLE room ADD CONSTRAINT room_member_FK_2 FOREIGN KEY (last_member_id) RE
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
-ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
-ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
+-- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
+-- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_2 FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;

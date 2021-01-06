@@ -62,9 +62,18 @@ router.get('/tree', function (req, res, next) {
   let categoryLargeList = [];
   let categoryMiddleList = [];
   let categorySmallList = [];
+  let isMinwon = paramObject.isMinwon;
+  let largeQueryId = 'findCategoryLarge';
+  let middleQueryId = 'findCategoryMiddle';
+  let smallQueryId = 'findCategorySmall';
+  if (isMinwon === 'Y') {
+    largeQueryId = 'findCategoryLargeByMinwonCodeExist';
+    middleQueryId = 'findCategoryMiddleByMinwonCodeExist';
+    smallQueryId = 'findCategorySmallByMinwonCodeExist';
+  }
   promiseList.push(
     dbService
-      .selectQueryById(queryIdPrefix + 'findCategoryLarge', {
+      .selectQueryById(queryIdPrefix + largeQueryId, {
         companyId: paramObject.companyId
       })
       .then((result) => {
@@ -79,7 +88,7 @@ router.get('/tree', function (req, res, next) {
   );
   promiseList.push(
     dbService
-      .selectQueryById(queryIdPrefix + 'findCategoryMiddle', {
+      .selectQueryById(queryIdPrefix + middleQueryId, {
         companyId: paramObject.companyId
       })
       .then((result) => {
@@ -94,7 +103,7 @@ router.get('/tree', function (req, res, next) {
   );
   promiseList.push(
     dbService
-      .selectQueryById(queryIdPrefix + 'findCategorySmall', {
+      .selectQueryById(queryIdPrefix + smallQueryId, {
         companyId: paramObject.companyId
       })
       .then((result) => {

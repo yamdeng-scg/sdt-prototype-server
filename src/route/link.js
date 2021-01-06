@@ -8,7 +8,7 @@ const _ = require('lodash');
 const queryIdPrefix = 'link.';
 
 // 활성화 되어있는 메뉴에 속한 링크 상세 조회
-router.get('/findDetilByMenuIdAndEnableStatus', function (req, res, next) {
+router.get('/findDetailByMenuIdAndEnableStatus', function (req, res, next) {
   let paramObject = req.paramObject;
   dbService
     .selectQueryById(queryIdPrefix + 'findDetilByMenuIdAndEnableStatus', {

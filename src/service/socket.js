@@ -228,15 +228,10 @@ service.connect = function (socket) {
       message,
       messageAdminType,
       messageDetail,
-      templateId,
-      fileName
+      templateId
     } = data;
     speakerId = speakerId || profile.speakerId;
     let isCustomer = socket.isCustomer;
-    if (fileName) {
-      message = fileService.saveFile(fileName);
-      messageDetail = imageTypeMessageDetailText;
-    }
     let messageParam = {
       companyId: companyId,
       roomId: roomId,

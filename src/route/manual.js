@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const dbService = require('../service/db');
+const fileService = require('../service/file');
 const errorRouteHandler = require('../error/routeHandler');
 const _ = require('lodash');
 const queryIdPrefix = 'manual.';
@@ -41,7 +42,8 @@ router.get('/', function (req, res, next) {
     tag: paramObject.tag || null,
     searchValue: paramObject.searchValue || '',
     limit: pageSize * (page - 1),
-    pageSize: pageSize
+    pageSize: pageSize,
+    manualIndex: paramObject.manualIndex || 1
   };
   dbService
     .selectQueryById(queryIdPrefix + 'findSearchCount', dbParam)
@@ -80,6 +82,11 @@ router.get('/:id', function (req, res, next) {
 // 매뉴얼 등록
 router.post('/', function (req, res, next) {
   let paramObject = req.paramObject;
+  let fileName = paramObject.fileName;
+  let fileUrl = '';
+  if (fileName) {
+    fileUrl = fileService.saveFile(fileName);
+  }
   let dbParam = {};
   dbParam.updateMemberId = paramObject.loginId;
   dbParam.companyId = paramObject.companyId;
@@ -88,7 +95,7 @@ router.post('/', function (req, res, next) {
   dbParam.pageCode = paramObject.pageCode;
   dbParam.title = paramObject.title;
   dbParam.content = paramObject.content;
-  dbParam.pdfImagePath = paramObject.pdfImagePath;
+  dbParam.pdfImagePath = fileUrl;
   dbService
     .selectQueryById(queryIdPrefix + 'getNextPageNumber', dbParam)
     .then((result) => {
@@ -107,6 +114,11 @@ router.post('/', function (req, res, next) {
 router.put('/:id', function (req, res, next) {
   let id = req.params.id;
   let paramObject = req.paramObject;
+  let fileName = paramObject.fileName;
+  let fileUrl = '';
+  if (fileName) {
+    fileUrl = fileService.saveFile(fileName);
+  }
   let dbParam = {};
   dbParam.updateMemberId = paramObject.loginId;
   dbParam.pageNumber = paramObject.pageNumber;
@@ -114,7 +126,7 @@ router.put('/:id', function (req, res, next) {
   dbParam.pageCode = paramObject.pageCode;
   dbParam.title = paramObject.title;
   dbParam.content = paramObject.content;
-  dbParam.pdfImagePath = paramObject.pdfImagePath;
+  dbParam.pdfImagePath = fileName ? fileUrl : paramObject.pdfImagePath;
   dbService
     .update('manual', dbParam, id)
     .then((result) => {

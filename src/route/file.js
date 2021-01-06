@@ -22,7 +22,7 @@ try {
  image 업로드
 
 */
-router.post('/uploadImage', upload.single('imageFile'), function (req, res) {
+router.post('/uploadWithThumbnail', upload.single('file'), function (req, res) {
   let file = req.file;
   let uploadFileInfo = {};
   uploadFileInfo.status = 'upload';

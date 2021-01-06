@@ -55,4 +55,18 @@ router.get('/', function (req, res, next) {
     .catch(errorRouteHandler(next));
 });
 
+router.get('/findSearchByRoomId', function (req, res, next) {
+  let paramObject = req.paramObject;
+  let queryId = queryIdPrefix + 'findSearchByRoomId';
+  paramObject.roomId = paramObject.roomId || '';
+  paramObject.searchValue = paramObject.searchValue || '';
+  dbService
+    .selectQueryById(queryId, paramObject)
+    .then((result) => {
+      let responseResult = result;
+      res.send(responseResult);
+    })
+    .catch(errorRouteHandler(next));
+});
+
 module.exports = router;
