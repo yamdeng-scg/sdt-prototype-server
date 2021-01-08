@@ -415,7 +415,7 @@ CREATE PROCEDURE cstalk.match_room(
     IF v_member_id IS NULL THEN
         -- 방 종료 history 최신화 : 상담사가 종료된 상담을 다시 시작을 하고 고객이 작성한 메시지가 없을 경우 join_message_id와 join_history_json 정보는 이전 걸로 유지된다
         INSERT INTO room_join_history (room_id, start_message_id, member_id, join_history_json, company_id, update_member_id)
-            SELECT id, join_message_id, member_id, join_history_json, company_id, member_id
+            SELECT id, join_message_id, _member_id, join_history_json, company_id, _member_id
               FROM room
               WHERE id = _room_id;
         SET v_chatid = Last_Insert_ID();
