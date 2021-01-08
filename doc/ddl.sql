@@ -769,7 +769,7 @@ ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN K
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 -- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
 -- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
-ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
+ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_2 FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 
