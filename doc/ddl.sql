@@ -544,6 +544,14 @@ INSERT INTO manual (id, create_date, update_date, company_id, manual_index, page
 SELECT id, createdate, workdate, '1', 1, pno, pageno, pagecode, title, tags, content, pdfimg
 FROM PdfManual;
 
+INSERT INTO manual (create_date, update_date, company_id, manual_index, page_number, page_no, page_code, title, tags, content, pdf_image_path)
+SELECT createdate, workdate, '1', 2, pno, pageno, pagecode, title, tags, content, pdfimg
+FROM PdfManual2018;
+
+insert into manual(id, company_id, manual_index, page_number, page_no, page_code, title, tags, content, pdf_image_path)
+select id * 1000, company_id, 2, page_number, page_no, page_code, title, tags, content, pdf_image_path
+from manual
+
 -- manual_favorite
 INSERT INTO manual_favorite (id, create_date, update_date, company_id, member_id, manual_id)
 SELECT id, createdate, workdate, '1', emp, pdf

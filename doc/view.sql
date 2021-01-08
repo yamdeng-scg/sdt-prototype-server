@@ -92,5 +92,5 @@ AS
   from   ((`category_small` `s`
            join `category_middle` `m`
              on (( `s`.`category_middle_id` = `m`.`id` )))
-          join `CateLg` `l`
+          join `category_large` `l`
             on (( `m`.`category_large_id` = `l`.`id` ))) 
