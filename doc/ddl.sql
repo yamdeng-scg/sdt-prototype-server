@@ -736,7 +736,7 @@ CREATE UNIQUE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite
 -- template2
 ALTER TABLE template2 ADD CONSTRAINT template_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE template2 ADD CONSTRAINT template_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
-ALTER TABLE template2 ADD CONSTRAINT template_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id);
+ALTER TABLE template2 ADD CONSTRAINT template_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
 ALTER TABLE template2 ADD CONSTRAINT template_member_FK_1 FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 
 -- auto_message
