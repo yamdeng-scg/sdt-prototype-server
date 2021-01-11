@@ -126,7 +126,7 @@ CREATE OR REPLACE PROCEDURE regist_customer(
           INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 1);
           SET v_speaker_id = LAST_INSERT_ID();
           
-          INSERT INTO room(company_id, state, name) VALUES(_company_id, 2, _name);
+          INSERT INTO room(company_id, state, name) VALUES(_company_id, 8, _name);
           SET v_room_id = LAST_INSERT_ID();
 
           INSERT INTO room_speaker(room_id, speaker_id, is_customer) VALUES(v_room_id, v_speaker_id, 1);
