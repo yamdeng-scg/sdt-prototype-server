@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `company` (
   `homepage` varchar(255) DEFAULT NULL COMMENT '회사 homepage',
   `use_config_json` varchar(1023) DEFAULT NULL COMMENT '회사별 설정 정보(json)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='회사';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='회사';
 
 
 -- member <--- emp : 회원
@@ -296,7 +296,9 @@ CREATE TABLE IF NOT EXISTS `chat_message` (
   `template_id` bigint(5) unsigned DEFAULT NULL COMMENT '템플릿 id(template table)',
   `is_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '메시지 삭제 여부(0, 1)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT='메시지';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='메시지';
+ALTER TABLE chat_message MODIFY COLUMN company_id varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '회사 id(company table)';
+
 
 -- room_speaker <--- spacespeaker : 방, 사용자 맵핑 정보
 CREATE TABLE IF NOT EXISTS `room_speaker` (
@@ -508,6 +510,12 @@ update member
   join Speaker on Speaker.id = member.speaker_id
    set member.name = Speaker.name;
 
+insert into member(company_id, is_admin, auth_level, login_name, state, speaker_id, name, dept_name, position_name, use_status, password)
+values('1', 1, 0, 'seoul_admin', 0, null, '서울도시가스 관리자', 'SCGLAB', '서비스관리자', 1, '9fd0b9976a4287506e489a33b04ca9f2f0f29249692ff08b6c84f1fa82a51e97');
+
+insert into member(company_id, is_admin, auth_level, login_name, state, speaker_id, name, dept_name, position_name, use_status, password)
+values('2', 1, 0, 'inchon_admin', 0, null, '인천도시가스 관리자', 'SCGLAB', '서비스관리자', 1, '9fd0b9976a4287506e489a33b04ca9f2f0f29249692ff08b6c84f1fa82a51e97');
+
 -- category_large
 INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name, sort_index)
     SELECT id, createdate, workdate, CONCAT(cid, ''), name,  mwcode, mwname, id
@@ -548,10 +556,6 @@ INSERT INTO manual (create_date, update_date, company_id, manual_index, page_num
 SELECT createdate, workdate, '1', 2, pno, pageno, pagecode, title, tags, content, pdfimg
 FROM PdfManual2018;
 
-insert into manual(id, company_id, manual_index, page_number, page_no, page_code, title, tags, content, pdf_image_path)
-select id * 1000, company_id, 2, page_number, page_no, page_code, title, tags, content, pdf_image_path
-from manual
-
 -- manual_favorite
 INSERT INTO manual_favorite (id, create_date, update_date, company_id, member_id, manual_id)
 SELECT id, createdate, workdate, '1', emp, pdf
@@ -559,7 +563,7 @@ FROM PdfManualFavorite;
 
 -- template2
 INSERT INTO template2 (id, create_date, update_date, company_id, category_small_id, ask, reply, link_url, image_path, image_name)
-SELECT id, createdate, workdate, '1', catesm, ask, reply, link_url, img, imgname
+SELECT id, createdate, workdate, '1', catesm, ask, reply, link, img, imgname
 FROM Template;
 
 update template2 m
@@ -605,20 +609,12 @@ SELECT id, createdate, workdate, emp, CONCAT(cid, ''), state, startid, chatid, p
 FROM Space;
 
 UPDATE room
-set state = 8, member_id = null, last_member_id = member_id
-where state = 2;
-
-UPDATE room
-set state = 8, end_date = now(), member_id = null, last_member_id = member_id
-where state = 1;
+set state = 8, member_id = null, last_member_id = member_id, join_message_id = null, end_date = now()
+where state > 0;
 
 update room
 set join_message_id = null
 where join_message_id = 0;
-
-update room
-set state = 8, member_id = null, last_member_id = 1, join_message_id = null, chatid = concat(id, '')
-where state > 1
 
 -- room_join_history
 INSERT INTO room_join_history (id, create_date, update_date, company_id, member_id, room_id, start_message_id, end_message_id, end_date, last_member_id, category_small_id, join_history_json)
