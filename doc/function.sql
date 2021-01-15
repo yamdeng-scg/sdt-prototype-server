@@ -266,7 +266,7 @@ CREATE OR REPLACE PROCEDURE close_room(
 
     -- 방 정보 최신화 시키기
     UPDATE room
-        SET state = 8, member_id = null, last_member_id = member_id, join_message_id = null, end_date = now(), join_history_json = null, update_member_id = _login_id
+        SET state = 8, last_member_id = member_id, member_id = null, join_message_id = null, end_date = now(), join_history_json = null, update_member_id = _login_id
       WHERE id = _room_id;
 
     -- 마지막 메시지까지 모두 읽음 처리 : 속도 때문에 검토 필요
