@@ -441,7 +441,7 @@ CREATE TABLE IF NOT EXISTS `stats_hashtag` (
   `company_id` varchar(10) NOT NULL COMMENT '회사 id(company table)',
   `create_date` timestamp NULL DEFAULT current_timestamp() COMMENT '생성일',
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
-  `rank` int(10) unsigned DEFAULT 0 COMMENT '랭크',
+  `rank_num` int(10) unsigned DEFAULT 0 COMMENT '랭크',
   `save_date` varchar(10) NOT NULL COMMENT '기준일 (YYYY-MM-DD)',
   `name` varchar(10) NOT NULL COMMENT '태그명(카테고리 소분류, 메시지 상세...)',
   `issue_count` int(10) unsigned DEFAULT 0 COMMENT 'count',

@@ -77,7 +77,7 @@ insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url,
 insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '안전점검 이력조회', 'pathgasapp://1/safechecks', 1);
 insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '계량기교체 이력조회', 'pathgasapp://1/meters', 1);
 insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '알림설정', 'pathgasapp://1/members/push', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '사용계약번호 등록', 'pathgasapp://1/cashBenefitList', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '사용계약번호 등록', '/://1/company/addN', 1);
 
 -- 전화발신
 insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '서울도시가스 고객센터', 'tel://1588-5788', 1);

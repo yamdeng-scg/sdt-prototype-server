@@ -620,3 +620,51 @@ CREATE PROCEDURE cstalk.read_message(
     END IF;
 END$$
 DELIMITER ;
+
+
+-- 9. stats_hashtag_daily : 문의유형별 일일 집계
+DELIMITER $$
+$$
+CREATE DEFINER=`cstalk`@`localhost` PROCEDURE `cstalk`.`stats_hashtag_daily`(
+	IN _company_id VARCHAR(255),		-- 회사id (1-서울도시가스, 2-인천도시가스, ...)
+	IN _target_date VARCHAR(10)			-- 집계대상 일자(YYYY-MM-DD)
+)
+BEGIN
+		
+		-- 이미 집계된 데이터가 존재하는지 확인.
+		IF (		
+			SELECT a.id 
+			FROM stats_hashtag a 
+			WHERE 1=1
+			AND a.save_date = _target_date
+			LIMIT 1
+		) THEN
+		
+			-- 이미 집계된 데이터가 존재할 경우 : 등록되어 있는 데이터를 삭제 한다.
+			DELETE 
+			FROM stats_hashtag
+			WHERE save_date = _target_date;
+		
+		END IF;
+	
+		-- 집계 및 등록
+		INSERT INTO stats_hashtag (company_id, rank_num, save_date, name, issue_count)
+		SELECT _company_id as company_id 
+		 		,rank() over(order by a.count desc) as rank_num
+				,_target_date as save_date
+				,b.name
+				,a.count as issue_count
+		FROM(
+			SELECT a.category_small_id, count(*) as count
+			FROM minwon_history a
+			WHERE 1=1
+			AND a.create_date BETWEEN _target_date AND adddate(_target_date, 1)
+			AND a.category_small_id is not null
+			AND a.company_id = '1'
+			GROUP BY a.category_small_id
+		) a
+			INNER JOIN category_small b on (b.id = a.category_small_id)
+		WHERE 1=1;
+
+	END$$
+DELIMITER ;
