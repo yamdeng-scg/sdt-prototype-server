@@ -59,7 +59,7 @@ VIEW `v_room` AS SELECT
       ) 
     WHERE 
       `room_speaker`.`room_id` = `room`.`id` 
-      AND `speaker2`.`is_customer` = 1
+      AND `room_speaker`.`is_customer` = 1
   ) AS `customer_speaker_id`, 
   (
     SELECT 
