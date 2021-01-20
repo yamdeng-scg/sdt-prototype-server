@@ -302,11 +302,13 @@ CREATE OR REPLACE PROCEDURE transfer_room(
         -옮긴 사용자 id : _login_id INT
 
     */
-
+	
     -- 이관 시킬 회원의 speaker id
     -- 방의 현재 담당 회원의 speaker id
-    DECLARE v_last_speaker_id INT;
-    DECLARE v_update_speaker_id INT;
+    -- 방의 담담 회원 id : 대기방에서 이관시 방의 담당자가 존재하지 않
+      DECLARE v_last_speaker_id INT;
+      DECLARE v_update_speaker_id INT;
+      DECLARE v_member_id INT;
 
     -- 이전 speaker_id 가져오기
     SELECT speaker_id into v_last_speaker_id
@@ -338,31 +340,42 @@ CREATE OR REPLACE PROCEDURE transfer_room(
           SET last_member_id = member_id, member_id = null, update_member_id = _login_id
         WHERE room_id = _room_id AND END_DATE IS NULL;
     ELSE
-        -- 지정한 상담사에게 이관인 경우
-        -- 방의 담당자 정보 변경
-        UPDATE room
-          SET state = 1, last_member_id = member_id, member_id = _member_id
-        WHERE id = _room_id;
-
-        -- 이관할 상담사의 speaker_id 가져오기 
-        SELECT speaker_id INTO v_update_speaker_id
-          FROM member
-        WHERE id = _member_id;
-
-        -- 방의 사용자 정보를 이관할 상담사로 변경
-        UPDATE room_speaker
-          SET speaker_id = v_update_speaker_id, update_member_id = _login_id
-        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
-
-        -- 메시지 읽음 정보를 이관할 상담사로 변경 시킴
-        UPDATE message_read
-          SET speaker_id = v_update_speaker_id
-        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
-        
-        -- 조인 history 정보 최신화
-        UPDATE room_join_history
-            SET last_member_id = member_id, member_id = _member_id, update_member_id = _login_id
-          WHERE room_id = _room_id AND END_DATE IS NULL;
+    
+	    -- 상담사가 존재하는지 체크하기 위한
+	    SELECT member_id INTO v_member_id
+	      FROM room WHERE id = _room_id;
+	     
+       -- 대기인 상태인 경우는 상담사 바로 매칭
+	     IF v_member_id IS NULL THEN
+	     	CALL match_room(_room_id, _member_id);
+	     ELSE
+	     	-- 지정한 상담사에게 이관인 경우
+	        -- 방의 담당자 정보 변경
+	        UPDATE room
+	          SET state = 1, last_member_id = member_id, member_id = _member_id
+	        WHERE id = _room_id;
+	
+	        -- 이관할 상담사의 speaker_id 가져오기 
+	        SELECT speaker_id INTO v_update_speaker_id
+	          FROM member
+	        WHERE id = _member_id;
+	
+	        -- 방의 사용자 정보를 이관할 상담사로 변경
+	        UPDATE room_speaker
+	          SET speaker_id = v_update_speaker_id, update_member_id = _login_id
+	        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
+	
+	        -- 메시지 읽음 정보를 이관할 상담사로 변경 시킴
+	        UPDATE message_read
+	          SET speaker_id = v_update_speaker_id
+	        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
+	        
+	        -- 조인 history 정보 최신화
+	        UPDATE room_join_history
+	            SET last_member_id = member_id, member_id = _member_id, update_member_id = _login_id
+	          WHERE room_id = _room_id AND END_DATE IS NULL;
+	     END IF;
+	     
     END IF;
 END;
 //

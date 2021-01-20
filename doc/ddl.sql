@@ -630,6 +630,21 @@ INSERT INTO speaker2 (id, create_date, update_date, company_id, name, is_custome
 SELECT id, createdate, workdate, CONCAT(cid, ''), name, iscustomer
 FROM Speaker;
 
+update speaker2 
+set is_customer = 0
+where id in(
+select id
+from (
+select s.id
+from member m inner join speaker2 s on m.speaker_id = s.id) as a
+);
+
+select m.id, m.name, s.id as speaker_id, s.name, s.is_customer 
+from member m inner join speaker2 s on m.speaker_id = s.id;
+
+select *
+from customer2 c inner join speaker2 s on c.speaker_id = s.id;
+
 -- chat_message
 INSERT INTO chat_message (id, create_date, update_date, company_id, room_id, speaker_id, message_type, not_read_count, is_system_message, message, message_admin_type, is_employee, message_detail)
 SELECT id, createdate, workdate, CONCAT(cid, ''), space, speaker, mtype, 0, sysmsg, msg, onlyadm, isemp, msgname
