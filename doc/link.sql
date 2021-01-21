@@ -80,10 +80,10 @@ insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url,
 insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 6, 'app', '사용계약번호 등록', '/://1/company/addN', 1);
 
 -- 전화발신
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '서울도시가스 고객센터', 'tel://1588-5788', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '예스코 고객센터', 'tel://1544-3131', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '귀뚜라미에너지 고객센터', 'tel://1670-4700', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '대륜E&S 고객센터', 'tel://1566-6116', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '삼천리 고객센터', 'tel://1544-3002', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '인천도시가스 고객센터', 'tel://1600-0002', 1);
-insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '코원에너지서비스 고객센터', 'tel://1599-3366', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '서울도시가스 콜센터', 'tel://1588-5788', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '예스코 콜센터', 'tel://1544-3131', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '귀뚜라미에너지 콜센터', 'tel://1670-4700', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '대륜E&S 콜센터', 'tel://1566-6116', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '삼천리 콜센터', 'tel://1544-3002', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '인천도시가스 콜센터', 'tel://1600-0002', 1);
+insert into link_detail(company_id, menu_id, link_protocol, link_text, link_url, enable) values ('1', 7, 'app', '코원에너지서비스 콜센터', 'tel://1599-3366', 1);
