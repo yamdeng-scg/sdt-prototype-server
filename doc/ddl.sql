@@ -443,7 +443,7 @@ CREATE TABLE IF NOT EXISTS `stats_hashtag` (
   `update_date` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정일',
   `rank_num` int(10) unsigned DEFAULT 0 COMMENT '랭크',
   `save_date` varchar(10) NOT NULL COMMENT '기준일 (YYYY-MM-DD)',
-  `name` varchar(10) NOT NULL COMMENT '태그명(카테고리 소분류, 메시지 상세...)',
+  `name` varchar(255) NOT NULL COMMENT '태그명(카테고리 소분류, 메시지 상세...)',
   `issue_count` int(10) unsigned DEFAULT 0 COMMENT 'count',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='일별 키워드 통계(랭크용)';
