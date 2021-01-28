@@ -668,3 +668,306 @@ BEGIN
 
 	END$$
 DELIMITER ;
+
+DELIMITER $$
+$$
+CREATE PROCEDURE stats_company_daily(
+	IN _company_id VARCHAR(255),		-- 회사id (1-서울도시가스, 2-인천도시가스, ...)
+	IN _target_date VARCHAR(10)			-- 집계대상 일자(YYYY-MM-DD)
+)
+BEGIN
+		
+		DECLARE talk_system_enter_count INT;
+		DECLARE new_count INT;
+		DECLARE ready_count INT;
+		DECLARE ing_count INT;
+		DECLARE close_count INT;
+		DECLARE out_count INT;
+		DECLARE speak_count INT;
+		DECLARE max_ready_minute INT;
+		DECLARE max_speak_minute INT;
+		DECLARE avg_ready_minute INT;
+		DECLARE avg_speak_minute INT;
+		DECLARE avg_member_speak_count INT;
+	
+		-- 이미 집계된 데이터가 존재하는지 확인.
+		IF (		
+			SELECT id 
+			FROM stats_company 
+			WHERE 1=1
+			AND company_id = _company_id
+			AND save_date = _target_date
+			LIMIT 1
+		) THEN
+		
+			-- 이미 집계된 데이터가 존재할 경우 : 등록되어 있는 데이터를 삭제 한다.
+			DELETE 
+			FROM stats_company
+			WHERE 1=1
+			AND company_id = _company_id
+			AND save_date = _target_date;
+		
+		END IF;
+	
+		
+		-- (1) 신규상담 건수 : 대기방을 매칭했을때 : 매칭이력(room_join_history의 create_date) 생성일이 오늘인 건
+		-- SET @new_count = select count(*)
+		select count(*) into new_count
+		-- select @new_count := count(*)
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.create_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (2) 대기상담 건수 : 전체 대기 상태 건수
+		select count(*) into ready_count
+		from room as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.state < 8
+		and a.member_id is null;
+		
+		
+		-- (3) 진행중인 상담 건수 : 방의 상태가 종료가 아니고 상담사가 존재하는 경우
+		select count(*) into ing_count
+		from room as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.state < 2
+		and a.member_id is not null;
+		
+		
+		-- (4) 종료된 상담 건수 : 종료일이 기준으로 추출(room_join_history.end_date)
+		select count(*) into close_count
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (5) 이탈 건수 : 종료된 상담인 경우. 이력의 시작 메시지 id와 종료 메시지 id 기준으로 추출. 시작 ~ 종료 구간에 상담사 메시지가 존재하지 않는 경우
+		select count(*) into out_count
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1)
+		and (
+				select count(*)
+				from chat_message as b
+				where 1=1
+				and b.company_id = a.company_id
+				and b.room_id = a.room_id
+				and b.id between a.start_message_id and a.end_message_id
+				and b.message_admin_type = 0
+				and b.is_system_message = 0
+				and b.is_employee = 1
+			) = 0;
+		
+		
+		-- (6) 총 상담사 수 : 오늘 작성한 채팅 메시지중 시스템메시지가 아니고 상담사의 메시지인 경우의 상담사 중복없이 추출
+		select count(*) into speak_count
+		from(
+			select distinct a.speaker_id
+			from chat_message as a
+				 inner join member as b on (b.speaker_id = a.speaker_id)
+			where 1=1
+			and a.company_id = _company_id
+			and a.create_date between _target_date and adddate(_target_date, 1)
+			and a.is_system_message = 0
+			and a.message_admin_type = 0
+			and a.is_employee = 1
+		)a;
+		
+		
+		-- (7) 최대 대기 시간 : 종료된 상담건 중 고객의 최초 메시지 작성시간과 상담사의 최초 메시지 작성 시간의 차이들의 가장 큰 시간 값 
+		select max(
+				TIMESTAMPDIFF(
+					SECOND,
+					(
+						select a1.create_date
+						from chat_message as a1
+						where 1=1
+						and a1.room_id = a.room_id
+						and a1.id >= a.start_message_id
+						and a1.is_system_message = 0
+						and a1.message_admin_type = 0
+						and a1.is_employee = 0
+						limit 1
+					),	-- 고객의 최초 메시지 작성시간
+					(
+						select a1.create_date
+						from chat_message as a1
+						where 1=1
+						and a1.room_id = a.room_id
+						and a1.id >= a.start_message_id
+						and a1.is_system_message = 0
+						and a1.message_admin_type = 0
+						and a1.is_employee = 1
+						limit 1
+					)	-- 상담사의 최초 메시지 작성 시간
+				)
+			) into max_ready_minute
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (8) 평균 대기 시간 : 종료된 상담건 중 고객의 최초 메시지 작성시간과 상담사의 최초 메시지 작성 시간의 차이들의 평균 시간 값 
+		select round(
+				avg(
+					TIMESTAMPDIFF(
+						SECOND,
+						(
+							select a1.create_date
+							from chat_message as a1
+							where 1=1
+							and a1.room_id = a.room_id
+							and a1.id >= a.start_message_id
+							and a1.is_system_message = 0
+							and a1.message_admin_type = 0
+							and a1.is_employee = 0
+							limit 1
+						),	-- 고객의 최초 메시지 작성시간
+						(
+							select a1.create_date
+							from chat_message as a1
+							where 1=1
+							and a1.room_id = a.room_id
+							and a1.id >= a.start_message_id
+							and a1.is_system_message = 0
+							and a1.message_admin_type = 0
+							and a1.is_employee = 1
+							limit 1
+						)	-- 상담사의 최초 메시지 작성 시간
+					)
+				)
+			) into avg_ready_minute
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (9) 최대 상담 시간 : 종료된 상담건 중 해당일에 작성된 상담사의 최초 메시지와 해당일에 작성된 마지막 메시지의 시간 차들 중 가장 큰 시간 값.
+		select max(
+				TIMESTAMPDIFF(
+					SECOND,
+					(
+						select a1.create_date
+						from chat_message as a1
+						where 1=1
+						and a1.room_id = a.room_id
+						and a1.id >= a.start_message_id
+						and a1.create_date >= _target_date
+						and a1.is_system_message = 0
+						and a1.message_admin_type = 0
+						and a1.is_employee = 1
+						limit 1
+					),	-- 고객의 최초 메시지 작성시간
+					(
+						select max(a1.create_date)
+						from chat_message as a1
+						where 1=1
+						and a1.room_id = a.room_id
+						and a1.id >= a.start_message_id
+						and a1.create_date >= _target_date
+						and a1.is_system_message = 0
+						and a1.message_admin_type = 0
+					)	-- 마지막 메시지 작성 시간
+				)
+			) into max_speak_minute
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (10) 평균 상담 시간 : 종료된 상담건 중 해당일에 작성된 상담사의 최초 메시지와 해당일에 작성된 마지막 메시지의 시간 차들 중 평균 시간 값.
+		select round(
+				avg(
+					TIMESTAMPDIFF(
+						SECOND,
+						(
+							select a1.create_date
+							from chat_message as a1
+							where 1=1
+							and a1.room_id = a.room_id
+							and a1.id >= a.start_message_id
+							and a1.create_date >= _target_date
+							and a1.is_system_message = 0
+							and a1.message_admin_type = 0
+							and a1.is_employee = 1
+							limit 1
+						),	-- 고객의 최초 메시지 작성시간
+						(
+							select max(a1.create_date)
+							from chat_message as a1
+							where 1=1
+							and a1.room_id = a.room_id
+							and a1.id >= a.start_message_id
+							and a1.create_date >= _target_date
+							and a1.is_system_message = 0
+							and a1.message_admin_type = 0
+						)	-- 마지막 메시지 작성 시간
+					)
+				)
+			) into avg_speak_minute
+		from room_join_history as a
+		where 1=1
+		and a.company_id = _company_id
+		and a.start_message_id is not null
+		and a.end_date between _target_date and adddate(_target_date, 1);
+		
+		
+		-- (11) 상담사별 평균 상담 건수 : 해당일에 작성된 메시지 기준으로 상담사별 상담 룸 카운트의 전체 평균.
+		select round(avg(a.cnt)) into avg_member_speak_count
+		from(
+			select a.speaker_id, count(*) as cnt
+			from(
+				select distinct a.speaker_id, b.id
+				from chat_message as a
+					 inner join room_join_history as b on (b.room_id = a.room_id and a.id >= b.start_message_id and a.id <= b.end_message_id)
+				where 1=1
+				and a.company_id = _company_id
+				and a.create_date between _target_date and adddate(_target_date, 1)
+				and a.is_system_message = 0
+				and a.message_admin_type = 0
+				and a.is_employee = 1
+			)a
+			group by a.speaker_id
+		)a;
+		
+		-- (12) 상담톡 이용 고객 수 : 해당일에 메시지를 1건이상 작성한 고객 수.
+		select count(*) into talk_system_enter_count
+		from(
+			select distinct a.speaker_id
+			from chat_message as a
+				 inner join customer2 as b on (b.speaker_id = a.speaker_id)
+			where 1=1
+			and a.company_id = _company_id
+			and a.create_date between _target_date and adddate(_target_date, 1)
+			and a.is_system_message = 0
+			and a.message_admin_type = 0
+			and a.is_employee = 0
+		)a;
+		
+		
+		INSERT INTO stats_company (
+			company_id, save_date, chatbot_use_count, talk_system_enter_count, new_count, 
+			ready_count, ing_count, close_count, out_count, speak_count, 
+			max_ready_minute, max_speak_minute, avg_ready_minute, avg_speak_minute, avg_member_speak_count
+		)
+		select _company_id, _target_date, 0, talk_system_enter_count, new_count, 
+			ready_count, ing_count, close_count, out_count, speak_count, 
+			ifnull(max_ready_minute, 0), ifnull(max_speak_minute, 0), ifnull(avg_ready_minute, 0), ifnull(avg_speak_minute, 0), ifnull(avg_member_speak_count, 0);
+			
+	END$$
+DELIMITER ;
