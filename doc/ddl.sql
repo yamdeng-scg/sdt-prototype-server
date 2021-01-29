@@ -510,6 +510,10 @@ update member
   join Speaker on Speaker.id = member.speaker_id
    set member.name = Speaker.name;
 
+UPDATE member
+set state = 3
+where state = 1 or state = 2
+
 insert into member(company_id, is_admin, auth_level, login_name, state, speaker_id, name, dept_name, position_name, use_status, password)
 values('1', 1, 0, 'seoul_admin', 0, null, '서울도시가스 관리자', 'SCGLAB', '서비스관리자', 1, '9fd0b9976a4287506e489a33b04ca9f2f0f29249692ff08b6c84f1fa82a51e97');
 
