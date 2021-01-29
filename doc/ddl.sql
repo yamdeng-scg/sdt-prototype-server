@@ -610,7 +610,7 @@ FROM Space;
 
 UPDATE room
 set state = 8, member_id = null, last_member_id = member_id, join_message_id = null, end_date = now()
-where state > 0;
+where state > 0 and end_date is null;
 
 update room
 set join_message_id = null
