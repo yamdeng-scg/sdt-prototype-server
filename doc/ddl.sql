@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `manual` (
   `page_code` varchar(7) DEFAULT NULL COMMENT 'page code',
   `title` varchar(255) DEFAULT NULL COMMENT '타이틀',
   `tags` varchar(255) DEFAULT NULL COMMENT 'page tags',
-  `content` varchar(2047) DEFAULT NULL COMMENT 'page content',
+  `content` varchar(4096) DEFAULT NULL COMMENT 'page content',
   `pdf_image_path` varchar(255) DEFAULT NULL COMMENT '파일 다운로드 path',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='매뉴얼';
@@ -503,22 +503,15 @@ INSERT INTO member (id, create_date, update_date, company_id, auth_level, login_
 FROM Emp;
 
 update member
-  join Emp on Emp.empno = member.login_name
-   set member.speaker_id = Emp.speaker;
-
-update member
   join Speaker on Speaker.id = member.speaker_id
    set member.name = Speaker.name;
 
 UPDATE member
-set state = 3
-where state = 1 or state = 2
+set auth_level = 3
+where auth_level < 3;
 
 insert into member(company_id, is_admin, auth_level, login_name, state, speaker_id, name, dept_name, position_name, use_status, password)
 values('1', 1, 0, 'seoul_admin', 0, null, '서울도시가스 관리자', 'SCGLAB', '서비스관리자', 1, '9fd0b9976a4287506e489a33b04ca9f2f0f29249692ff08b6c84f1fa82a51e97');
-
-insert into member(company_id, is_admin, auth_level, login_name, state, speaker_id, name, dept_name, position_name, use_status, password)
-values('2', 1, 0, 'inchon_admin', 0, null, '인천도시가스 관리자', 'SCGLAB', '서비스관리자', 1, '9fd0b9976a4287506e489a33b04ca9f2f0f29249692ff08b6c84f1fa82a51e97');
 
 -- category_large
 INSERT INTO category_large (id, create_date, update_date, company_id, name, minwon_code, minwon_name, sort_index)
@@ -533,8 +526,7 @@ INSERT INTO category_middle (id, create_date, update_date, company_id, category_
 -- category_small
 INSERT INTO category_small (id, create_date, update_date, company_id, category_middle_id,  name, minwon_code, minwon_name, sort_index)
     SELECT id, createdate, workdate, CONCAT(cid, ''), catemd, name,  mwcode, mwname, id
-    FROM CateSm
-    where catemd != 82;
+    FROM CateSm;
 
 -- customer2
 INSERT INTO customer2 (id, create_date, update_date, gasapp_member_number, name, tel_number, speaker_id)
@@ -574,13 +566,6 @@ update template2 m
   join Template s on s.id = m.id
    set m.update_member_id = s.emp, m.member_id = s.emp;
 
-update template2 set category_small_id = null where category_small_id in(1, 288);
-
-update template2 t
-  join link_detail l on t.link_url = l.link_url
-   set t.link_url = l.link_url
-where t.link_url is not null and t.link_url != '' and t.link_url like 'scg%';
-
 -- auto_message
 INSERT INTO auto_message (id, create_date, update_date, update_member_id, company_id, type, message)
 SELECT id, createdate, workdate, emp, '1', type, msg
@@ -591,21 +576,10 @@ INSERT INTO template_favorite (id, create_date, update_date, member_id, company_
 SELECT id, createdate, workdate, emp, '1', template
 FROM TemplateFavorite;
 
-delete from template_favorite where template_id in(596, 608, 609, 595);
-
 -- template_keyword
 INSERT INTO template_keyword (id, create_date, update_date, company_id, template_id, keyword_id)
 SELECT id, createdate, workdate, '1', template, keyword
 FROM TemplateKeyword;
-
-delete 
-from template_keyword
-where template_id in(
-select sub.template_id
-    from (
-    select template_id
-    from template_keyword) sub
-    where sub.template_id not in(select id from template2));
 
 -- room
 INSERT INTO room (id, create_date, update_date, member_id, company_id, state, join_message_id, chatid, join_history_json, is_online, name, end_date, last_member_id)
@@ -613,8 +587,12 @@ SELECT id, createdate, workdate, emp, CONCAT(cid, ''), state, startid, chatid, p
 FROM Space;
 
 UPDATE room
+set state = 8
+where state = 2;
+
+UPDATE room
 set state = 8, member_id = null, last_member_id = member_id, join_message_id = null, end_date = now()
-where state > 0 and end_date is null;
+where state = 1 and end_date is null;
 
 update room
 set join_message_id = null
@@ -634,29 +612,10 @@ INSERT INTO speaker2 (id, create_date, update_date, company_id, name, is_custome
 SELECT id, createdate, workdate, CONCAT(cid, ''), name, iscustomer
 FROM Speaker;
 
-update speaker2 
-set is_customer = 0
-where id in(
-select id
-from (
-select s.id
-from member m inner join speaker2 s on m.speaker_id = s.id) as a
-);
-
-select m.id, m.name, s.id as speaker_id, s.name, s.is_customer 
-from member m inner join speaker2 s on m.speaker_id = s.id;
-
-select *
-from customer2 c inner join speaker2 s on c.speaker_id = s.id;
-
 -- chat_message
 INSERT INTO chat_message (id, create_date, update_date, company_id, room_id, speaker_id, message_type, not_read_count, is_system_message, message, message_admin_type, is_employee, message_detail)
 SELECT id, createdate, workdate, CONCAT(cid, ''), space, speaker, mtype, 0, sysmsg, msg, onlyadm, isemp, msgname
 FROM Speak;
-
-update chat_message
-set speaker_id = null
-where speaker_id = 0;
 
 -- room_speaker
 INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, room_id, read_last_message_id, old_last_message_id, is_alarm, is_customer)
@@ -668,18 +627,6 @@ INSERT INTO room_speaker (id, create_date, update_date, company_id, speaker_id, 
 SELECT id, createdate, workdate, '1', speaker, space, lastid, oldid, iscalm, 0
 FROM SpaceSpeaker
 where spacename is null;
-
-update room_speaker
-set read_last_message_id = null
-where read_last_message_id = 0;
-
-update room_speaker
-set old_last_message_id = null
-where old_last_message_id = 0;
-
--- update room_speaker m
---  join speaker2 s on m.speaker_id = s.id
---   set m.is_customer = s.is_customer;
 
 -- message_read
 INSERT INTO message_read (create_date, update_date, read_date, company_id, room_id, message_id, speaker_id)
@@ -720,10 +667,44 @@ ALTER TABLE category_small ADD CONSTRAINT category_small_category_middle_FK FORE
 -- customer2
 ALTER TABLE customer2 ADD CONSTRAINT customer_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE customer2 ADD CONSTRAINT customer_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
+
+ @@.customer_gasapp_member_number_IDX 유니크 인덱스 생성전에 중복 데이터 삭제
+  delete
+  from customer2
+  where id in(
+  select id from (
+    select id
+    from customer2
+    where id not in(
+      select min(id)
+      from customer2
+      group by gasapp_member_number 
+      having count(*) > 1
+    )
+    and gasapp_member_number in(
+      select gasapp_member_number 
+      from customer2
+      group by gasapp_member_number 
+      having count(*) > 1
+    ) )as a
+  );
+
 CREATE UNIQUE INDEX customer_gasapp_member_number_IDX USING BTREE ON customer2 (gasapp_member_number);
+
 
 -- customer_company
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_customer_FK FOREIGN KEY (customer_id) REFERENCES customer2(id) ON DELETE CASCADE;
+
+delete
+    from customer_company cc 
+    where customer_id not in(
+    select id
+    from (
+      select id
+      from customer2 c2 
+      ) as a
+    );
+
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE customer_company ADD CONSTRAINT customer_company_member_FK_1 FOREIGN KEY (block_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
@@ -745,8 +726,43 @@ CREATE INDEX manual_company_id_IDX2 USING BTREE ON manual (company_id, manual_in
 -- manual_favorite
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE CASCADE;
+
+delete
+    from manual_favorite cc 
+    where manual_id not in(
+    select id
+    from (
+      select id
+      from manual c2 
+      ) as a
+    );
+
 ALTER TABLE manual_favorite ADD CONSTRAINT manual_favorite_manual_FK FOREIGN KEY (manual_id) REFERENCES manual(id) ON DELETE CASCADE;
+
+
+  delete
+  from manual_favorite
+  where id in(
+  select id from (
+    select id
+    from manual_favorite
+    where id not in(
+      select min(id)
+      from manual_favorite
+      group by member_id, manual_id 
+      having count(*) > 1
+    )
+    and manual_id in(
+      select manual_id 
+      from manual_favorite
+      group by member_id, manual_id 
+      having count(*) > 1
+    ) )as a
+  );
+  
 CREATE UNIQUE INDEX manual_favorite_member_id_IDX USING BTREE ON manual_favorite (member_id, manual_id);
+
+
 
 -- template2
 ALTER TABLE template2 ADD CONSTRAINT template_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
@@ -782,8 +798,6 @@ ALTER TABLE room ADD CONSTRAINT room_member_FK_2 FOREIGN KEY (last_member_id) RE
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_room_FK FOREIGN KEY (room_id) REFERENCES room(id) ON DELETE CASCADE;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
--- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK FOREIGN KEY (start_message_id) REFERENCES chat_message(id);
--- ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_chat_message_FK_1 FOREIGN KEY (end_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_category_small_FK FOREIGN KEY (category_small_id) REFERENCES category_small(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_1 FOREIGN KEY (last_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 ALTER TABLE room_join_history ADD CONSTRAINT room_join_history_member_FK_2 FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
@@ -802,8 +816,6 @@ ALTER TABLE chat_message ADD CONSTRAINT chat_message_template_FK FOREIGN KEY (te
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_company_FK FOREIGN KEY (company_id) REFERENCES company(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_speaker_FK FOREIGN KEY (speaker_id) REFERENCES speaker2(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_room_FK FOREIGN KEY (room_id) REFERENCES room(id);
--- ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK FOREIGN KEY (read_last_message_id) REFERENCES chat_message(id);
--- ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_chat_message_FK_1 FOREIGN KEY (old_last_message_id) REFERENCES chat_message(id);
 ALTER TABLE room_speaker ADD CONSTRAINT room_speaker_member_FK FOREIGN KEY (update_member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 CREATE UNIQUE INDEX room_speaker_room_id_IDX USING BTREE ON room_speaker (room_id, speaker_id);
 
@@ -909,92 +921,3 @@ UPDATE room_speaker
 
 
 */
-
-/*
-
-<query id="joinRoom">
-		SET @o_read_last_message_id=null, @o_max_message_id=null; CALL join_room(:roomId, :speakerId, @o_read_last_message_id, @o_max_message_id); SELECT @o_read_last_message_id, @o_max_message_id;
-</query>
-
-*/
-
-/*
-
-drop table category_large;
-drop table category_middle;
-drop table category_small;
-drop table customer2;
-drop table customer_company;
-drop table keyword2;
-drop table manual;
-drop table manual_favorite;
-drop table template2;
-drop table template_favorite;
-drop table template_keyword;
-drop table room;
-drop table room_join_history;
-drop table speaker2;
-drop table chat_message;
-drop table room_speaker;
-drop table message_read;
-drop table minwon_history;
-drop table link_menu;
-drop table link_detail;
-drop table template_use_history;
-drop table stats_company;
-drop table stats_hashtag;
-drop table company;
-drop table member;
-drop table alarm_member;
-drop table action_history;
-
-*/
-
-
--- DROP PROCEDURE IF EXISTS cstalk.regist_member;
-
--- DELIMITER $$
--- $$
--- CREATE PROCEDURE cstalk.regist_member(IN _company_id VARCHAR(255),
--- 	IN _login_name VARCHAR(255),
--- 	IN _name VARCHAR(255),
---   IN _auth_level INT)
--- BEGIN
--- 	/*
-      
---       기능명 : 회원 로그인(상담사 로그인)
---       매개변수
---         -회사 id : _company_id VARCHAR(255)
---         -직원번호 : _login_name VARCHAR(255)
---         -이름 : _name VARCHAR(255)
-
---     */
-
---     -- 회원 id
---     -- 회원의 speaker id
---     DECLARE v_member_id INT;
---     DECLARE v_speaker_id INT;
-
---     -- 기존 등록된 회원 조회
---     SELECT id, speaker_id INTO v_member_id, v_speaker_id
---       FROM member WHERE company_id = _company_id AND login_name = _login_name;
-
---     -- 회원 존재 여부에 따라 분기
---     IF v_member_id IS NULL THEN
---         -- 등록된 회원이 없으면 speaker, member 테이블 insert 
---         INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 0);
---         SET v_speaker_id = LAST_INSERT_ID();
-        
---         INSERT INTO member(company_id, speaker_id, login_name, name, auth_level) VALUES(_company_id, v_speaker_id, _login_name, _name, _auth_level);
---     ELSE
---         -- 회원이 존재하면 member, speaker 테이블의 이름 값 컬럼을 update
---         UPDATE member
---             SET name = _name
---           WHERE id = v_member_id;
-          
---         UPDATE speaker2
---             SET name = _name
---           WHERE id = v_speaker_id; 
---     END IF;
--- END$$
--- DELIMITER ;

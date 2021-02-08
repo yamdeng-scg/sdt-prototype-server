@@ -4,10 +4,15 @@ DROP PROCEDURE IF EXISTS cstalk.regist_member;
 
 DELIMITER $$
 $$
-CREATE PROCEDURE cstalk.regist_member(IN _company_id VARCHAR(255),
+CREATE PROCEDURE cstalk.regist_member(
+  IN _company_id VARCHAR(255),
 	IN _login_name VARCHAR(255),
 	IN _name VARCHAR(255),
-  IN _auth_level INT)
+  IN _auth_level INT,
+  IN _dept_name VARCHAR(255),
+  IN _position_name VARCHAR(255),
+  IN _use_status INT
+)
 BEGIN
 	/*
       
@@ -16,7 +21,10 @@ BEGIN
         -회사 id : _company_id VARCHAR(255)
         -직원번호 : _login_name VARCHAR(255)
         -이름 : _name VARCHAR(255)
-
+        -권한 : _auth_level INT
+        -부서명 : _dept_name VARCHAR(255)
+        -직급명 : _position_name VARCHAR(255)
+        -사용여부 : use_status INT
     */
 
     -- 회원 id
@@ -34,11 +42,11 @@ BEGIN
         INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 0);
         SET v_speaker_id = LAST_INSERT_ID();
         
-        INSERT INTO member(company_id, speaker_id, login_name, name, auth_level) VALUES(_company_id, v_speaker_id, _login_name, _name, _auth_level);
+        INSERT INTO member(company_id, speaker_id, login_name, name, auth_level, dept_name, position_name, use_status) VALUES(_company_id, v_speaker_id, _login_name, _name, _auth_level, _dept_name, _position_name, _use_status);
     ELSE
         -- 회원이 존재하면 member, speaker 테이블의 이름 값 컬럼을 update
         UPDATE member
-            SET name = _name
+            SET name = _name, dept_name = _dept_name, position_name = _position_name, use_status = _use_status
           WHERE id = v_member_id;
           
         UPDATE speaker2
@@ -119,7 +127,7 @@ CREATE PROCEDURE cstalk.regist_customer(
           INSERT INTO speaker2(company_id, name, is_customer) VALUES(_company_id, _name, 1);
           SET v_speaker_id = LAST_INSERT_ID();
           
-          INSERT INTO room(company_id, state, name) VALUES(_company_id, 2, _name);
+          INSERT INTO room(company_id, state, name) VALUES(_company_id, 8, _name);
           SET v_room_id = LAST_INSERT_ID();
 
           INSERT INTO room_speaker(room_id, speaker_id, is_customer) VALUES(v_room_id, v_speaker_id, 1);
@@ -261,7 +269,7 @@ CREATE PROCEDURE cstalk.close_room(
 
     -- 방 정보 최신화 시키기
     UPDATE room
-        SET state = 8, member_id = null, last_member_id = member_id, join_message_id = null, end_date = now(), join_history_json = null, update_member_id = _login_id
+        SET state = 8, last_member_id = member_id, member_id = null, join_message_id = null, end_date = now(), join_history_json = null, update_member_id = _login_id
       WHERE id = _room_id;
 
     -- 마지막 메시지까지 모두 읽음 처리 : 속도 때문에 검토 필요
@@ -298,11 +306,13 @@ CREATE PROCEDURE cstalk.transfer_room(
         -옮긴 사용자 id : _login_id INT
 
     */
-
+	
     -- 이관 시킬 회원의 speaker id
     -- 방의 현재 담당 회원의 speaker id
+	-- 방의 담담 회원 id : 대기방에서 이관시 방의 담당자가 존재하지 않
     DECLARE v_last_speaker_id INT;
     DECLARE v_update_speaker_id INT;
+   	DECLARE v_member_id INT;
 
     -- 이전 speaker_id 가져오기
     SELECT speaker_id into v_last_speaker_id
@@ -334,31 +344,41 @@ CREATE PROCEDURE cstalk.transfer_room(
           SET last_member_id = member_id, member_id = null, update_member_id = _login_id
         WHERE room_id = _room_id AND END_DATE IS NULL;
     ELSE
-        -- 지정한 상담사에게 이관인 경우
-        -- 방의 담당자 정보 변경
-        UPDATE room
-          SET state = 1, last_member_id = member_id, member_id = _member_id
-        WHERE id = _room_id;
-
-        -- 이관할 상담사의 speaker_id 가져오기 
-        SELECT speaker_id INTO v_update_speaker_id
-          FROM member
-        WHERE id = _member_id;
-
-        -- 방의 사용자 정보를 이관할 상담사로 변경
-        UPDATE room_speaker
-          SET speaker_id = v_update_speaker_id, update_member_id = _login_id
-        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
-
-        -- 메시지 읽음 정보를 이관할 상담사로 변경 시킴
-        UPDATE message_read
-          SET speaker_id = v_update_speaker_id
-        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
-        
-        -- 조인 history 정보 최신화
-        UPDATE room_join_history
-            SET last_member_id = member_id, member_id = _member_id, update_member_id = _login_id
-          WHERE room_id = _room_id AND END_DATE IS NULL;
+    
+	    -- 상담사가 존재하는지 체크하기 위한
+	    SELECT member_id INTO v_member_id
+	      FROM room WHERE id = _room_id;
+	     
+	     IF v_member_id IS NULL THEN
+	     	CALL match_room(_room_id, _member_id);
+	     ELSE
+	     	-- 지정한 상담사에게 이관인 경우
+	        -- 방의 담당자 정보 변경
+	        UPDATE room
+	          SET state = 1, last_member_id = member_id, member_id = _member_id
+	        WHERE id = _room_id;
+	
+	        -- 이관할 상담사의 speaker_id 가져오기 
+	        SELECT speaker_id INTO v_update_speaker_id
+	          FROM member
+	        WHERE id = _member_id;
+	
+	        -- 방의 사용자 정보를 이관할 상담사로 변경
+	        UPDATE room_speaker
+	          SET speaker_id = v_update_speaker_id, update_member_id = _login_id
+	        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
+	
+	        -- 메시지 읽음 정보를 이관할 상담사로 변경 시킴
+	        UPDATE message_read
+	          SET speaker_id = v_update_speaker_id
+	        WHERE room_id = _room_id AND speaker_id = v_last_speaker_id;
+	        
+	        -- 조인 history 정보 최신화
+	        UPDATE room_join_history
+	            SET last_member_id = member_id, member_id = _member_id, update_member_id = _login_id
+	          WHERE room_id = _room_id AND END_DATE IS NULL;
+	     END IF;
+	     
     END IF;
 END$$
 DELIMITER ;
@@ -415,7 +435,7 @@ CREATE PROCEDURE cstalk.match_room(
     IF v_member_id IS NULL THEN
         -- 방 종료 history 최신화 : 상담사가 종료된 상담을 다시 시작을 하고 고객이 작성한 메시지가 없을 경우 join_message_id와 join_history_json 정보는 이전 걸로 유지된다
         INSERT INTO room_join_history (room_id, start_message_id, member_id, join_history_json, company_id, update_member_id)
-            SELECT id, join_message_id, _member_id, join_history_json, company_id, _member_id
+            SELECT id, join_message_id, _member_id , join_history_json, company_id, _member_id
               FROM room
               WHERE id = _room_id;
         SET v_chatid = Last_Insert_ID();
@@ -427,7 +447,7 @@ CREATE PROCEDURE cstalk.match_room(
         -- room_speaker 테이블 insert
         IF v_room_speaker_id IS NULL THEN
             INSERT INTO room_speaker(room_id, speaker_id, read_last_message_id, is_customer)
-                VALUES(_room_id, v_speaker_id, v_max_message_id, 0);
+                VALUES(_room_id, v_speaker_id, NULL, 0);
         END IF;
         
         -- 방의 사용자 정보 삭제시키기(사용자 유형이 상담사인 경우만 삭제하고 상담할 상담사는 제외) : 정상적인 경우에는 필요없음 2차 검증
@@ -539,7 +559,7 @@ BEGIN
 			) AS is_customer,
 			(
 				SELECT
-					COUNT(1)
+					CASE WHEN m.is_employee = 0 AND r.member_id IS NULL THEN 1 ELSE COUNT(1) END
 				FROM
 					message_read
 				WHERE
@@ -548,6 +568,7 @@ BEGIN
 			) no_read_count,
 			r.name AS room_name,
 			s.name AS speaker_name,
+			r.join_message_id as join_message_id,
 			r.is_online,
 			(
 			    SELECT
@@ -625,50 +646,65 @@ DELIMITER ;
 -- 9. stats_hashtag_daily : 문의유형별 일일 집계
 DELIMITER $$
 $$
-CREATE DEFINER=`cstalk`@`localhost` PROCEDURE `cstalk`.`stats_hashtag_daily`(
+CREATE PROCEDURE cstalk.stats_hashtag_daily(
 	IN _company_id VARCHAR(255),		-- 회사id (1-서울도시가스, 2-인천도시가스, ...)
 	IN _target_date VARCHAR(10)			-- 집계대상 일자(YYYY-MM-DD)
 )
 BEGIN
 		
 		-- 이미 집계된 데이터가 존재하는지 확인.
-		IF (		
-			SELECT a.id 
-			FROM stats_hashtag a 
-			WHERE 1=1
-			AND a.save_date = _target_date
-			LIMIT 1
-		) THEN
-		
-			-- 이미 집계된 데이터가 존재할 경우 : 등록되어 있는 데이터를 삭제 한다.
-			DELETE 
-			FROM stats_hashtag
-			WHERE save_date = _target_date;
-		
-		END IF;
+	IF (		
+		SELECT id 
+		FROM stats_hashtag
+		WHERE 1=1
+		AND company_id = _company_id
+		AND save_date = _target_date
+		LIMIT 1
+	) THEN
 	
-		-- 집계 및 등록
-		INSERT INTO stats_hashtag (company_id, rank_num, save_date, name, issue_count)
-		SELECT _company_id as company_id 
-		 		,rank() over(order by a.count desc) as rank_num
-				,_target_date as save_date
-				,b.name
-				,a.count as issue_count
+		-- 이미 집계된 데이터가 존재할 경우 : 등록되어 있는 데이터를 삭제 한다.
+		DELETE 
+		FROM stats_hashtag
+		WHERE 1=1
+		AND company_id = _company_id
+		AND save_date = _target_date;
+	
+	END IF;
+
+	INSERT INTO stats_hashtag (company_id, rank_num, save_date, name, issue_count)
+	SELECT _company_id as company_id
+			,RANK() OVER(ORDER BY a.count DESC, a.name ASC) as rank_num
+			,_target_date as save_date
+			,a.name
+			,a.count as issue_count
+	FROM(	
+		SELECT a.name, count(*) as count
 		FROM(
-			SELECT a.category_small_id, count(*) as count
-			FROM minwon_history a
+			SELECT trim(c.name) as name
+			FROM chat_message a
+				 INNER JOIN template2 b on (b.id = a.template_id)
+				 INNER JOIN category_small c on (c.id = b.category_small_id)
 			WHERE 1=1
+			AND a.company_id = _company_id
 			AND a.create_date BETWEEN _target_date AND adddate(_target_date, 1)
-			AND a.category_small_id is not null
-			AND a.company_id = '1'
-			GROUP BY a.category_small_id
-		) a
-			INNER JOIN category_small b on (b.id = a.category_small_id)
-		WHERE 1=1;
+		
+			UNION ALL
+			
+			SELECT trim(a.message_detail) as name
+			FROM chat_message a
+			WHERE 1=1
+			AND a.company_id = _company_id
+			AND a.create_date BETWEEN _target_date AND adddate(_target_date, 1)
+			AND a.message_type = 4
+			AND a.message_detail IS NOT NULL
+		)a
+		GROUP BY a.name
+	)a;
 
 	END$$
 DELIMITER ;
 
+-- 10. stats_company_daily : 회사 통계 일일 집계
 DELIMITER $$
 $$
 CREATE PROCEDURE stats_company_daily(
