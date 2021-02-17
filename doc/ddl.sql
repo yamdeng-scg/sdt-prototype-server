@@ -874,6 +874,12 @@ ALTER TABLE action_history ADD CONSTRAINT action_history_company_FK FOREIGN KEY 
 ALTER TABLE action_history ADD CONSTRAINT action_history_member_FK FOREIGN KEY (member_id) REFERENCES `member`(id) ON DELETE SET NULL;
 
 
+-- 매뉴얼 이미지경로 일괄변경.
+update manual
+set pdf_image_path = concat('https://cstalk.gasapp.co.kr/attach/manual',pdf_image_path) 
+where 1=1
+and pdf_image_path like '/static/images/%'
+
 */
 
 
