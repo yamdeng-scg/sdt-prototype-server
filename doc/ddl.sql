@@ -538,6 +538,14 @@ INSERT INTO customer_company (customer_id, create_date, update_date, company_id,
 SELECT id, createdate, workdate, '1', 0, blocktype, blockdt, remark, blockemp, space, speaker, swear, insult, state
 FROM Customer;
 
+update customer_company 
+set block_type = ''
+where block_type = '0' or block_type is null;
+
+update customer_company 
+set block_type = '업무 외 대화 시도'
+where block_type = '2';
+
 -- keyword2
 INSERT INTO keyword2 (id, create_date, update_date, company_id, name)
 SELECT id, createdate, workdate, cid, name
